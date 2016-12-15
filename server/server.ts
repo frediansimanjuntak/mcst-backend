@@ -22,8 +22,8 @@ DBConfig.init();
 Routes.init(app, express.Router());
 
 const opts = {
-  key: fs.readFileSync(__dirname + '/cert/server.key'),
-  cert: fs.readFileSync(__dirname + '/cert/server.crt')
+  key: fs.readFileSync(__dirname + '/../server/cert/server.key'),
+  cert: fs.readFileSync(__dirname + '/../server/cert/server.crt')
 }
 
 https.createServer(opts, app)
