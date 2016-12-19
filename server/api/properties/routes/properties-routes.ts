@@ -1,0 +1,21 @@
+"use strict";
+
+import * as express from 'express';
+import {PropertiesController} from '../controller/properties-controller';
+
+export class PropertiesRoutes {
+    static init(router: express.Router) {
+      router
+        .route('/api/properties')
+        .get(PropertiesController.getAll)
+        .post(PropertiesController.createProperties);
+
+      router
+        .route('/api/properties/:id')
+        .delete(PropertiesController.deleteProperties);
+
+      router
+        .route('/api/properties/update/:id')
+        .post(PropertiesController.updateProperties);
+    }
+}
