@@ -29,6 +29,12 @@ const opts = {
   cert: fs.readFileSync(__dirname + '/../server/cert/server.crt')
 }
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  next()
+})
+
 https.createServer(opts, app)
      .listen(PORT, () => {
        console.log(`up and running @: ${os.hostname()} on port: ${PORT}`);
