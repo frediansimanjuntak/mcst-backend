@@ -1,7 +1,7 @@
 // import * as mongoose from 'mongoose';
 
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+import * as mongoose from 'mongoose';
+var Schema = mongoose.Schema;
 
 var developmentSchema = new mongoose.Schema({
     name: {type: String, required: true, trim: true},
