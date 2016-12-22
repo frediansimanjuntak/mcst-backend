@@ -10,7 +10,8 @@ export class NewsletterRoutes {
         .get(NewsletterController.getAll);
 
       router
-        .route('/api/newsletters/:id')        
+        .route('/api/newsletters/:id') 
+        .get(NewsletterController.getNewsletter)       
         .post(NewsletterController.createNewsletter);
 
       router
