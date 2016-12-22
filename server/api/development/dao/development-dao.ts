@@ -29,14 +29,29 @@ developmentSchema.static('getById', (id:string,):Promise<any> => {
 
 developmentSchema.static('getByIdNewsletter', (id:string, idnewsletter:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      // let _query = {_id:id, newsletter:{_id:idnewsletter}};
       var ObjectID = mongoose.Types.ObjectId;
 
          Development 
-         .find({},{"_id":new ObjectID(id),"newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}})        
+         .findById(id)
+         .select({"newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}})
           .exec((err, newsletters) => {
               err ? reject(err)
                   : resolve(newsletters);
+          });
+
+    });
+});
+
+developmentSchema.static('getByIdProperties', (id:string, idproperties:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      var ObjectID = mongoose.Types.ObjectId;
+
+         Development 
+         .findById(id)
+         .select({"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})                
+          .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
           });
 
     });
@@ -66,20 +81,7 @@ developmentSchema.static('getProperties', (id:string,):Promise<any> => {
     });
 });
 
-developmentSchema.static('getByIdProperties', (id:string, idproperties:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-      // let _query = {_id:id, newsletter:{_id:idnewsletter}};
-      var ObjectID = mongoose.Types.ObjectId;
 
-         Development 
-         .find({},{"newsletter": { $elemMatch: {"_id": new ObjectID(idproperties)}}})        
-          .exec((err, properties) => {
-              err ? reject(err)
-                  : resolve(properties);
-          });
-
-    });
-});
 
 developmentSchema.static('createDevelopment', (development:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
