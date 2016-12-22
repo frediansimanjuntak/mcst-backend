@@ -7,15 +7,20 @@ export class PropertiesRoutes {
     static init(router: express.Router) {
       router
         .route('/api/properties')
-        .get(PropertiesController.getAll)
-        .post(PropertiesController.createProperties);
+        .get(PropertiesController.getAll);
 
       router
         .route('/api/properties/:id')
+        .post(PropertiesController.createProperties);
+
+      router
+        .route('/api/properties/:id/:idproperties')
+        .get(PropertiesController.getByIdProperties)
         .delete(PropertiesController.deleteProperties);
 
       router
         .route('/api/properties/update/:id')
+        // .get(PropertiesController.updateGetById)
         .post(PropertiesController.updateProperties);
     }
 }
