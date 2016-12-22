@@ -12,6 +12,7 @@ export class DevelopmentRoutes {
 
       router
         .route('/api/developments/:id')
+        .get(DevelopmentController.getById)
         .delete(DevelopmentController.deleteDevelopment);
 
       router

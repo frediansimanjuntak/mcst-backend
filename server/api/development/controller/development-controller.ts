@@ -9,6 +9,15 @@ export class DevelopmentController {
         .catch(error => res.status(400).json(error));
   }
 
+   static getById(req: express.Request, res: express.Response):void {
+     let _id = req.params.id;
+
+      DevelopmentDAO
+        ['getById'](_id)
+        .then(developments => res.status(200).json(developments))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createDevelopment(req: express.Request, res: express.Response):void {
       let _development = req.body;
 
