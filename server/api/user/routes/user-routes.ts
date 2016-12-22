@@ -12,6 +12,7 @@ export class UserRoutes {
 
       router
         .route('/api/users/:id')
+        .get(UserController.getById)
         .delete(UserController.deleteUser);
 
       router

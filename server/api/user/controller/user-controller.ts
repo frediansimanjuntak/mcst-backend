@@ -8,6 +8,13 @@ export class UserController {
         .then(users => res.status(200).json(users))
         .catch(error => res.status(400).json(error));
   }
+  static getById(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+      UserDAO
+        ['getById'](_id)
+        .then(users => res.status(200).json(users))
+        .catch(error => res.status(400).json(error));
+  }
 
   static createUser(req: express.Request, res: express.Response):void {
       let _user = req.body;

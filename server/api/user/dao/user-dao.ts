@@ -16,6 +16,18 @@ userSchema.static('getAll', ():Promise<any> => {
     });
 });
 
+userSchema.static('getById', (id):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+        User
+          .findById(id)
+          .exec((err, users) => {
+              err ? reject(err)
+                  : resolve(users);
+          });
+    });
+});
+
 userSchema.static('createUser', (user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
