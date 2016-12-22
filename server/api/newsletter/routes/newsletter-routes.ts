@@ -7,15 +7,20 @@ export class NewsletterRoutes {
     static init(router: express.Router) {
       router
         .route('/api/newsletters')
-        .get(NewsletterController.getAll)
+        .get(NewsletterController.getAll);
+
+      router
+        .route('/api/newsletters/:id')        
         .post(NewsletterController.createNewsletter);
 
       router
-        .route('/api/newsletters/:id')
+        .route('/api/newsletters/:id/:idnewsletter')
+        .get(NewsletterController.getByIdNewsletter)
         .delete(NewsletterController.deleteNewsletter);
 
       router
         .route('/api/newsletters/update/:id')
+        .get(NewsletterController.updateGetById)
         .post(NewsletterController.updateNewsletter);
     }
 }
