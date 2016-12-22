@@ -42,6 +42,30 @@ developmentSchema.static('getByIdNewsletter', (id:string, idnewsletter:string):P
     });
 });
 
+developmentSchema.static('getNewsletter', (id:string,):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+         Development
+          .findById(id)
+          .select("newsletter")
+          .exec((err, newsletters) => {
+              err ? reject(err)
+                  : resolve(newsletters);
+          });
+    });
+});
+
+developmentSchema.static('getProperties', (id:string,):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+         Development
+          .findById(id)
+          .select("properties")
+          .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
+          });
+    });
+});
+
 developmentSchema.static('getByIdProperties', (id:string, idproperties:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       // let _query = {_id:id, newsletter:{_id:idnewsletter}};

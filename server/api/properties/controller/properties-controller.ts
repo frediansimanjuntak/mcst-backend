@@ -10,14 +10,22 @@ export class PropertiesController {
         .catch(error => res.status(400).json(error));
   }
 
-static getByIdProperties(req: express.Request, res: express.Response):void {
-      let _id = req.params.id;
-      let _idproperties = req.params.idproperties;
-      DevelopmentDAO
-        ['getByIdProperties'](_id, _idproperties)
-        .then(properties => res.status(200).json(properties))
-        .catch(error => res.status(400).json(error));
-  }
+  static getByIdProperties(req: express.Request, res: express.Response):void {
+        let _id = req.params.id;
+        let _idproperties = req.params.idproperties;
+        DevelopmentDAO
+          ['getByIdProperties'](_id, _idproperties)
+          .then(properties => res.status(200).json(properties))
+          .catch(error => res.status(400).json(error));
+    }
+
+  static getProperties(req: express.Request, res: express.Response):void {
+        let _id = req.params.id;
+        DevelopmentDAO
+          ['getProperties'](_id)
+          .then(properties => res.status(200).json(properties))
+          .catch(error => res.status(400).json(error));
+    }
 
   static createProperties(req: express.Request, res: express.Response):void {
       let _properties = req.body;

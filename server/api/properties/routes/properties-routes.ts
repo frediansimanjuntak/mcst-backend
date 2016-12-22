@@ -11,6 +11,7 @@ export class PropertiesRoutes {
 
       router
         .route('/api/properties/:id')
+        .get(PropertiesController.getProperties)
         .post(PropertiesController.createProperties);
 
       router
