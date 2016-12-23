@@ -5,6 +5,7 @@ import {PropertiesRoutes} from '../api/properties/routes/properties-routes';
 import {NewsletterRoutes} from '../api/newsletter/routes/newsletter-routes';
 import {UserRoutes} from '../api/user/routes/user-routes';
 import {UserGroupRoutes} from '../api/user_group/routes/user_group-routes';
+import {AttachmentRoutes} from '../api/attachment/routes/attachment-routes';
 
 
 export class Routes {
@@ -15,6 +16,7 @@ export class Routes {
      NewsletterRoutes.init(router);
      UserRoutes.init(router);
      UserGroupRoutes.init(router);
+     AttachmentRoutes.init(router);
 
      app.use('/', router);
    }

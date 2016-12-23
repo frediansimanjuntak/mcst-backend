@@ -7,6 +7,9 @@ import * as helmet from 'helmet';
 import * as compression from 'compression';
 import * as zlib from 'zlib';
 
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
+
 export class RoutesConfig {
     static init(application: express.Application):void {
         let _root = process.cwd();
@@ -20,7 +23,9 @@ export class RoutesConfig {
 
         application.use(express.static(_root + _nodeModules));
         application.use(express.static(_root + _clientFiles));
+        application.use(bodyParser.urlencoded({ extended: false }));
         application.use(bodyParser.json());
+        application.use(multipartMiddleware);
         application.use(morgan('dev'));
         application.use(helmet());
     }

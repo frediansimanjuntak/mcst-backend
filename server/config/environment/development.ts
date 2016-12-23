@@ -9,6 +9,7 @@ export default {
   mongo: {
     uri: 'mongodb://localhost/mcst-backend'
   },
+  awsBucket: 'mcst-app',
 
   // Seed database on startup
   seedDB: false
