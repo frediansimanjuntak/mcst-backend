@@ -1,0 +1,85 @@
+import * as mongoose from 'mongoose';
+import * as Promise from 'bluebird';
+import * as _ from 'lodash';
+import incidentSchema from '../model/incident-model';
+
+incidentSchema.static('getAll', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {};
+
+        Incident
+          .find(_query)
+          .exec((err, incidents) => {
+              err ? reject(err)
+                  : resolve(incidents);
+          });
+    });
+});
+
+incidentSchema.static('createIncident', (incident:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(incident)) {
+        return reject(new TypeError('Polls is not a valid object.'));
+      }
+
+      var _incident = new Incident(incident);
+
+      _incident.save((err, saved) => {
+        err ? reject(err)
+            : resolve(saved);
+      });
+    });
+});
+
+incidentSchema.static('deleteIncident', (id:string, ):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Incident
+          .findByIdAndRemove(id)
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
+          });
+    });
+});
+
+incidentSchema.static('updateIncident', (id:string, incident:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(incident)) {
+          return reject(new TypeError('Development is not a valid object.'));
+        }
+
+        Incident
+        .findByIdAndUpdate(id, incident)
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+incidentSchema.static('statusIncident',(id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }    
+
+        Incident
+          .findByIdAndUpdate(id, {
+            $set:{
+              "status": "reviewing"
+            }
+          })
+          .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });           
+    });
+});
+
+let Incident = mongoose.model('Incident', incidentSchema);
+
+export default Incident;

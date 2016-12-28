@@ -5,6 +5,8 @@ import {PropertiesRoutes} from '../api/properties/routes/properties-routes';
 import {NewsletterRoutes} from '../api/newsletter/routes/newsletter-routes';
 import {UserRoutes} from '../api/user/routes/user-routes';
 import {UserGroupRoutes} from '../api/user_group/routes/user_group-routes';
+import {IncidentRoutes} from '../api/incident/routes/incident-routes';
+import {PetitionRoutes} from '../api/petition/routes/petition-routes';
 import {AttachmentRoutes} from '../api/attachment/routes/attachment-routes';
 
 
@@ -17,7 +19,8 @@ export class Routes {
      UserRoutes.init(router);
      UserGroupRoutes.init(router);
      AttachmentRoutes.init(router);
-
+     IncidentRoutes.init(router);
+     PetitionRoutes.init(router);
      app.use('/', router);
    }
 }
