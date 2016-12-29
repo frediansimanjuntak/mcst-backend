@@ -49,10 +49,11 @@ export class PropertiesController {
 
   static updateProperties(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
+    let _idproperties = req.params.idproperties;
     let _properties = req.body;
 
     DevelopmentDAO
-      ['updateProperties'](_id, _properties)
+      ['updateProperties'](_id, _idproperties, _properties)
       .then(properties => res.status(201).json(properties))
       .catch(error => res.status(400).json(error));
   }

@@ -20,8 +20,7 @@ export class PropertiesRoutes {
         .delete(PropertiesController.deleteProperties);
 
       router
-        .route('/api/properties/update/:id')
-        // .get(PropertiesController.updateGetById)
+        .route('/api/newsletters/:id/update/:idproperties')
         .post(PropertiesController.updateProperties);
     }
 }
