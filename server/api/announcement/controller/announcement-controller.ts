@@ -45,4 +45,14 @@ export class AnnouncementController {
       .then(_annoncement => res.status(201).json(_annoncement))
       .catch(error => res.status(400).json(error));
   }
+
+  static publishAnnouncement(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+    let _annoncement = req.body;
+
+    AnnouncementDAO
+      ['publishAnnouncement'](_id, _annoncement)
+      .then(_annoncement => res.status(201).json(_annoncement))
+      .catch(error => res.status(400).json(error));
+  }
 }

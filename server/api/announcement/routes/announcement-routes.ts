@@ -18,5 +18,9 @@ export class AnnouncementRoutes {
       router
         .route('/api/announcements/update/:id')
         .post(AnnouncementController.updateAnnouncement);
+
+      router
+        .route('/api/announcements/publish/:id')
+        .post(AnnouncementController.publishAnnouncement);
     }
 }

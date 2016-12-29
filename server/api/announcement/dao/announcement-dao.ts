@@ -76,6 +76,40 @@ announcementSchema.static('updateAnnouncement', (id:string, announcement:Object)
     });
 });
 
+announcementSchema.static('publishAnnouncement', (id:string, announcement:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(announcement)) {
+          return reject(new TypeError('Announcement is not a valid object.'));
+        }
+
+        let sticky=announcement.sticky;
+        let valid_till=announcement.valid_till;
+        let date= new Date();
+
+        console.log(sticky);
+        console.log(valid_till);
+        console.log(date);   
+
+        Announcement
+        .findById(id)
+        .where('publish').equals('no')
+        .update({
+          $set:{
+            "sticky":sticky,
+            "valid_till":valid_till,
+            "publish":"yes",
+            "publish_by":"nnti ini session",
+            "publish_at": date
+          }
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+
 let Announcement = mongoose.model('Announcement', announcementSchema);
 
 export default Announcement;
