@@ -6,16 +6,17 @@ import {PetitionController} from '../controller/petition-controller';
 export class PetitionRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/petition')
+        .route('/api/petitions')
         .get(PetitionController.getAll)
         .post(PetitionController.createPetition);
 
       router
-        .route('/api/petition/:id')
+        .route('/api/petitions/:id')
+        .get(PetitionController.getById)
         .delete(PetitionController.deletePetition);
 
       router
-        .route('/api/petition/update/:id')
+        .route('/api/petitions/update/:id')
         .post(PetitionController.updatePetition);
     }
 }

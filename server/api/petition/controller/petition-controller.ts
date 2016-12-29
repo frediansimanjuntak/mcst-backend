@@ -9,6 +9,15 @@ export class PetitionController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getById(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+
+      PetitionDAO
+        ['getById'](_id)
+        .then(petitions => res.status(200).json(petitions))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createPetition(req: express.Request, res: express.Response):void {
       let _petition = req.body;
 

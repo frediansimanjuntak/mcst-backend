@@ -16,10 +16,25 @@ petitionSchema.static('getAll', ():Promise<any> => {
     });
 });
 
+petitionSchema.static('getById', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Petition
+          .findById(id)
+          .exec((err, petitions) => {
+              err ? reject(err)
+                  : resolve(petitions);
+          });
+    });
+});
+
 petitionSchema.static('createPetition', (petition:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(petition)) {
-        return reject(new TypeError('Polls is not a valid object.'));
+        return reject(new TypeError('Petition is not a valid object.'));
       }
 
       var _petition = new Petition(petition);
@@ -49,7 +64,7 @@ petitionSchema.static('deletePetition', (id:string, ):Promise<any> => {
 petitionSchema.static('updatePetition', (id:string, petition:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(petition)) {
-          return reject(new TypeError('Development is not a valid object.'));
+          return reject(new TypeError('Petition is not a valid object.'));
         }
 
         Petition
