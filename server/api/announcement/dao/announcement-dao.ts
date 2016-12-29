@@ -86,10 +86,6 @@ announcementSchema.static('publishAnnouncement', (id:string, announcement:Object
         let valid_till=announcement.valid_till;
         let date= new Date();
 
-        console.log(sticky);
-        console.log(valid_till);
-        console.log(date);   
-
         Announcement
         .findById(id)
         .where('publish').equals('no')
