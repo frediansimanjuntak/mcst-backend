@@ -28,6 +28,19 @@ userSchema.static('getById', (id):Promise<any> => {
     });
 });
 
+userSchema.static('getDetailUser', (id):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+        User
+          .findById(id)
+          .select("details")
+          .exec((err, users) => {
+              err ? reject(err)
+                  : resolve(users);
+          });
+    });
+});
+
 userSchema.static('createUser', (user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
@@ -66,6 +79,26 @@ userSchema.static('updateUser', (id:string, user:Object):Promise<any> => {
 
         User
         .findByIdAndUpdate(id, user)
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+userSchema.static('settingDetailUser', (id:string, user:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(user)) {
+          return reject(new TypeError('User is not a valid object.'));
+        }
+
+        let userObj = {$set: {}};
+        for(var param in user) {
+          userObj.$set['details.'+param] = user[param];
+         }
+        console.log(userObj);
+        User
+        .findByIdAndUpdate(id, userObj)
         .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);

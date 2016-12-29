@@ -10,6 +10,7 @@ import {PetitionRoutes} from '../api/petition/routes/petition-routes';
 import {AccessControlRoutes} from '../api/access_control/routes/access_control-routes';
 import {AnnouncementRoutes} from '../api/announcement/routes/announcement-routes';
 import {AttachmentRoutes} from '../api/attachment/routes/attachment-routes';
+import {SettingRoutes} from '../api/setting/routes/setting-routes';
 
 
 export class Routes {
@@ -25,6 +26,7 @@ export class Routes {
      PetitionRoutes.init(router);
      AccessControlRoutes.init(router);
      AnnouncementRoutes.init(router);
+     SettingRoutes.init(router);
      app.use('/', router);
    }
 }
