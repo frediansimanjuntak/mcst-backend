@@ -20,6 +20,10 @@ export class NewsletterRoutes {
         .delete(NewsletterController.deleteNewsletter);
 
       router
+        .route('/api/newsletters/:id/update/:idnewsletter')
+        .post(NewsletterController.updateNewsletter);
+
+      router
         .route('/api/newsletters/update/:id')
         .get(NewsletterController.updateGetById)
         .post(NewsletterController.updateNewsletter);

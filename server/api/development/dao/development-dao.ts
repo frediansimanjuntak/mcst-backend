@@ -16,7 +16,7 @@ developmentSchema.static('getAll', ():Promise<any> => {
     });
 });
 
-developmentSchema.static('getById', (id:string,):Promise<any> => {
+developmentSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
          Development
           .findById(id)
@@ -187,6 +187,32 @@ developmentSchema.static('deleteProperties', (id:string, idproperties:string ):P
     });
 });
 
+developmentSchema.static('releaseNewsletter',(id:string, idnewsletter:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        var ObjectID = mongoose.Types.ObjectId;   
+        var released=true;
+        var released_by="nnti ini session"; 
+        var release_at= Date.now();                      
+
+        Development
+        .update({"_id":id, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}},
+          { 
+            $set:{
+              "newsletter.$.released":released,
+              "newsletter.$.released_by":released_by,
+              "newsletter.$.release_at":release_at
+            }            
+          })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
 developmentSchema.static('updateDevelopment', (id:string, development:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(development)) {
@@ -202,31 +228,22 @@ developmentSchema.static('updateDevelopment', (id:string, development:Object):Pr
     });
 });
 
+
 developmentSchema.static('updateNewsletter', 
-  (id:string, title:Object, description:Object, type:Object, attachment:Object, released:Object, pinned:Object, released_by:Object, release_at:Object):Promise<any> => {
+  (id:string, idnewsletter:string, newsletter:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(title)) {
+        if (!_.isObject(newsletter)) {
           return reject(new TypeError('Newsletter is not a valid object.'));
-        }        
-        var ObjectID = mongoose.Types.ObjectId;  
-        var idNews={"newsletter": { $elemMatch: {"_id": new ObjectID(id)}}};                               
+        }    
+
+        let updateObj = {$set: {}};
+        for(var param in newsletter) {
+          updateObj.$set['newsletter.$.'+param] = newsletter[param];
+         }
+        let ObjectID = mongoose.Types.ObjectId;    
 
         Development
-        .update(idNews,
-          {
-            $set:{
-              "newsletter":{
-                "title":title,
-                "description":description,
-                "type":type,
-                "attachment":attachment,
-                "released":released,
-                "pinned":pinned,
-                "released_by":released_by,
-                "release_at":release_at
-              }
-            }
-          })
+        .update({"_id":id, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}},updateObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -234,17 +251,20 @@ developmentSchema.static('updateNewsletter',
     });
 });
 
-developmentSchema.static('updateProperties', (id:string, properties:Object):Promise<any> => {
+developmentSchema.static('updateProperties', (id:string, idproperties:string, properties:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(properties)) {
           return reject(new TypeError('Newsletter is not a valid object.'));
         }        
 
-        var ObjectID = mongoose.Types.ObjectId;                           
+        let updateObj = {$set: {}};
+        for(var param in properties) {
+          updateObj.$set['properties.$.'+param] = properties[param];
+         }
+        let ObjectID = mongoose.Types.ObjectId;    
 
         Development
-        .find({},{"properties": { $elemMatch: {"_id": new ObjectID(id)}}})
-        .update({"properties":properties})
+        .update({"_id":id, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},updateObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);

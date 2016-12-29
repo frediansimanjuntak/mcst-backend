@@ -37,6 +37,17 @@ export class NewsletterController {
         .catch(error => res.status(400).json(error));
   }
 
+  static releaseNewsletter(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+      let _idnewsletter = req.params.idnewsletter;
+
+      DevelopmentDAO         
+        ['releaseNewsletter'](_id,_idnewsletter)
+        .then(updateNewsletter => res.status(201).json(updateNewsletter))
+        .catch(error => res.status(400).json(error));   
+  }
+
+  
   static createNewsletter(req: express.Request, res: express.Response):void {
       let _newsletter= req.body;
       let _id = req.params.id;
@@ -58,18 +69,12 @@ export class NewsletterController {
 
   static updateNewsletter(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _title = req.body.title;
-    let _description = req.body.description;
-    let _type = req.body.type;
-    let _attachment = req.body.attachment;
-    let _released = req.body.released;
-    let _pinned = req.body.pinned;
-    let _released_by = req.body.released_by;
-    let _release_at = req.body.release_at;
+    let _idnewsletter = req.params.idnewsletter;
+    let _newsletter= req.body;
 
     DevelopmentDAO
-      ['updateNewsletter'](_id, _title, _description, _type, _attachment, _released, _pinned, _released_by, )
-      .then(title => res.status(201).json(title))
+      ['updateNewsletter'](_id, _idnewsletter, _newsletter)
+      .then(newsletter => res.status(201).json(newsletter))
       .catch(error => res.status(400).json(error));
   }
 }
