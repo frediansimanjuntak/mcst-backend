@@ -228,22 +228,20 @@ developmentSchema.static('updateDevelopment', (id:string, development:Object):Pr
     });
 });
 
-
-developmentSchema.static('updateNewsletter', 
-  (id:string, idnewsletter:string, newsletter:Object):Promise<any> => {
+developmentSchema.static('updateNewsletter', (id:string, idnewsletter:string, newsletter:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(newsletter)) {
-          return reject(new TypeError('Newsletter is not a valid object.'));
-        }    
+          return reject(new TypeError('Properties is not a valid object.'));
+        }        
 
-        let updateObj = {$set: {}};
+        let newsletterObj = {$set: {}};
         for(var param in newsletter) {
-          updateObj.$set['newsletter.$.'+param] = newsletter[param];
+          newsletterObj.$set['newsletter.$.'+param] = newsletter[param];
          }
         let ObjectID = mongoose.Types.ObjectId;    
-
+        console.log(newsletterObj);
         Development
-        .update({"_id":id, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}},updateObj)
+        .update({"_id":id, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}},newsletterObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -254,17 +252,17 @@ developmentSchema.static('updateNewsletter',
 developmentSchema.static('updateProperties', (id:string, idproperties:string, properties:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(properties)) {
-          return reject(new TypeError('Newsletter is not a valid object.'));
+          return reject(new TypeError('Properties is not a valid object.'));
         }        
 
-        let updateObj = {$set: {}};
+        let propertiesObj = {$set: {}};
         for(var param in properties) {
-          updateObj.$set['properties.$.'+param] = properties[param];
+          propertiesObj.$set['properties.$.'+param] = properties[param];
          }
         let ObjectID = mongoose.Types.ObjectId;    
 
         Development
-        .update({"_id":id, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},updateObj)
+        .update({"_id":id, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},propertiesObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);

@@ -43,7 +43,7 @@ export class NewsletterController {
 
       DevelopmentDAO         
         ['releaseNewsletter'](_id,_idnewsletter)
-        .then(updateNewsletter => res.status(201).json(updateNewsletter))
+        .then(newsletter => res.status(201).json(newsletter))
         .catch(error => res.status(400).json(error));   
   }
 

@@ -25,7 +25,6 @@ export class NewsletterRoutes {
 
       router
         .route('/api/newsletters/update/:id')
-        .get(NewsletterController.updateGetById)
-        .post(NewsletterController.updateNewsletter);
+        .get(NewsletterController.updateGetById);
     }
 }
