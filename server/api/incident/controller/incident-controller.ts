@@ -9,6 +9,15 @@ export class IncidentController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getById(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+
+      IncidentDAO
+        ['getById'](_id)
+        .then(incidents => res.status(200).json(incidents))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createIncident(req: express.Request, res: express.Response):void {
       let _incident = req.body;
 

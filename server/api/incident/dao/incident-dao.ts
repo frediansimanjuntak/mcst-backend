@@ -16,10 +16,25 @@ incidentSchema.static('getAll', ():Promise<any> => {
     });
 });
 
+incidentSchema.static('getById', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        } 
+
+        Incident
+          .findById(id)
+          .exec((err, incidents) => {
+              err ? reject(err)
+                  : resolve(incidents);
+          });
+    });
+});
+
 incidentSchema.static('createIncident', (incident:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(incident)) {
-        return reject(new TypeError('Polls is not a valid object.'));
+        return reject(new TypeError('Incident is not a valid object.'));
       }
 
       var _incident = new Incident(incident);
@@ -49,7 +64,7 @@ incidentSchema.static('deleteIncident', (id:string, ):Promise<any> => {
 incidentSchema.static('updateIncident', (id:string, incident:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(incident)) {
-          return reject(new TypeError('Development is not a valid object.'));
+          return reject(new TypeError('Incident is not a valid object.'));
         }
 
         Incident
@@ -68,11 +83,13 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
         }    
 
         Incident
-          .findByIdAndUpdate(id, {
-            $set:{
-              "status": "reviewing"
-            }
-          })
+        .findById(id)
+        .where('status').equals('pending')
+        .update({
+          $set:{
+            "status":"reviewing"
+          }
+        })     
           .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);

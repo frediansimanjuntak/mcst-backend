@@ -6,17 +6,18 @@ import {IncidentController} from '../controller/incident-controller';
 export class IncidentRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/incident')
+        .route('/api/incidents')
         .get(IncidentController.getAll)
         .post(IncidentController.createIncident);
 
       router
-        .route('/api/incident/:id')
-        .get(IncidentController.statusIncident)
+        .route('/api/incidents/:id')
+        .get(IncidentController.getById)
+        .post(IncidentController.statusIncident)
         .delete(IncidentController.deleteIncident);
 
       router
-        .route('/api/incident/update/:id')
+        .route('/api/incidents/update/:id')
         .post(IncidentController.updateIncident);
     }
 }
