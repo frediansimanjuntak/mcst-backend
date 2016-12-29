@@ -7,6 +7,8 @@ import {UserRoutes} from '../api/user/routes/user-routes';
 import {UserGroupRoutes} from '../api/user_group/routes/user_group-routes';
 import {IncidentRoutes} from '../api/incident/routes/incident-routes';
 import {PetitionRoutes} from '../api/petition/routes/petition-routes';
+import {AccessControlRoutes} from '../api/access_control/routes/access_control-routes';
+import {AnnouncementRoutes} from '../api/announcement/routes/announcement-routes';
 import {AttachmentRoutes} from '../api/attachment/routes/attachment-routes';
 
 
@@ -21,6 +23,8 @@ export class Routes {
      AttachmentRoutes.init(router);
      IncidentRoutes.init(router);
      PetitionRoutes.init(router);
+     AccessControlRoutes.init(router);
+     AnnouncementRoutes.init(router);
      app.use('/', router);
    }
 }
