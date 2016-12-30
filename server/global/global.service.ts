@@ -12,7 +12,7 @@ export class GlobalService {
   static init():void {
     let _root = process.cwd();
   }
-  static globalFunction():void {
+  static initGlobalFunction():void {
     String.prototype.indexOfEnd = function(string) {
       var io = this.indexOf(string);
       return io == -1 ? -1 : io + string.length;
@@ -22,5 +22,9 @@ export class GlobalService {
       var io = this.lastIndexOf(string);
       return io == -1 ? -1 : io + string.length;
     };
+  }
+  static validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
   }
 }

@@ -23,8 +23,9 @@ const app = express();
 
 RoutesConfig.init(app);
 DBConfig.init();
+// DBConfig.listenTo();
 GlobalService.init();
-GlobalService.globalFunction();
+GlobalService.initGlobalFunction();
 AWSConfig.init();
 
 app.use((req, res, next) => {

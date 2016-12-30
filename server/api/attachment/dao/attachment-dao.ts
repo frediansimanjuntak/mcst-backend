@@ -53,15 +53,14 @@ attachmentSchema.static('deleteAttachment', (id:string, ):Promise<any> => {
           .exec((err, attachment) => {
             if (err)
               reject(err)
-            if (attachment) {
+            if (attachment)
               attachment.remove((err:any) => {
                 if (err)
                   reject(err)
                 resolve({ message: "success" });
               });
-            } else {
+            else
               reject(new Error("Attachment not found."));
-            }
          });
     });
 });
