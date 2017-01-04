@@ -19,5 +19,15 @@ export class IncidentRoutes {
       router
         .route('/api/incidents/update/:id')
         .post(IncidentController.updateIncident);
+
+      router
+        .route('/api/incidents/starred/:id')
+        .post(IncidentController.starred)
+        .delete(IncidentController.unstarred);
+
+      router
+        .route('/api/incidents/archieve/:id')
+        .post(IncidentController.archieve)
+        .put(IncidentController.unarchieve);
     }
 }

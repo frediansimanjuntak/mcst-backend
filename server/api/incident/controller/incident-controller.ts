@@ -54,4 +54,42 @@ export class IncidentController {
       .then(_incident => res.status(201).json(_incident))
       .catch(error => res.status(400).json(error));
   }
+
+  static starred(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+    let _userid = req.body;
+
+    IncidentDAO
+      ['starred'](_id, _userid)
+      .then(_userid => res.status(201).json(_userid))
+      .catch(error => res.status(400).json(error));
+  }
+
+  static unstarred(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+    let _userid = req.body;
+
+    IncidentDAO
+      ['unstarred'](_id, _userid)
+      .then(_userid => res.status(201).json(_userid))
+      .catch(error => res.status(400).json(error));
+  }
+
+  static archieve(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+
+    IncidentDAO
+      ['archieve'](_id)
+      .then(_userid => res.status(201).json(_userid))
+      .catch(error => res.status(400).json(error));
+  }
+
+  static unarchieve(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+
+    IncidentDAO
+      ['unarchieve'](_id)
+      .then(_userid => res.status(201).json(_userid))
+      .catch(error => res.status(400).json(error));
+  }
 }

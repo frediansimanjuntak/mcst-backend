@@ -97,6 +97,69 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
     });
 });
 
+incidentSchema.static('starred', (id:string, userid:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(userid)) {
+        return reject(new TypeError('user id is not a valid object.'));
+      }
+      Incident
+      .findByIdAndUpdate(id,     
+        {
+          $push:{"starred_by":userid.starred_by}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
+incidentSchema.static('unstarred', (id:string, userid:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(userid)) {
+        return reject(new TypeError('user id is not a valid object.'));
+      }
+      Incident
+      .findByIdAndUpdate(id,     
+        {
+          $pull:{"starred_by":userid.starred_by}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
+incidentSchema.static('archieve', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+      Incident
+      .findByIdAndUpdate(id,     
+        {
+          $set:{"archieve":"true"}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
+incidentSchema.static('unarchieve', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      Incident
+      .findByIdAndUpdate(id,     
+        {
+          $set:{"archieve":"false"}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
 let Incident = mongoose.model('Incident', incidentSchema);
 
 export default Incident;
