@@ -45,4 +45,5 @@ export class FacilityController {
       .then(facility => res.status(201).json(facility))
       .catch(error => res.status(400).json(error));
   }
+  
 }
