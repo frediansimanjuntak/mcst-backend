@@ -45,4 +45,22 @@ export class PetitionController {
       .then(_petition => res.status(201).json(_petition))
       .catch(error => res.status(400).json(error));
   }
+
+  static archieve(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+
+    PetitionDAO
+      ['archieve'](_id)
+      .then(_userid => res.status(201).json(_userid))
+      .catch(error => res.status(400).json(error));
+  }
+
+  static unarchieve(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+
+    PetitionDAO
+      ['unarchieve'](_id)
+      .then(_userid => res.status(201).json(_userid))
+      .catch(error => res.status(400).json(error));
+  }
 }

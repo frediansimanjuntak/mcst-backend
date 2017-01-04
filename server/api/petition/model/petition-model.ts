@@ -8,6 +8,7 @@ var petitionSchema = new mongoose.Schema({
 	attachment:{type: Date, trim: true},
 	contract:{type: Date, trim: true},
 	remark:{type: String, trim: true},
+	archieve:{type: String, trim: true, default: "false"},
 	status:{type: String, trim: true},
 	created_by:{type: String, trim: true},
 	updated_at:{type: Date},

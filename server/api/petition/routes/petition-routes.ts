@@ -18,5 +18,10 @@ export class PetitionRoutes {
       router
         .route('/api/petitions/update/:id')
         .post(PetitionController.updatePetition);
+
+      router
+        .route('/api/incidents/archieve/:id')
+        .post(PetitionController.archieve)
+        .put(PetitionController.unarchieve);
     }
 }

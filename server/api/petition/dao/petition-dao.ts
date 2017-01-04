@@ -76,6 +76,35 @@ petitionSchema.static('updatePetition', (id:string, petition:Object):Promise<any
     });
 });
 
+petitionSchema.static('archieve', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+      Petition
+      .findByIdAndUpdate(id,     
+        {
+          $set:{"archieve":"true"}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
+petitionSchema.static('unarchieve', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      Petition
+      .findByIdAndUpdate(id,     
+        {
+          $set:{"archieve":"false"}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
 let Petition = mongoose.model('Petition', petitionSchema);
 
 export default Petition;
