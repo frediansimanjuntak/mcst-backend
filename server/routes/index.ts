@@ -11,6 +11,10 @@ import {AccessControlRoutes} from '../api/access_control/routes/access_control-r
 import {AnnouncementRoutes} from '../api/announcement/routes/announcement-routes';
 import {AttachmentRoutes} from '../api/attachment/routes/attachment-routes';
 import {SettingRoutes} from '../api/setting/routes/setting-routes';
+import {FacilityRoutes} from '../api/facility/routes/facility-routes';
+import {ScheduleRoutes} from '../api/schedule_facility/routes/schedule_facility-routes';
+import {BookingRoutes} from '../api/booking/routes/booking-routes';
+import {PaymentBookingRoutes} from '../api/payment_booking/routes/payment_booking-routes';
 
 
 export class Routes {
@@ -27,6 +31,10 @@ export class Routes {
      AccessControlRoutes.init(router);
      AnnouncementRoutes.init(router);
      SettingRoutes.init(router);
+     FacilityRoutes.init(router);
+     ScheduleRoutes.init(router);
+     BookingRoutes.init(router);
+     PaymentBookingRoutes.init(router);
      app.use('/', router);
    }
 }
