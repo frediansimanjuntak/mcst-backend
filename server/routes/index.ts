@@ -15,6 +15,7 @@ import {FacilityRoutes} from '../api/facility/routes/facility-routes';
 import {ScheduleRoutes} from '../api/schedule_facility/routes/schedule_facility-routes';
 import {BookingRoutes} from '../api/booking/routes/booking-routes';
 import {PaymentBookingRoutes} from '../api/payment_booking/routes/payment_booking-routes';
+import {NotificationRoutes} from '../api/notification/routes/notification-routes';
 
 
 export class Routes {
@@ -35,6 +36,8 @@ export class Routes {
      ScheduleRoutes.init(router);
      BookingRoutes.init(router);
      PaymentBookingRoutes.init(router);
+     NotificationRoutes.init(router);
+     
      app.use('/', router);
    }
 }

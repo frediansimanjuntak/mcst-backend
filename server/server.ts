@@ -10,6 +10,7 @@ if (process.env.NODE_ENV === 'production')
 import * as express from 'express';
 import * as os from 'os';
 import * as https from 'https';
+import * as http from 'http';
 import * as fs from 'fs';
 import config from './config/environment/index';
 import {AWSConfig} from './global/aws.service';
@@ -43,8 +44,16 @@ const opts = {
   cert: fs.readFileSync(__dirname + '/../server/cert/server.crt')
 }
 
+// run using https
 https.createServer(opts, app)
      .listen(PORT, () => {
        console.log(`up and running @: ${os.hostname()} on port: ${PORT}`);
        console.log(`enviroment: ${process.env.NODE_ENV}`);
      });
+
+// run using http
+// http.createServer(app)
+//      .listen(PORT, () => {
+//        console.log(`up and running @: ${os.hostname()} on port: ${PORT}`);
+//        console.log(`enviroment: ${process.env.NODE_ENV}`);
+//      });
