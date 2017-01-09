@@ -1,11 +1,11 @@
 import * as mongoose from 'mongoose';
 
 var guestSchema = new mongoose.Schema({
-	development:{type: String, trim: true},
-	property:{type: String, trim: true},
+	development:{type: String, required: true, trim: true},
+	property:{type: String, required: true, trim: true},
 	visitor:{
-		prefix:{type: String, trim: true},
-		full_name:{type: String, trim: true},
+		prefix:{type: String, required: true, trim: true},
+		full_name:{type: String, required: true, trim: true},
 		vehicle:{type: String, trim: true},
 		pass:{type: String, trim: true},
 	},		
@@ -15,7 +15,8 @@ var guestSchema = new mongoose.Schema({
 	created_by:{type: String, trim: true},
 	check_in:{type: Date, trim: true},
 	check_out:{type: Date, trim: true},
-	checked_by:{type: String, trim: true},
+	checkin_by:{type: String, trim: true},
+	checkout_by:{type: String, trim: true},
 	created_at:{type: Date, default: Date.now}
 });
 

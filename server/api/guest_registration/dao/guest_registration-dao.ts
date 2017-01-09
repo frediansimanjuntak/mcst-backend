@@ -76,7 +76,7 @@ guestSchema.static('updateGuest', (id:string, guest:Object):Promise<any> => {
     });
 });
 
-guestSchema.static('checkInGuest', (id:string):Promise<any> => {
+guestSchema.static('checkInGuest', (id:string, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -84,7 +84,9 @@ guestSchema.static('checkInGuest', (id:string):Promise<any> => {
         let checkIn = Date.now();
         Guest
         .findByIdAndUpdate(id, {
-          $set:{check_in:checkIn}
+          $set:{check_in:checkIn,
+                checkin_by:userId
+                }
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -93,7 +95,7 @@ guestSchema.static('checkInGuest', (id:string):Promise<any> => {
     });
 });
 
-guestSchema.static('checkOutGuest', (id:string):Promise<any> => {
+guestSchema.static('checkOutGuest', (id:string, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -101,7 +103,9 @@ guestSchema.static('checkOutGuest', (id:string):Promise<any> => {
         let checkOut = Date.now();
         Guest
         .findByIdAndUpdate(id, {
-          $set:{check_out:checkOut}
+          $set:{check_out:checkOut,
+                checkout_by:userId
+                }
         })
         .exec((err, updated) => {
               err ? reject(err)

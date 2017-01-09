@@ -49,18 +49,20 @@ export class GuestController {
 
   static checkInGuest(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
+    let _userId = req.user._id;
 
     GuestDAO
-      ['checkInGuest'](_id)
+      ['checkInGuest'](_id, _userId)
       .then(guest => res.status(201).json(guest))
       .catch(error => res.status(400).json(error));
-  }
+  }  
 
   static checkOutGuest(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
+    let _userId = req.user._id;
 
     GuestDAO
-      ['checkOutGuest'](_id)
+      ['checkOutGuest'](_id, _userId)
       .then(guest => res.status(201).json(guest))
       .catch(error => res.status(400).json(error));
   }
