@@ -16,6 +16,9 @@ import {ScheduleRoutes} from '../api/schedule_facility/routes/schedule_facility-
 import {BookingRoutes} from '../api/booking/routes/booking-routes';
 import {PaymentBookingRoutes} from '../api/payment_booking/routes/payment_booking-routes';
 import {NotificationRoutes} from '../api/notification/routes/notification-routes';
+import {GuestRoutes} from '../api/guest_registration/routes/guest_registration-routes';
+import {CompanyRoutes} from '../api/company/routes/company-routes';
+import {ContratorRoutes} from '../api/contractor/routes/contractor-routes';
 
 
 export class Routes {
@@ -37,6 +40,9 @@ export class Routes {
      BookingRoutes.init(router);
      PaymentBookingRoutes.init(router);
      NotificationRoutes.init(router);
+     GuestRoutes.init(router);
+     CompanyRoutes.init(router);
+     ContratorRoutes.init(router);
      
      app.use('/', router);
      app.use('/auth', require('../auth').default);
