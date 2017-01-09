@@ -2,25 +2,26 @@
 
 import * as express from 'express';
 import {PropertiesController} from '../controller/properties-controller';
+import * as auth from '../../../auth/auth-service';
 
 export class PropertiesRoutes {
     static init(router: express.Router) {
-      router
-        .route('/api/properties')
-        .get(PropertiesController.getAll);
+      // router
+      //   .route('/api/properties')
+      //   .get(PropertiesController.getAll);
 
       router
         .route('/api/properties/:id')
-        .get(PropertiesController.getProperties)
-        .post(PropertiesController.createProperties);
+        .get(auth.isAuthenticated(), PropertiesController.getProperties)
+        .post(auth.isAuthenticated(), PropertiesController.createProperties);
 
       router
         .route('/api/properties/:id/:idproperties')
-        .get(PropertiesController.getByIdProperties)
-        .delete(PropertiesController.deleteProperties);
+        .get(auth.isAuthenticated(), PropertiesController.getByIdProperties)
+        .delete(auth.isAuthenticated(), PropertiesController.deleteProperties);
 
       router
         .route('/api/properties/:id/update/:idproperties')
-        .post(PropertiesController.updateProperties);
+        .post(auth.isAuthenticated(), PropertiesController.updateProperties);
     }
 }

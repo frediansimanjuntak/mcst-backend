@@ -2,25 +2,26 @@
 
 import * as express from 'express';
 import {AnnouncementController} from '../controller/announcement-controller';
+import * as auth from '../../../auth/auth-service';
 
 export class AnnouncementRoutes {
     static init(router: express.Router) {
       router
         .route('/api/announcements')
-        .get(AnnouncementController.getAll)
-        .post(AnnouncementController.createAnnouncement);
+        .get(auth.isAuthenticated(), AnnouncementController.getAll)
+        .post(auth.isAuthenticated(), AnnouncementController.createAnnouncement);
 
       router
         .route('/api/announcements/:id')
-        .get(AnnouncementController.getById)
-        .delete(AnnouncementController.deleteAnnouncement);
+        .get(auth.isAuthenticated(), AnnouncementController.getById)
+        .delete(auth.isAuthenticated(), AnnouncementController.deleteAnnouncement);
 
       router
         .route('/api/announcements/update/:id')
-        .post(AnnouncementController.updateAnnouncement);
+        .post(auth.isAuthenticated(), AnnouncementController.updateAnnouncement);
 
       router
         .route('/api/announcements/publish/:id')
-        .post(AnnouncementController.publishAnnouncement);
+        .post(auth.isAuthenticated(), AnnouncementController.publishAnnouncement);
     }
 }

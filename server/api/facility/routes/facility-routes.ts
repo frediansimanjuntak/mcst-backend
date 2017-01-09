@@ -2,21 +2,22 @@
 
 import * as express from 'express';
 import {FacilityController} from '../controller/facility-controller';
+import * as auth from '../../../auth/auth-service';
 
 export class FacilityRoutes {
     static init(router: express.Router) {
       router
         .route('/api/facilities')
-        .get(FacilityController.getAll)
-        .post(FacilityController.createFacility);
+        .get(auth.isAuthenticated(), FacilityController.getAll)
+        .post(auth.isAuthenticated(), FacilityController.createFacility);
 
       router
         .route('/api/facilities/:id')
-        .get(FacilityController.getById)
-        .delete(FacilityController.deleteFacility);
+        .get(auth.isAuthenticated(), FacilityController.getById)
+        .delete(auth.isAuthenticated(), FacilityController.deleteFacility);
 
       router
         .route('/api/facilities/update/:id')
-        .post(FacilityController.updateFacility);
+        .post(auth.isAuthenticated(), FacilityController.updateFacility);
     }
 }

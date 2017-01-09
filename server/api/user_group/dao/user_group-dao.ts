@@ -23,7 +23,6 @@ userGroupSchema.static('createUserGroup', (user_group:Object):Promise<any> => {
       }
 
       var _user_group = new UserGroup(user_group);
-
       _user_group.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);

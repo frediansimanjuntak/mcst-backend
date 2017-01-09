@@ -1,15 +1,16 @@
 import * as express from 'express';
-import NewsletterDAO from '../dao/newsletter-dao';
+// import NewsletterDAO from '../dao/newsletter-dao';
 import DevelopmentDAO from '../../development/dao/development-dao';
+import AttachmentDAO from '../../attachment/dao/attachment-dao';
 
 
 export class NewsletterController {
-  static getAll(req: express.Request, res: express.Response):void {
-      NewsletterDAO
-        ['getAll']()
-        .then(newsletters => res.status(200).json(newsletters))
-        .catch(error => res.status(400).json(error));
-  }
+  // static getAll(req: express.Request, res: express.Response):void {
+  //     NewsletterDAO
+  //       ['getAll']()
+  //       .then(newsletters => res.status(200).json(newsletters))
+  //       .catch(error => res.status(400).json(error));
+  // }
 
   static getByIdNewsletter(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
@@ -29,13 +30,13 @@ export class NewsletterController {
   }
 
 
-  static updateGetById(req: express.Request, res: express.Response):void {
-      let _id = req.params.id;
-      NewsletterDAO
-        ['updateGetById'](_id)
-        .then(newsletters => res.status(200).json(newsletters))
-        .catch(error => res.status(400).json(error));
-  }
+  // static updateGetById(req: express.Request, res: express.Response):void {
+  //     let _id = req.params.id;
+  //     NewsletterDAO
+  //       ['updateGetById'](_id)
+  //       .then(newsletters => res.status(200).json(newsletters))
+  //       .catch(error => res.status(400).json(error));
+  // }
 
   static releaseNewsletter(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
@@ -50,10 +51,11 @@ export class NewsletterController {
   
   static createNewsletter(req: express.Request, res: express.Response):void {
       let _newsletter= req.body;
+      let _attachment= _newsletter.files(req['files']['files']);
       let _id = req.params.id;
 
       DevelopmentDAO         
-        ['createNewsletter'](_id,_newsletter)
+        ['createNewsletter'](_id,_newsletter, _attachment)
         .then(newsletter => res.status(201).json(newsletter))
         .catch(error => res.status(400).json(error));   }
 

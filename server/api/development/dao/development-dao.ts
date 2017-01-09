@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import developmentSchema from '../model/development-model';
+import {localAttachment} from '../../attachment/dao/attachment-dao'
 
 developmentSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -92,13 +93,14 @@ developmentSchema.static('createDevelopment', (development:Object):Promise<any> 
       var _development = new Development(development);
 
       _development.save((err, saved) => {
+
         err ? reject(err)
             : resolve(saved);
       });
     });
 });
 
-developmentSchema.static('createNewsletter', (id:string, newsletter:Object):Promise<any> => {
+developmentSchema.static('createNewsletter', (id:string, newsletter:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(newsletter)) {
         return reject(new TypeError('Newsletter is not a valid object.'));
@@ -109,9 +111,11 @@ developmentSchema.static('createNewsletter', (id:string, newsletter:Object):Prom
         {
           $push:{"newsletter":newsletter}
         })
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
+        .exec((err, saved, done) => {
+          return localAttachment(attachment, done),(err, attach)=>{
+            saved.attachment.push(attach._id);
+            saved.save();
+          };
         });
     });
 });

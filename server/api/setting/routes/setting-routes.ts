@@ -2,12 +2,13 @@
 
 import * as express from 'express';
 import {SettingController} from '../controller/setting-controller';
+import * as auth from '../../../auth/auth-service';
 
 export class SettingRoutes {
     static init(router: express.Router) {
       router
         .route('/api/setting/user/:id')
-        .get(SettingController.getDetailUser)
-        .post(SettingController.settingDetailUser);
+        .get(auth.isAuthenticated(), SettingController.getDetailUser)
+        .post(auth.isAuthenticated(), SettingController.settingDetailUser);
     }
 }

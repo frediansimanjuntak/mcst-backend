@@ -1,14 +1,14 @@
 import * as express from 'express';
-import PropertiesDAO from '../dao/properties-dao';
+// import PropertiesDAO from '../dao/properties-dao';
 import DevelopmentDAO from '../../development/dao/development-dao';
 
 export class PropertiesController {
-  static getAll(req: express.Request, res: express.Response):void {
-      PropertiesDAO
-        ['getAll']()
-        .then(propertiess => res.status(200).json(propertiess))
-        .catch(error => res.status(400).json(error));
-  }
+  // static getAll(req: express.Request, res: express.Response):void {
+  //     PropertiesDAO
+  //       ['getAll']()
+  //       .then(propertiess => res.status(200).json(propertiess))
+  //       .catch(error => res.status(400).json(error));
+  // }
 
   static getByIdProperties(req: express.Request, res: express.Response):void {
         let _id = req.params.id;
