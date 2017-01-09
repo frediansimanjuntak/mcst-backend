@@ -3,6 +3,17 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import userSchema from '../model/user-model';
 
+userSchema.static('index', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        User
+          .find({}, '-salt -password')
+          .exec((err, users) => {
+              err ? reject(err)
+                  : resolve(users);
+          });
+    });
+});
+
 userSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
@@ -16,7 +27,20 @@ userSchema.static('getAll', ():Promise<any> => {
     });
 });
 
-userSchema.static('getById', (id):Promise<any> => {
+userSchema.static('me', (userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+        User
+          .findOne({_id:userId}, '-salt -password')
+          .exec((err, users) => {
+              err ? reject(err)
+                  : resolve(users);
+          });
+    });
+});
+
+
+userSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
 
         User
@@ -28,7 +52,7 @@ userSchema.static('getById', (id):Promise<any> => {
     });
 });
 
-userSchema.static('getDetailUser', (id):Promise<any> => {
+userSchema.static('getDetailUser', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
 
         User
@@ -53,6 +77,7 @@ userSchema.static('createUser', (user:Object):Promise<any> => {
         err ? reject(err)
             : resolve(saved);
       });
+
     });
 });
 

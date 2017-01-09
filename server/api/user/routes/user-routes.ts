@@ -2,21 +2,34 @@
 
 import * as express from 'express';
 import {UserController} from '../controller/user-controller';
+import * as auth from '../../../auth/auth-service';
 
 export class UserRoutes {
     static init(router: express.Router) {
       router
         .route('/api/users')
-        .get(UserController.getAll)
+        .get(auth.isAuthenticated(), UserController.getAll)
         .post(UserController.createUser);
 
       router
         .route('/api/users/:id')
-        .get(UserController.getById)
-        .delete(UserController.deleteUser);
+        .get(auth.isAuthenticated(), UserController.getById)
+        .delete(auth.isAuthenticated(), UserController.deleteUser);
 
       router
         .route('/api/users/update/:id')
-        .post(UserController.updateUser);
+        .post(auth.isAuthenticated(), UserController.updateUser);
+
+      router
+        .route('/')
+        .get(auth.hasRole('admin'), UserController.index);
+
+      router
+        .route('/me')
+        .get(auth.isAuthenticated(), UserController.me);
+
+      // router
+      //   .route('/login')
+      //   .use(require('../../../auth/local/index'));
     }
 }

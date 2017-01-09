@@ -1,13 +1,31 @@
 import * as express from 'express';
 import UserDAO from '../dao/user-dao';
+var passport = require('passport');
 
 export class UserController {
+
+  static index(req: express.Request, res: express.Response):void {
+      UserDAO
+        ['index']()
+        .then(users => res.status(200).json(users))
+        .catch(error => res.status(400).json(error));
+  }
+
   static getAll(req: express.Request, res: express.Response):void {
       UserDAO
         ['getAll']()
         .then(users => res.status(200).json(users))
         .catch(error => res.status(400).json(error));
   }
+
+  static me(req: express.Request, res: express.Response):void {
+      let _userId = req.user._id;
+      UserDAO
+        ['me'](_userId)
+        .then(users => res.status(200).json(users))
+        .catch(error => res.status(400).json(error));
+  }
+
   static getById(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       UserDAO

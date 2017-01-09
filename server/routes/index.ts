@@ -39,5 +39,6 @@ export class Routes {
      NotificationRoutes.init(router);
      
      app.use('/', router);
+     app.use('/auth', require('../auth').default);
    }
 }
