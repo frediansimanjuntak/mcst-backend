@@ -20,9 +20,10 @@ export class FacilityController {
 
   static createFacility(req: express.Request, res: express.Response):void {
       let _facility = req.body;
+      let _userId= req.user._id;
 
       FacilityDAO
-        ['createFacility'](_facility)
+        ['createFacility'](_facility, _userId)
         .then(facility => res.status(201).json(facility))
         .catch(error => res.status(400).json(error));
   }

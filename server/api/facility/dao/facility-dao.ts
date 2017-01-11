@@ -31,14 +31,14 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-facilitySchema.static('createFacility', (facility:Object):Promise<any> => {
+facilitySchema.static('createFacility', (facility:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(facility)) {
         return reject(new TypeError('Facility is not a valid object.'));
       }
 
       var _facility = new Facility(facility);
-
+      _facility.created_by = userId;
       _facility.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
