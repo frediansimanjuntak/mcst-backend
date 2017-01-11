@@ -2,6 +2,8 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import companySchema from '../model/company-model';
+import Attachment from '../../attachment/dao/attachment-dao';
+import {AWSService} from '../../../global/aws.service';
 
 companySchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -61,17 +63,42 @@ companySchema.static('deleteCompany', (id:string, ):Promise<any> => {
     });
 });
 
-companySchema.static('updateCompany', (id:string, company:Object):Promise<any> => {
+companySchema.static('updateCompany', (id:string, userId:string, company:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(company)) {
           return reject(new TypeError('Company is not a valid object.'));
         }
-
+            let file:any = company.files.attachmentfile;
+            if(file!=null){
+              let key:string = 'attachment/company/'+file.name;
+              AWSService.upload(key, file).then(fileDetails => {
+              let _attachment = new Attachment(company);
+              _attachment.name = fileDetails.name;
+              _attachment.type = fileDetails.type;
+              _attachment.url = fileDetails.url;
+              _attachment.created_by=userId;
+              _attachment.save((err, saved)=>{
+                err ? reject(err)
+                    : resolve(saved);
+              });
+              var attachmentID=_attachment._id;
+              Company
+                .findByIdAndUpdate(id,{$push:{'company_logo':attachmentID}})
+                .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                 });
+              })
+            }        
+        let companyObj = {$set: {}};
+        for(var param in company) {
+          companyObj.$set[param] = companyObj[param];
+         }
         Company
-        .findByIdAndUpdate(id, company)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id,companyObj)
+          .exec((err, saved) => {  
+                err ? reject(err)
+                    : resolve(saved);
           });
     });
 });

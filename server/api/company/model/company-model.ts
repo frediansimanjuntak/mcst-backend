@@ -16,7 +16,7 @@ var companySchema = new mongoose.Schema({
 		full_address:{type: String, trim: true}
 	},
 	description:{type: String, trim: true},
-	company_logo:{type: String, trim: true},
+	company_logo:[{type: String, trim: true}],
 	chief:{type: String, trim: true},
 	employee:[{type: String, trim: true}],
 	active:{type: String, trim: true, default:'false'},

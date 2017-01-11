@@ -40,9 +40,10 @@ export class CompanyController {
   static updateCompany(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _company = req.body;
+    let _userId = req.user._id;
 
     CompanyDAO
-      ['updateCompany'](_id, _company)
+      ['updateCompany'](_id, _userId, _company)
       .then(company => res.status(201).json(company))
       .catch(error => res.status(400).json(error));
   }
