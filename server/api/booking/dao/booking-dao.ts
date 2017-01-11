@@ -31,14 +31,14 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-bookingSchema.static('createBooking', (booking:Object):Promise<any> => {
+bookingSchema.static('createBooking', (booking:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(booking)) {
         return reject(new TypeError('Booking is not a valid object.'));
       }
 
       var _booking = new Booking(booking);
-
+      _booking.created_by= userId;
       _booking.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);

@@ -20,9 +20,10 @@ export class BookingController {
 
   static createBooking(req: express.Request, res: express.Response):void {
       let _booking = req.body;
+      let _userId= req.user._id;
 
       BookingDAO
-        ['createBooking'](_booking)
+        ['createBooking'](_booking, _userId)
         .then(booking => res.status(201).json(booking))
         .catch(error => res.status(400).json(error));
   }
