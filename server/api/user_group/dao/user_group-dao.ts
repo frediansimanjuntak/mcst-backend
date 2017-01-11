@@ -16,13 +16,13 @@ userGroupSchema.static('getAll', ():Promise<any> => {
     });
 });
 
-userGroupSchema.static('createUserGroup', (user_group:Object):Promise<any> => {
+userGroupSchema.static('createUserGroup', (userGroup:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(user_group)) {
+      if (!_.isObject(userGroup)) {
         return reject(new TypeError('User Group is not a valid object.'));
       }
 
-      var _user_group = new UserGroup(user_group);
+      var _user_group = new UserGroup(userGroup);
       _user_group.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
@@ -45,14 +45,48 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
     });
 });
 
-userGroupSchema.static('updateUserGroup', (id:string, user_group:Object):Promise<any> => {
+userGroupSchema.static('updateUserGroup', (id:string, userGroup:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(user_group)) {
+        if (!_.isObject(userGroup)) {
           return reject(new TypeError('User Group is not a valid object.'));
         }
 
         UserGroup
-        .findByIdAndUpdate(id, user_group)
+        .findByIdAndUpdate(id, userGroup)
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+userGroupSchema.static('addUser', (id:string, userGroup:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(userGroup)) {
+          return reject(new TypeError('User Group is not a valid object.'));
+        }
+
+        UserGroup
+        .findByIdAndUpdate(id, {
+            $push:{'users':userGroup.users}
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+userGroupSchema.static('deleteUser', (id:string, userGroup:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(userGroup)) {
+          return reject(new TypeError('User Group is not a valid object.'));
+        }
+
+        UserGroup
+        .findByIdAndUpdate(id, {
+            $pull:{'users':userGroup.users}
+        })
         .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);
