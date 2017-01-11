@@ -20,9 +20,11 @@ export class PetitionController {
 
   static createPetition(req: express.Request, res: express.Response):void {
       let _petition = req.body;
+      _petition.files = req.files;
+      let _userId= req.user._id;
 
       PetitionDAO
-        ['createPetition'](_petition)
+        ['createPetition'](_petition, _userId)
         .then(petition => res.status(201).json(petition))
         .catch(error => res.status(400).json(error));
   }

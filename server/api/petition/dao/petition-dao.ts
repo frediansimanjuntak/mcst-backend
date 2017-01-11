@@ -2,6 +2,8 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import petitionSchema from '../model/petition-model';
+import Attachment from '../../attachment/dao/attachment-dao';
+import {AWSService} from '../../../global/aws.service';
 
 petitionSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -31,18 +33,33 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-petitionSchema.static('createPetition', (petition:Object):Promise<any> => {
+petitionSchema.static('createPetition', (petition:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(petition)) {
         return reject(new TypeError('Petition is not a valid object.'));
       }
 
-      var _petition = new Petition(petition);
-
-      _petition.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+      let file:any = petition.files.attachmentfile;
+      let key:string = 'test/'+file.name;
+      AWSService.upload(key, file).then(fileDetails => {
+        let _attachment = new Attachment(petition);
+        _attachment.name = fileDetails.name;
+        _attachment.type = fileDetails.type;
+        _attachment.url = fileDetails.url;
+        _attachment.created_by=userId;
+        _attachment.save((err, saved)=>{
+          err ? reject(err)
+              : resolve(saved);
+        });
+        var attachmentID=_attachment._id;
+        var _petition = new Petition(petition);
+            _petition.created_by = userId;
+            _petition.attachment = attachmentID;
+            _petition.save((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+            });  
+        }) 
     });
 });
 

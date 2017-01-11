@@ -5,7 +5,7 @@ var petitionSchema = new mongoose.Schema({
 	development:{type: String, trim: true},
 	property:{type: String, trim: true},		
 	petition_type:{type: String, trim: true},
-	attachment:{type: Date, trim: true},
+	attachment:{type: String, trim: true},
 	contract:{type: Date, trim: true},
 	remark:{type: String, trim: true},
 	archieve:{type: String, trim: true, default: "false"},
