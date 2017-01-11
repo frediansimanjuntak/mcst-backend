@@ -40,10 +40,11 @@ export class NewsletterController {
 
   static releaseNewsletter(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
+      let _userId = req.user._id;
       let _idnewsletter = req.params.idnewsletter;
 
       DevelopmentDAO         
-        ['releaseNewsletter'](_id,_idnewsletter)
+        ['releaseNewsletter'](_id,_idnewsletter, _userId)
         .then(newsletter => res.status(201).json(newsletter))
         .catch(error => res.status(400).json(error));   
   }
@@ -51,11 +52,12 @@ export class NewsletterController {
   
   static createNewsletter(req: express.Request, res: express.Response):void {
       let _newsletter= req.body;
-      let _attachment= _newsletter.files(req['files']['files']);
+      _newsletter.files = req.files;
       let _id = req.params.id;
+      let _userId = req.user._id;
 
       DevelopmentDAO         
-        ['createNewsletter'](_id,_newsletter, _attachment)
+        ['createNewsletter'](_id,_newsletter, _userId)
         .then(newsletter => res.status(201).json(newsletter))
         .catch(error => res.status(400).json(error));   }
 
