@@ -23,5 +23,10 @@ export class PropertiesRoutes {
       router
         .route('/api/properties/:id/update/:idproperties')
         .post(auth.isAuthenticated(), PropertiesController.updateProperties);
+
+      router
+        .route('/api/properties/:id/tenant/:idproperties')
+        .post(auth.isAuthenticated(), PropertiesController.createTenantProperties)
+        .delete(auth.isAuthenticated(), PropertiesController.deleteTenantProperties);
     }
 }

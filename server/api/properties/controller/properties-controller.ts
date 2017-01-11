@@ -37,6 +37,28 @@ export class PropertiesController {
         .catch(error => res.status(400).json(error));
   }
 
+  static createTenantProperties(req: express.Request, res: express.Response):void {
+      let _properties = req.body;
+      let _id = req.params.id;
+      let _idproperties = req.params.idproperties;
+
+      DevelopmentDAO
+        ['createTenantProperties'](_id, _idproperties, _properties)
+        .then(properties => res.status(201).json(properties))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static deleteTenantProperties(req: express.Request, res: express.Response):void {
+      let _properties = req.body;
+      let _id = req.params.id;
+      let _idproperties = req.params.idproperties;
+
+      DevelopmentDAO
+        ['deleteTenantProperties'](_id, _idproperties, _properties)
+        .then(properties => res.status(201).json(properties))
+        .catch(error => res.status(400).json(error));
+  }
+
   static deleteProperties(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _idproperties = req.params.idproperties;
