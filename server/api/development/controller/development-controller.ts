@@ -27,6 +27,26 @@ export class DevelopmentController {
         .catch(error => res.status(400).json(error));
   }
 
+  static createStaffDevelopment(req: express.Request, res: express.Response):void {
+      let _development = req.body;
+      let _id = req.params.id;
+
+      DevelopmentDAO
+        ['createStaffDevelopment'](_development, _id)
+        .then(development => res.status(201).json(development))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static deleteStaffDevelopment(req: express.Request, res: express.Response):void {
+      let _development = req.body;
+      let _id = req.params.id;
+
+      DevelopmentDAO
+        ['deleteStaffDevelopment'](_development, _id)
+        .then(development => res.status(201).json(development))
+        .catch(error => res.status(400).json(error));
+  }
+
   static deleteDevelopment(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
 

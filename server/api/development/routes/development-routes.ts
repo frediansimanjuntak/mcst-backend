@@ -2,21 +2,27 @@
 
 import * as express from 'express';
 import {DevelopmentController} from '../controller/development-controller';
+import * as auth from '../../../auth/auth-service';
 
 export class DevelopmentRoutes {
     static init(router: express.Router) {
       router
         .route('/api/developments')
-        .get(DevelopmentController.getAll)
-        .post(DevelopmentController.createDevelopment);
+        .get(auth.isAuthenticated(), DevelopmentController.getAll)
+        .post(auth.isAuthenticated(), DevelopmentController.createDevelopment);
 
       router
         .route('/api/developments/:id')
-        .get(DevelopmentController.getById)
-        .delete(DevelopmentController.deleteDevelopment);
+        .get(auth.isAuthenticated(), DevelopmentController.getById)
+        .delete(auth.isAuthenticated(), DevelopmentController.deleteDevelopment);
 
       router
         .route('/api/developments/update/:id')
-        .post(DevelopmentController.updateDevelopment);
+        .post(auth.isAuthenticated(), DevelopmentController.updateDevelopment);
+
+      router
+        .route('/api/developments/staff/:id')
+        .post(auth.isAuthenticated(), DevelopmentController.createStaffDevelopment)
+        .delete(auth.isAuthenticated(), DevelopmentController.deleteStaffDevelopment);
     }
 }
