@@ -7,7 +7,7 @@ var incidentSchema = new mongoose.Schema({
 	property:{type: String, trim: true},		
 	incident_type:{type: String, trim: true},
 	landlord_acceptance:{type: String, trim: true},
-	attachment:{type: Date, trim: true},
+	attachment:{type: String, trim: true},
 	contract:{type: Date, trim: true},
 	remark:{type: String, trim: true},
 	starred_by:[{type: String, trim: true}],

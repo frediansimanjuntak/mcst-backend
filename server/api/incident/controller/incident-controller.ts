@@ -20,9 +20,11 @@ export class IncidentController {
 
   static createIncident(req: express.Request, res: express.Response):void {
       let _incident = req.body;
-
+      _incident.files = req.files;
+      let _userId= req.user._id;
+      
       IncidentDAO
-        ['createIncident'](_incident)
+        ['createIncident'](_incident, _userId)
         .then(incident => res.status(201).json(incident))
         .catch(error => res.status(400).json(error));
   }
@@ -32,7 +34,7 @@ export class IncidentController {
 
     IncidentDAO
       ['deleteIncident'](_id)
-      .then(() => res.status(200).end())
+      .then(() => res.status(200).ebnd())
       .catch(error => res.status(400).json(error));
   }
 

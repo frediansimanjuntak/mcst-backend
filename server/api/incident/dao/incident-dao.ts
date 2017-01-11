@@ -2,6 +2,8 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import incidentSchema from '../model/incident-model';
+import Attachment from '../../attachment/dao/attachment-dao';
+import {AWSService} from '../../../global/aws.service';
 
 incidentSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -31,18 +33,33 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-incidentSchema.static('createIncident', (incident:Object):Promise<any> => {
+incidentSchema.static('createIncident', (incident:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(incident)) {
         return reject(new TypeError('Incident is not a valid object.'));
       }
 
-      var _incident = new Incident(incident);
-
-      _incident.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+      let file:any = incident.files.attachmentfile;
+      let key:string = 'test/'+file.name;
+      AWSService.upload(key, file).then(fileDetails => {
+        let _attachment = new Attachment(incident);
+        _attachment.name = fileDetails.name;
+        _attachment.type = fileDetails.type;
+        _attachment.url = fileDetails.url;
+        _attachment.created_by=userId;
+        _attachment.save((err, saved)=>{
+          err ? reject(err)
+              : resolve(saved);
+        });
+        var attachmentID=_attachment._id;
+        var _incident = new Incident(incident);
+            _incident.created_by = userId;
+            _incident.attachment = attachmentID;
+            _incident.save((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+            });  
+        })    
     });
 });
 
