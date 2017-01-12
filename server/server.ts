@@ -19,7 +19,7 @@ import {RoutesConfig} from './config/routes.conf';
 import {DBConfig} from './config/db.conf';
 import {Routes} from './routes/index';
 
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 5000;
 const app = express();
 
 require('./config/express').default(app);
