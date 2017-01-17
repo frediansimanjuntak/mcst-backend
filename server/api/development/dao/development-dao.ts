@@ -18,67 +18,13 @@ developmentSchema.static('getAll', ():Promise<any> => {
     });
 });
 
-developmentSchema.static('getById', (id:string):Promise<any> => {
+developmentSchema.static('getById', (namedevelopment:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
          Development
-          .findById(id)
+          .findOne({"name":namedevelopment})
           .exec((err, developments) => {
               err ? reject(err)
                   : resolve(developments);
-          });
-    });
-});
-
-developmentSchema.static('getByIdNewsletter', (id:string, idnewsletter:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-      var ObjectID = mongoose.Types.ObjectId;
-
-         Development 
-         .findById(id)
-         .select({"newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}})
-          .exec((err, newsletters) => {
-              err ? reject(err)
-                  : resolve(newsletters);
-          });
-
-    });
-});
-
-developmentSchema.static('getByIdProperties', (id:string, idproperties:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-      var ObjectID = mongoose.Types.ObjectId;
-
-         Development 
-         .findById(id)
-         .select({"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})                
-          .exec((err, properties) => {
-              err ? reject(err)
-                  : resolve(properties);
-          });
-
-    });
-});
-
-developmentSchema.static('getNewsletter', (id:string,):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-         Development
-          .findById(id)
-          .select("newsletter")
-          .exec((err, newsletters) => {
-              err ? reject(err)
-                  : resolve(newsletters);
-          });
-    });
-});
-
-developmentSchema.static('getProperties', (id:string,):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-         Development
-          .findById(id)
-          .select("properties")
-          .exec((err, properties) => {
-              err ? reject(err)
-                  : resolve(properties);
           });
     });
 });
@@ -99,7 +45,66 @@ developmentSchema.static('createDevelopment', (development:Object):Promise<any> 
     });
 });
 
-developmentSchema.static('createNewsletter', (id:string, userId:string, newsletter:Object):Promise<any> => {
+developmentSchema.static('deleteDevelopment', (namedevelopment:string ):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(namedevelopment)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }
+
+        Development
+          .findOneAndRemove({"name":namedevelopment})                
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
+          });
+    });
+});
+
+developmentSchema.static('updateDevelopment', (namedevelopment:string, development:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(development)) {
+          return reject(new TypeError('Development is not a valid object.'));
+        }
+
+        Development
+        .findOneAndUpdate({"name":namedevelopment}, development)
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+
+//Development Newsletter
+developmentSchema.static('getNewsletter', (namedevelopment:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+         Development
+          .findOne({"name":namedevelopment})
+          .select("newsletter")
+          .exec((err, newsletters) => {
+              err ? reject(err)
+                  : resolve(newsletters);
+          });
+    });
+});
+
+developmentSchema.static('getByIdNewsletter', (namedevelopment:string, idnewsletter:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      var ObjectID = mongoose.Types.ObjectId;
+
+         Development 
+         .findOne({"name":namedevelopment})
+         .select({"newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}})
+          .exec((err, newsletters) => {
+              err ? reject(err)
+                  : resolve(newsletters);
+          });
+
+    });
+});
+
+developmentSchema.static('createNewsletter', (namedevelopment:string, userId:string, newsletter:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(newsletter)) {
         return reject(new TypeError('Newsletter is not a valid object.'));
@@ -119,7 +124,7 @@ developmentSchema.static('createNewsletter', (id:string, userId:string, newslett
         });
         var attachmentID=_attachment._id;
         Development
-          .findByIdAndUpdate(id, {
+          .findOneAndUpdate({"name":namedevelopment}, {
                 $push:{"newsletter.title":newsletter.title,
                        "newsletter.description":newsletter.description,
                        "newsletter.type":newsletter.type,
@@ -137,102 +142,14 @@ developmentSchema.static('createNewsletter', (id:string, userId:string, newslett
     });
 });
 
-developmentSchema.static('createProperties', (id:string, properties:Object):Promise<any> => {
+developmentSchema.static('deleteNewsletter', (namedevelopment:string, idnewsletter:string ):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(properties)) {
-        return reject(new TypeError('Properties is not a valid object.'));
-      }
-
-      Development
-      .findByIdAndUpdate(id,     
-        {
-          $push:{"properties":properties}
-        })
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-        });
-    });
-});
-
-developmentSchema.static('createTenantProperties', (id:string, idproperties:string, properties:Object):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(properties)) {
-          return reject(new TypeError('Properties is not a valid object.'));
-        }        
-
-        let propertiesObj = {$push: {'properties.tenant':properties.tenant}};
-        let ObjectID = mongoose.Types.ObjectId;    
-
-        Development
-        .update({"_id":id, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},propertiesObj)
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-          });
-    });
-});
-
-developmentSchema.static('deleteTenantProperties', (id:string, idproperties:string, properties:Object):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(properties)) {
-          return reject(new TypeError('Properties is not a valid object.'));
-        }        
-
-        let propertiesObj = {$pull: {'properties.tenant':properties.tenant}};
-        let ObjectID = mongoose.Types.ObjectId;    
-
-        Development
-        .update({"_id":id, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},propertiesObj)
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-          });
-    });
-});
-
-developmentSchema.static('deleteTenantProperties', (id:string, properties:Object):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(properties)) {
-        return reject(new TypeError('Properties is not a valid object.'));
-      }
-
-      Development
-      .findByIdAndUpdate(id,     
-        {
-          $pull:{"properties.tenant":properties.tenant}
-        })
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-        });
-    });
-});
-
-
-developmentSchema.static('deleteDevelopment', (id:string ):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-            return reject(new TypeError('Id is not a valid string.'));
+        if (!_.isString(namedevelopment)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
         }
 
         Development
-          .findByIdAndRemove(id)          
-          .exec((err, deleted) => {
-              err ? reject(err)
-                  : resolve();
-          });
-    });
-});
-
-developmentSchema.static('deleteNewsletter', (id:string, idnewsletter:string ):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-            return reject(new TypeError('Id is not a valid string.'));
-        }
-
-        Development
-          .findByIdAndUpdate(id,
+          .findOneAndUpdate({"name":namedevelopment},
           {
             $pull:{"newsletter":{_id:idnewsletter}}
           })
@@ -243,66 +160,7 @@ developmentSchema.static('deleteNewsletter', (id:string, idnewsletter:string ):P
     });
 });
 
-developmentSchema.static('deleteProperties', (id:string, idproperties:string ):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-            return reject(new TypeError('Id is not a valid string.'));
-        }
-
-        Development
-          .findByIdAndUpdate(id,
-          {
-            $pull:{"properties":{_id:idproperties}}
-          })
-          .exec((err, deleted) => {
-              err ? reject(err)
-                  : resolve();
-          });
-    });
-});
-
-developmentSchema.static('releaseNewsletter',(id:string, userId:string, idnewsletter:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-            return reject(new TypeError('Id is not a valid string.'));
-        }
-        var ObjectID = mongoose.Types.ObjectId;   
-        var released=true;
-        var released_by=userId; 
-        var release_at= Date.now();                      
-
-        Development
-        .update({"_id":id, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}},
-          { 
-            $set:{
-              "newsletter.$.released":released,
-              "newsletter.$.released_by":released_by,
-              "newsletter.$.release_at":release_at
-            }            
-          })
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-          });
-    });
-});
-
-developmentSchema.static('updateDevelopment', (id:string, development:Object):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(development)) {
-          return reject(new TypeError('Development is not a valid object.'));
-        }
-
-        Development
-        .findByIdAndUpdate(id, development)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
-    });
-});
-
-developmentSchema.static('updateNewsletter', (id:string, idnewsletter:string, userId:string, newsletter:Object):Promise<any> => {
+developmentSchema.static('updateNewsletter', (namedevelopment:string, idnewsletter:string, userId:string, newsletter:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(newsletter)) {
           return reject(new TypeError('Properties is not a valid object.'));
@@ -313,7 +171,7 @@ developmentSchema.static('updateNewsletter', (id:string, idnewsletter:string, us
              }
 
             let ObjectID = mongoose.Types.ObjectId; 
-            let _query={"_id":id, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}};
+            let _query={"name":namedevelopment, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}};
 
             let file:any = newsletter.files.attachmentfile;
 
@@ -348,7 +206,96 @@ developmentSchema.static('updateNewsletter', (id:string, idnewsletter:string, us
     });
 });
 
-developmentSchema.static('updateProperties', (id:string, idproperties:string, properties:Object):Promise<any> => {
+developmentSchema.static('releaseNewsletter',(namedevelopment:string, userId:string, idnewsletter:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(namedevelopment)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }
+        var ObjectID = mongoose.Types.ObjectId;   
+        var released=true;
+        var released_by=userId; 
+        var release_at= Date.now();                      
+
+        Development
+        .update({"name":namedevelopment, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}},
+          { 
+            $set:{
+              "newsletter.$.released":released,
+              "newsletter.$.released_by":released_by,
+              "newsletter.$.release_at":release_at
+            }            
+          })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
+//Properties Development
+developmentSchema.static('getProperties', (namedevelopment:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+         Development
+          .findOne({"name":namedevelopment})
+          .select("properties")
+          .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
+          });
+    });
+});
+
+developmentSchema.static('getByIdProperties', (namedevelopment:string, idproperties:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      var ObjectID = mongoose.Types.ObjectId;
+
+         Development 
+         .findOne({"name":namedevelopment})
+         .select({"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})                
+          .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
+          });
+    });
+});
+
+developmentSchema.static('createProperties', (namedevelopment:string, properties:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(properties)) {
+        return reject(new TypeError('Properties is not a valid object.'));
+      }
+
+      Development
+      .findOneAndUpdate({"name":namedevelopment},     
+        {
+          $push:{"properties":properties}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
+developmentSchema.static('deleteProperties', (namedevelopment:string, idproperties:string ):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(namedevelopment)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }
+
+        Development
+          .findOneAndUpdate({"name":namedevelopment},
+          {
+            $pull:{"properties":{_id:idproperties}}
+          })
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
+          });
+    });
+});
+
+developmentSchema.static('updateProperties', (namedevelopment:string, idproperties:string, properties:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(properties)) {
           return reject(new TypeError('Properties is not a valid object.'));
@@ -361,7 +308,7 @@ developmentSchema.static('updateProperties', (id:string, idproperties:string, pr
         let ObjectID = mongoose.Types.ObjectId;    
 
         Development
-        .update({"_id":id, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},propertiesObj)
+        .update({"name":namedevelopment, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},propertiesObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -369,14 +316,16 @@ developmentSchema.static('updateProperties', (id:string, idproperties:string, pr
     });
 });
 
-developmentSchema.static('createStaffDevelopment', (id:string, development:Object):Promise<any> => {
+
+//Staff Development
+developmentSchema.static('createStaffDevelopment', (namedevelopment:string, development:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(development)) {
         return reject(new TypeError('Staff Development is not a valid object.'));
       }
 
       Development
-      .findByIdAndUpdate(id,     
+      .findOneAndUpdate({"name":namedevelopment},     
         {
           $push:{"staff":development.staff}
         })
@@ -387,14 +336,14 @@ developmentSchema.static('createStaffDevelopment', (id:string, development:Objec
     });
 });
 
-developmentSchema.static('deleteStaffDevelopment', (id:string, development:Object):Promise<any> => {
+developmentSchema.static('deleteStaffDevelopment', (namedevelopment:string, development:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(development)) {
         return reject(new TypeError('Staff Development is not a valid object.'));
       }
 
       Development
-      .findByIdAndUpdate(id,     
+      .findOneAndUpdate({"name":namedevelopment},     
         {
           $pull:{"staff":development.staff}
         })
@@ -404,6 +353,107 @@ developmentSchema.static('deleteStaffDevelopment', (id:string, development:Objec
         });
     });
 });
+
+
+//Tenant
+developmentSchema.static('getTenantProperties', (namedevelopment:string, idproperties:string,):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      var ObjectID = mongoose.Types.ObjectId;
+
+         Development
+         .find({"name":namedevelopment},{"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})
+         .select("properties.tenant")   
+          .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
+          });
+    });
+});
+
+developmentSchema.static('getByIdTenantProperties', (namedevelopment:string, idproperties:string, idtenant:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      var ObjectID = mongoose.Types.ObjectId;
+
+         Development
+         // .aggregate([
+         //   {$match:{_id:id}},
+         //   {$unwind:"$properties"},
+         //   {$match:{"properties._id":new ObjectID(idproperties)}},
+         //   {$unwind:"$properties.tenant"},
+         //   {$match:{"properties.tenant._id":new ObjectID(idtenant)}},
+         //   {$project:{_id:id, tenant:"$properties.tenant"}}
+         //   ])
+
+         .find({"name": namedevelopment, "properties._id": idproperties, "properties.tenant._id": idtenant}, {"properties.tenant.$":1})
+         // .select({"properties.tenant._id":new ObjectID(idtenant)})
+         // .where({"properties.tenant._id":new ObjectID(idtenant)})
+         .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
+                  console.log(properties)
+          });
+
+    });
+});
+
+developmentSchema.static('createTenantProperties', (namedevelopment:string, idproperties:string, tenant:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(tenant)) {
+          return reject(new TypeError('Properties is not a valid object.'));
+        }        
+        let ObjectID = mongoose.Types.ObjectId;    
+        Development
+        .update({"name":namedevelopment, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+          $push:{
+            "properties.$.tenant":tenant  
+          }
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+developmentSchema.static('deleteTenantProperties', (namedevelopment:string, idtenant:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isString(idtenant)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+      Development
+      .findOneAndUpdate({"name":namedevelopment},     
+        {
+          $pull:{"properties":{"tenant":{"_id":idtenant}}}
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
+developmentSchema.static('updateTenantProperties', (namedevelopment:string, idtenant:string, tenant:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(tenant)) {
+          return reject(new TypeError('Properties is not a valid object.'));
+        }        
+
+        let tenantObj = {$set: {}};
+        for(var param in tenant) {
+          tenantObj.$set['tenant.$.'+param] = tenant[param];
+         }
+        let ObjectID = mongoose.Types.ObjectId;
+
+        Development
+        .update({"name":namedevelopment, "properties.tenant": { $elemMatch: {"_id": new ObjectID(idtenant)}}},tenantObj)
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
 
 let Development = mongoose.model('Development', developmentSchema);
 

@@ -6,26 +6,18 @@ import * as auth from '../../../auth/auth-service';
 
 export class NewsletterRoutes {
     static init(router: express.Router) {
-      // router
-      //   .route('/api/newsletters')
-      //   .get(NewsletterController.getAll);
-
       router
-        .route('/api/newsletters/:id') 
+        .route('/api/newsletters/:namedevelopment') 
         .get(auth.isAuthenticated(), NewsletterController.getNewsletter)       
         .post(auth.isAuthenticated(), NewsletterController.createNewsletter);
 
       router
-        .route('/api/newsletters/:id/:idnewsletter')
+        .route('/api/newsletters/:namedevelopment/:idnewsletter')
         .get(auth.isAuthenticated(), NewsletterController.getByIdNewsletter)
         .delete(auth.isAuthenticated(), NewsletterController.deleteNewsletter);
 
       router
-        .route('/api/newsletters/:id/update/:idnewsletter')
-        .post(auth.isAuthenticated(), NewsletterController.updateNewsletter);
-
-      // router
-      //   .route('/api/newsletters/update/:id')
-      //   .get(NewsletterController.updateGetById);
+        .route('/api/newsletters/:namedevelopment/update/:idnewsletter')
+        .post(auth.isAuthenticated(), NewsletterController.updateNewsletter);      
     }
 }

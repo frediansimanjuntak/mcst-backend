@@ -40,6 +40,7 @@ export class CompanyController {
   static updateCompany(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _company = req.body;
+    _company.files=req.files;
     let _userId = req.user._id;
 
     CompanyDAO

@@ -7,6 +7,7 @@ var facilitySchema = new mongoose.Schema({
 	facility_type:{type: String, trim: true},
 	payment_type:{type: String, trim: true},
 	booking_type:{type: String, trim: true},
+	booking_fee:{type: String},
 	schedule:[{
 		day:[{type: String, trim: true}],
 		start_time:{type: Date, trim: true},

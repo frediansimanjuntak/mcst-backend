@@ -7,8 +7,8 @@ import attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
 var developmentSchema = new mongoose.Schema({
-    name: {type: String},
-    owner: {type: String},
+    name: {type: String, required: true},
+    owner: {type: String, required: true},
     staff:[{type: String}],
     description: {type: String},
     properties:[{
@@ -23,7 +23,23 @@ var developmentSchema = new mongoose.Schema({
 			full_address:{type: String}
 		},
 		landlord:{type: String},
-		tenant:[{type: String}],
+		tenant:[{
+			resident:{type: String},
+			type:{type: String},
+			added_on:{type: String},
+			social_page:{type: String},
+			remarks:{type: String},
+			created_by:{type: String}
+		}],
+		registered_vehicle:[{
+			license_plate:{type:String},
+			owner:{type:String},
+			transponder:{type: String},
+			document:{type:String},
+			registered_on:{type: Date},
+			remarks:{type: String},
+			created_by:{type: String}
+		}],
 		status:{type: String},
 		created_by:{type: String},
 		created_at:{type: Date, default: Date.now}

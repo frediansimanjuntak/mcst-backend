@@ -19,6 +19,10 @@ import {NotificationRoutes} from '../api/notification/routes/notification-routes
 import {GuestRoutes} from '../api/guest_registration/routes/guest_registration-routes';
 import {CompanyRoutes} from '../api/company/routes/company-routes';
 import {ContratorRoutes} from '../api/contractor/routes/contractor-routes';
+import {PollRoutes} from '../api/polls/routes/poll-routes';
+import {ContractRoutes} from '../api/contract/routes/contract-routes';
+import {ContractNoteRoutes} from '../api/contract_note/routes/contract_note-routes';
+import {ContractNoticeRoutes} from '../api/contract_notice/routes/contract_notice-routes';
 
 
 export class Routes {
@@ -43,6 +47,10 @@ export class Routes {
      GuestRoutes.init(router);
      CompanyRoutes.init(router);
      ContratorRoutes.init(router);
+     PollRoutes.init(router);
+     ContractRoutes.init(router);
+     ContractNoteRoutes.init(router);
+     ContractNoticeRoutes.init(router);
      
      app.use('/', router);
      app.use('/auth', require('../auth').default);

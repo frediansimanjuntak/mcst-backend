@@ -10,10 +10,10 @@ export class DevelopmentController {
   }
 
    static getById(req: express.Request, res: express.Response):void {
-     let _id = req.params.id;
+     let _namedevelopment = req.params.namedevelopment;
 
       DevelopmentDAO
-        ['getById'](_id)
+        ['getById'](_namedevelopment)
         .then(developments => res.status(200).json(developments))
         .catch(error => res.status(400).json(error));
   }
@@ -29,39 +29,39 @@ export class DevelopmentController {
 
   static createStaffDevelopment(req: express.Request, res: express.Response):void {
       let _development = req.body;
-      let _id = req.params.id;
+      let _namedevelopment = req.params.namedevelopment;
 
       DevelopmentDAO
-        ['createStaffDevelopment'](_development, _id)
+        ['createStaffDevelopment'](_development, _namedevelopment)
         .then(development => res.status(201).json(development))
         .catch(error => res.status(400).json(error));
   }
 
   static deleteStaffDevelopment(req: express.Request, res: express.Response):void {
       let _development = req.body;
-      let _id = req.params.id;
+      let _namedevelopment = req.params.namedevelopment;
 
       DevelopmentDAO
-        ['deleteStaffDevelopment'](_development, _id)
+        ['deleteStaffDevelopment'](_development, _namedevelopment)
         .then(development => res.status(201).json(development))
         .catch(error => res.status(400).json(error));
   }
 
   static deleteDevelopment(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+    let _namedevelopment = req.params.namedevelopment;
 
     DevelopmentDAO
-      ['deleteDevelopment'](_id)
+      ['deleteDevelopment'](_namedevelopment)
       .then(() => res.status(200).end())
       .catch(error => res.status(400).json(error));
   }
 
   static updateDevelopment(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+    let _namedevelopment = req.params.namedevelopment;
     let _development = req.body;
 
     DevelopmentDAO
-      ['updateDevelopment'](_id, _development)
+      ['updateDevelopment'](_namedevelopment, _development)
       .then(development => res.status(201).json(development))
       .catch(error => res.status(400).json(error));
   }

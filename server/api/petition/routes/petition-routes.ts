@@ -21,7 +21,7 @@ export class PetitionRoutes {
         .post(auth.isAuthenticated(), PetitionController.updatePetition);
 
       router
-        .route('/api/incidents/archieve/:id')
+        .route('/api/petitions/archieve/:id')
         .post(auth.isAuthenticated(), PetitionController.archieve)
         .put(auth.isAuthenticated(), PetitionController.unarchieve);
     }
