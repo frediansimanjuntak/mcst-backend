@@ -18,6 +18,10 @@ export class ContractNoticeRoutes {
 
       router
         .route('/api/contract_notice/:id/update/:idcontractnote')
-        .post(auth.isAuthenticated(), ContractNoticeController.updateContractNotice);      
+        .post(auth.isAuthenticated(), ContractNoticeController.updateContractNotice); 
+
+      router
+        .route('/api/contract_notice/:id/publish/:idcontractnote')
+        .post(auth.isAuthenticated(), ContractNoticeController.publishContractNotice);      
     }
 }

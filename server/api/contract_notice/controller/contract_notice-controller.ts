@@ -56,4 +56,14 @@ export class ContractNoticeController {
       .catch(error => res.status(400).json(error));
   }
 
+  static publishContractNotice(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+      let _idcontractnotice = req.params.idcontractnotice;
+
+      ContractDAO
+        ['publishContractNotice'](_id, _idcontractnotice)
+        .then(contractnotices => res.status(200).json(contractnotices))
+        .catch(error => res.status(400).json(error));
+  }
+
 }
