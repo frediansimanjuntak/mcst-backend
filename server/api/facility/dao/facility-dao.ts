@@ -24,6 +24,8 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
 
         Facility
           .findById(id)
+          .populate("created_by development")
+          // .populate('development')
           .exec((err, facilities) => {
               err ? reject(err)
                   : resolve(facilities);
@@ -31,13 +33,14 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-facilitySchema.static('createFacility', (facility:Object, userId:string):Promise<any> => {
+facilitySchema.static('createFacility', (facility:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(facility)) {
         return reject(new TypeError('Facility is not a valid object.'));
       }
 
       var _facility = new Facility(facility);
+      _facility.development = developmentId;
       _facility.created_by = userId;
       _facility.save((err, saved) => {
         err ? reject(err)
