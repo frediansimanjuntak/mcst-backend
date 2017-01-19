@@ -26,6 +26,7 @@ contractorSchema.static('getById', (id:string):Promise<any> => {
 
         Contractor
           .findById(id)
+          .populate("company created_by")
           .exec((err, contractors) => {
               err ? reject(err)
                   : resolve(contractors);

@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as crypto from 'crypto';
+var Schema = mongoose.Schema;
 
 var contractorSchema = new mongoose.Schema({
 	username:{type: String, lowercase: true, unique: true, required: true, trim: true},
@@ -17,11 +18,17 @@ var contractorSchema = new mongoose.Schema({
 	},
 	profile_picture:{type: String, trim: true},
 	description:{type: String, trim: true},
-	company:{type: String, trim: true},
+	company:{
+    type: Schema.Types.ObjectId,
+    ref: 'Company'
+  },
 	position:{type: String, trim: true},
 	role:{type: String, trim: true},
 	active:{type: String, trim: true, default:'false'},
-	created_by:{type: String, trim: true},
+	created_by:{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
 	created_at:{type: Date, default: Date.now}
 });
 
