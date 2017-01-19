@@ -26,6 +26,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
 
         Petition
           .findById(id)
+          .populate("development attachment contract created_by")
           .exec((err, petitions) => {
               err ? reject(err)
                   : resolve(petitions);
@@ -33,7 +34,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-petitionSchema.static('createPetition', (petition:Object, userId:string):Promise<any> => {
+petitionSchema.static('createPetition', (petition:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(petition)) {
         return reject(new TypeError('Petition is not a valid object.'));
@@ -55,6 +56,7 @@ petitionSchema.static('createPetition', (petition:Object, userId:string):Promise
         var _petition = new Petition(petition);
             _petition.created_by = userId;
             _petition.attachment = attachmentID;
+            _petition.development = developmentId;
             _petition.save((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -78,29 +80,58 @@ petitionSchema.static('deletePetition', (id:string, ):Promise<any> => {
     });
 });
 
-petitionSchema.static('updatePetition', (id:string, petition:Object):Promise<any> => {
+petitionSchema.static('updatePetition', (id:string, userId:string, petition:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(petition)) {
           return reject(new TypeError('Petition is not a valid object.'));
         }
 
-        Petition
-        .findByIdAndUpdate(id, petition)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+        let petitionObj = {$set: {}};
+            for(var param in petition) {
+              petitionObj.$set[param] = petition[param];
+             }
+
+            let ObjectID = mongoose.Types.ObjectId; 
+            let _query={"_id":id};
+
+            let file:any = petition.files.attachmentfile;
+
+            if(file!=null){
+              let key:string = 'attachment/petition/'+file.name;
+              AWSService.upload(key, file).then(fileDetails => {
+              let _attachment = new Attachment(petition);
+              _attachment.name = fileDetails.name;
+              _attachment.type = fileDetails.type;
+              _attachment.url = fileDetails.url;
+              _attachment.created_by=userId;
+              _attachment.save((err, saved)=>{
+                err ? reject(err)
+                    : resolve(saved);
+              });
+              var attachmentID=_attachment._id;
+              Petition
+                .update(_query,{$set:{'attachment':attachmentID}})
+                .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                 });
+              })
+            } 
+            
+            Petition
+              .update(_query,petitionObj)
+              .exec((err, saved) => {
+                    err ? reject(err)
+                        : resolve(saved);
+                }); 
     });
 });
 
-petitionSchema.static('archieve', (id:string):Promise<any> => {
+petitionSchema.static('archieve', (id:string, arrayId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
 
       Petition
-      .findByIdAndUpdate(id,     
-        {
-          $set:{"archieve":"true"}
-        })
+        .update({_id:{$in:arrayId}}, {$set:{ archieve : "true"}}, {multi:true})
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -108,13 +139,10 @@ petitionSchema.static('archieve', (id:string):Promise<any> => {
     });
 });
 
-petitionSchema.static('unarchieve', (id:string):Promise<any> => {
+petitionSchema.static('unarchieve', (id:string, arrayId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       Petition
-      .findByIdAndUpdate(id,     
-        {
-          $set:{"archieve":"false"}
-        })
+        .update({_id:{$in:arrayId}}, {$set:{ archieve : "false"}}, {multi:true})
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
