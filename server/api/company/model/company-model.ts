@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+var Schema = mongoose.Schema;
 
 var companySchema = new mongoose.Schema({
 	name:{type: String, required: true, trim: true},
@@ -16,11 +17,23 @@ var companySchema = new mongoose.Schema({
 		full_address:{type: String, trim: true}
 	},
 	description:{type: String, trim: true},
-	company_logo:[{type: String, trim: true}],
-	chief:{type: String, trim: true},
-	employee:[{type: String, trim: true}],
+	company_logo:[{
+		type: Schema.Types.ObjectId,
+    	ref: 'Attachment'
+	}],
+	chief:{
+		type: Schema.Types.ObjectId,
+    	ref: 'User'
+	},
+	employee:[{
+		type: Schema.Types.ObjectId,
+    	ref: 'User'
+	}],
 	active:{type: String, trim: true, default:'false'},
-	created_by:{type: String, trim: true},
+	created_by:{
+		type: Schema.Types.ObjectId,
+    	ref: 'User'
+	},
 	created_at:{type: Date, default: Date.now}
 });
 

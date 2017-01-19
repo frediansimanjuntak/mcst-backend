@@ -51,30 +51,30 @@ export class CompanyController {
 
   static addEmployeeCompany(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _company = req.body;
+    let _employee = req.body.employee;
 
     CompanyDAO
-      ['addEmployeeCompany'](_id, _company)
+      ['addEmployeeCompany'](_id, _employee)
       .then(company => res.status(201).json(company))
       .catch(error => res.status(400).json(error));
   }
 
   static removeEmployeeCompany(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _company = req.body;
+    let _employee = req.body.employee;
 
     CompanyDAO
-      ['removeEmployeeCompany'](_id, _company)
+      ['removeEmployeeCompany'](_id, _employee)
       .then(company => res.status(201).json(company))
       .catch(error => res.status(400).json(error));
   }
 
   static activationCompany(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _company = req.body;
+    let _active = req.body.active;
 
     CompanyDAO
-      ['activationCompany'](_id, _company)
+      ['activationCompany'](_id, _active)
       .then(company => res.status(201).json(company))
       .catch(error => res.status(400).json(error));
   }

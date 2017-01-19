@@ -26,6 +26,7 @@ companySchema.static('getById', (id:string):Promise<any> => {
 
         Company
           .findById(id)
+          .populate("company_logo chief employee created_by")
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
@@ -103,15 +104,15 @@ companySchema.static('updateCompany', (id:string, userId:string, company:Object)
     });
 });
 
-companySchema.static('addEmployeeCompany', (id:string, company:Object):Promise<any> => {
+companySchema.static('addEmployeeCompany', (id:string, employee:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(company)) {
-          return reject(new TypeError('Company is not a valid object.'));
+        if (!_.isObject(employee)) {
+          return reject(new TypeError('Company Employee is not a valid object.'));
         }
 
         Company
         .findByIdAndUpdate(id,{
-          $push:{employee:company.employee}
+          $push:{employee:employee}
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -120,15 +121,15 @@ companySchema.static('addEmployeeCompany', (id:string, company:Object):Promise<a
     });
 });
 
-companySchema.static('removeEmployeeCompany', (id:string, company:Object):Promise<any> => {
+companySchema.static('removeEmployeeCompany', (id:string, employee:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(company)) {
-          return reject(new TypeError('Company is not a valid object.'));
+        if (!_.isObject(employee)) {
+          return reject(new TypeError('Company Employee is not a valid object.'));
         }
 
         Company
         .findByIdAndUpdate(id,{
-          $pull:{employee:company.employee}
+          $pull:{employee:employee}
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -137,15 +138,15 @@ companySchema.static('removeEmployeeCompany', (id:string, company:Object):Promis
     });
 });
 
-companySchema.static('activationCompany', (id:string, company:Object):Promise<any> => {
+companySchema.static('activationCompany', (id:string, active:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(company)) {
-          return reject(new TypeError('Company is not a valid object.'));
+        if (!_.isObject(active)) {
+          return reject(new TypeError('Company Activation is not a valid object.'));
         }
 
         Company
         .findByIdAndUpdate(id,{
-          $set:{active:company.active}
+          $set:{active:active}
         })
         .exec((err, updated) => {
               err ? reject(err)
