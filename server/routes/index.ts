@@ -23,6 +23,7 @@ import {PollRoutes} from '../api/polls/routes/poll-routes';
 import {ContractRoutes} from '../api/contract/routes/contract-routes';
 import {ContractNoteRoutes} from '../api/contract_note/routes/contract_note-routes';
 import {ContractNoticeRoutes} from '../api/contract_notice/routes/contract_notice-routes';
+import {LostfoundRoutes} from '../api/lost_found/routes/lost_found-routes';
 
 
 export class Routes {
@@ -51,6 +52,7 @@ export class Routes {
      ContractRoutes.init(router);
      ContractNoteRoutes.init(router);
      ContractNoticeRoutes.init(router);
+     LostfoundRoutes.init(router);
      
      app.use('/', router);
      app.use('/auth', require('../auth').default);
