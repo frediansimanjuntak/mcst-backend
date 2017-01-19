@@ -22,9 +22,10 @@ export class IncidentController {
       let _incident = req.body;
       _incident.files = req.files;
       let _userId= req.user._id;
+      let _developmentId= req.user.default_development;
       
       IncidentDAO
-        ['createIncident'](_incident, _userId)
+        ['createIncident'](_incident, _userId, _developmentId)
         .then(incident => res.status(201).json(incident))
         .catch(error => res.status(400).json(error));
   }
@@ -50,9 +51,11 @@ export class IncidentController {
   static updateIncident(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _incident = req.body;
+    _incident.files = req.files;
+    let _userId= req.user._id;
 
     IncidentDAO
-      ['updateIncident'](_id, _incident)
+      ['updateIncident'](_id,_userId, _incident)
       .then(_incident => res.status(201).json(_incident))
       .catch(error => res.status(400).json(error));
   }

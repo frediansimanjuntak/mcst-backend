@@ -26,6 +26,7 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
 
         Incident
           .findById(id)
+          .populate("development attachment starred_by created_by")
           .exec((err, incidents) => {
               err ? reject(err)
                   : resolve(incidents);
@@ -33,7 +34,7 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-incidentSchema.static('createIncident', (incident:Object, userId:string):Promise<any> => {
+incidentSchema.static('createIncident', (incident:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(incident)) {
         return reject(new TypeError('Incident is not a valid object.'));
@@ -55,6 +56,7 @@ incidentSchema.static('createIncident', (incident:Object, userId:string):Promise
         var _incident = new Incident(incident);
             _incident.created_by = userId;
             _incident.attachment = attachmentID;
+            _incident.development = developmentId;
             _incident.save((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -78,18 +80,50 @@ incidentSchema.static('deleteIncident', (id:string, ):Promise<any> => {
     });
 });
 
-incidentSchema.static('updateIncident', (id:string, incident:Object):Promise<any> => {
+incidentSchema.static('updateIncident', (id:string, userId:string, incident:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(incident)) {
           return reject(new TypeError('Incident is not a valid object.'));
         }
 
-        Incident
-        .findByIdAndUpdate(id, incident)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+        let incidentObj = {$set: {}};
+            for(var param in incident) {
+              incidentObj.$set[param] = incident[param];
+             }
+
+            let ObjectID = mongoose.Types.ObjectId; 
+            let _query={"_id":id};
+
+            let file:any = incident.files.attachmentfile;
+
+            if(file!=null){
+              let key:string = 'attachment/incident/'+file.name;
+              AWSService.upload(key, file).then(fileDetails => {
+              let _attachment = new Attachment(incident);
+              _attachment.name = fileDetails.name;
+              _attachment.type = fileDetails.type;
+              _attachment.url = fileDetails.url;
+              _attachment.created_by=userId;
+              _attachment.save((err, saved)=>{
+                err ? reject(err)
+                    : resolve(saved);
+              });
+              var attachmentID=_attachment._id;
+              Incident
+                .update(_query,{$set:{'attachment':attachmentID}})
+                .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                 });
+              })
+            } 
+            
+            Incident
+              .update(_query,incidentObj)
+              .exec((err, saved) => {
+                    err ? reject(err)
+                        : resolve(saved);
+                }); 
     });
 });
 
