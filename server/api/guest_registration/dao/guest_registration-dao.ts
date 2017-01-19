@@ -24,6 +24,7 @@ guestSchema.static('getById', (id:string):Promise<any> => {
 
         Guest
           .findById(id)
+          .populate("development created_by checkin_by checkout_by")
           .exec((err, guests) => {
               err ? reject(err)
                   : resolve(guests);
@@ -31,7 +32,8 @@ guestSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-guestSchema.static('createGuest', (guest:Object, userId:string):Promise<any> => {
+
+guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(guest)) {  
         return reject(new TypeError('Guest is not a valid object.'));
@@ -39,6 +41,7 @@ guestSchema.static('createGuest', (guest:Object, userId:string):Promise<any> => 
 
       var _guest = new Guest(guest);
       _guest.created_by = userId;
+      _guest.development = developmentId;
       _guest.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
