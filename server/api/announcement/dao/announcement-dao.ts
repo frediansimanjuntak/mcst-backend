@@ -24,6 +24,7 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
 
         Announcement
           .findById(id)
+          .populate("development publish_by created_by")
           .exec((err, announcements) => {
               err ? reject(err)
                   : resolve(announcements);
@@ -31,14 +32,15 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-announcementSchema.static('createAnnouncement', (announcement:Object):Promise<any> => {
+announcementSchema.static('createAnnouncement', (announcement:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(announcement)) {
         return reject(new TypeError('Announcement is not a valid object.'));
       }
 
       var _announcement = new Announcement(announcement);
-
+      _announcement.created_by = userId;
+      _announcement.development = developmentId;
       _announcement.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
@@ -76,32 +78,33 @@ announcementSchema.static('updateAnnouncement', (id:string, announcement:Object)
     });
 });
 
-announcementSchema.static('publishAnnouncement', (id:string, announcement:Object):Promise<any> => {
+announcementSchema.static('publishAnnouncement', (id:string, userId:string, sticky:Object, valid_till:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(announcement)) {
-          return reject(new TypeError('Announcement is not a valid object.'));
+        if (!_.isObject(sticky)) {
+          return reject(new TypeError('Sticky is not a valid object.'));
+        }
+        if (!_.isObject(valid_till)) {
+          return reject(new TypeError('Valid Till is not a valid object.'));
         }
 
-        let sticky=announcement.sticky;
-        let valid_till=announcement.valid_till;
         let date= new Date();
 
         Announcement
-        .findById(id)
-        .where('publish').equals('no')
-        .update({
-          $set:{
-            "sticky":sticky,
-            "valid_till":valid_till,
-            "publish":"yes",
-            "publish_by":"nnti ini session",
-            "publish_at": date
-          }
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+          .findById(id)
+          .where('publish').equals('no')
+          .update({
+            $set:{
+              "sticky":sticky,
+              "valid_till":valid_till,
+              "publish":"yes",
+              "publish_by":userId,
+              "publish_at": date
+            }
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+            });
     });
 });
 

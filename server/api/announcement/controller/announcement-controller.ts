@@ -20,9 +20,11 @@ export class AnnouncementController {
 
   static createAnnouncement(req: express.Request, res: express.Response):void {
       let _annoncement = req.body;
+      let _userId = req.user._id;
+      let _developmentId= req.user.default_development;
 
       AnnouncementDAO
-        ['createAnnouncement'](_annoncement)
+        ['createAnnouncement'](_annoncement, _userId, _developmentId)
         .then(annoncement => res.status(201).json(annoncement))
         .catch(error => res.status(400).json(error));
   }
@@ -48,10 +50,12 @@ export class AnnouncementController {
 
   static publishAnnouncement(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _annoncement = req.body;
+    let _sticky = req.body.sticky;
+    let _valid_till = req.body.valid_till;
+    let _userId = req.user._id;
 
     AnnouncementDAO
-      ['publishAnnouncement'](_id, _annoncement)
+      ['publishAnnouncement'](_id, _userId, _sticky, _valid_till)
       .then(_annoncement => res.status(201).json(_annoncement))
       .catch(error => res.status(400).json(error));
   }
