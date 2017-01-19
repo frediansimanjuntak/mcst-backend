@@ -9,6 +9,7 @@ bookingSchema.static('getAll', ():Promise<any> => {
 
         Booking
           .find(_query)
+          .populate("created_by development facility" )
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
@@ -24,6 +25,8 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
 
         Booking
           .findById(id)
+          .populate("created_by development facility" )
+          // .populate("development")
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
@@ -31,14 +34,15 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-bookingSchema.static('createBooking', (booking:Object, userId:string):Promise<any> => {
+bookingSchema.static('createBooking', (booking:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(booking)) {
         return reject(new TypeError('Booking is not a valid object.'));
       }
-
+      console.log(developmentId);
       var _booking = new Booking(booking);
       _booking.created_by= userId;
+      _booking.development= developmentId;
       _booking.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
