@@ -24,6 +24,7 @@ pollSchema.static('getById', (id:string):Promise<any> => {
 
         Poll
           .findById(id)
+          .populate("development created_by votes.voted_by")
           .exec((err, polls) => {
               err ? reject(err)
                   : resolve(polls);
@@ -31,7 +32,7 @@ pollSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-pollSchema.static('createPoll', (poll:Object, userId:string):Promise<any> => {
+pollSchema.static('createPoll', (poll:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(poll)) {
         return reject(new TypeError('Poll is not a valid object.'));
@@ -39,6 +40,7 @@ pollSchema.static('createPoll', (poll:Object, userId:string):Promise<any> => {
 
       var _poll = new Poll(poll);
       _poll.created_by = userId;
+      _poll.development = developmentId;
       _poll.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);

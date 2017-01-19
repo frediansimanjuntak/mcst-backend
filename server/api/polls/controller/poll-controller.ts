@@ -21,6 +21,7 @@ export class PollController {
   static createPoll(req: express.Request, res: express.Response):void {
       let _poll = req.body;
       let _userId= req.user._id;
+      let _developmentId= req.user.default_development;
 
       PollDAO
         ['createPoll'](_poll, _userId)
