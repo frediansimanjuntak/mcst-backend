@@ -8,11 +8,20 @@ import {AWSService} from '../../../global/aws.service';
 
 var developmentSchema = new mongoose.Schema({
     name: {type: String, required: true},
-    owner: {type: String, required: true},
-    staff:[{type: String}],
+    owner: {
+    	type: Schema.Types.ObjectId,
+    	ref: 'User'
+    },
+    staff:[{
+    	type: Schema.Types.ObjectId,
+    	ref: 'User'
+    }],
     description: {type: String},
     properties:[{
-    	development:{type: String},
+    	development:{
+    		type: Schema.Types.ObjectId,
+    		ref: 'Development'
+    	},
     	address:{
 		    unit_no:{type: String},
 			unit_no_2:{type: String},
@@ -22,14 +31,16 @@ var developmentSchema = new mongoose.Schema({
 			country:{type: String},
 			full_address:{type: String}
 		},
-		landlord:{type: String},
+		landlord:{
+			type: Schema.Types.ObjectId,
+    		ref: 'User'
+		},
 		tenant:[{
 			resident:{type: String},
 			type:{type: String},
 			added_on:{type: String},
 			social_page:{type: String},
-			remarks:{type: String},
-			created_by:{type: String}
+			remarks:{type: String}
 		}],
 		registered_vehicle:[{
 			license_plate:{type:String},
@@ -37,22 +48,33 @@ var developmentSchema = new mongoose.Schema({
 			transponder:{type: String},
 			document:{type:String},
 			registered_on:{type: Date},
-			remarks:{type: String},
-			created_by:{type: String}
+			remarks:{type: String}
 		}],
 		status:{type: String},
-		created_by:{type: String},
+		created_by:{
+			type: Schema.Types.ObjectId,
+    		ref: 'User'
+		},
 		created_at:{type: Date, default: Date.now}
     }],
     newsletter:[{
 		title:{type: String},
 		description:{type: String},
 		type:{type: String},
-		attachment:[{type: String}],
+		attachment:[{
+			type: Schema.Types.ObjectId,
+    		ref: 'Attachment'
+		}],
 		released:{type: String, default: false},
 		pinned:{type: String},
-		released_by:{type: String},
-		created_by:{type: String},
+		released_by:{
+			type: Schema.Types.ObjectId,
+    		ref: 'User'
+		},
+		created_by:{
+			type: Schema.Types.ObjectId,
+    		ref: 'User'
+		},
 		release_at:{type: Date},
 		created_at:{type: Date, default: Date.now}
     }]      

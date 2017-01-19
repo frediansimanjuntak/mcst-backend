@@ -18,10 +18,11 @@ developmentSchema.static('getAll', ():Promise<any> => {
     });
 });
 
-developmentSchema.static('getById', (namedevelopment:string):Promise<any> => {
+developmentSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
          Development
-          .findOne({"name":namedevelopment})
+          .findById(id)
+          .populate("owner staff")
           .exec((err, developments) => {
               err ? reject(err)
                   : resolve(developments);
@@ -45,14 +46,14 @@ developmentSchema.static('createDevelopment', (development:Object):Promise<any> 
     });
 });
 
-developmentSchema.static('deleteDevelopment', (namedevelopment:string ):Promise<any> => {
+developmentSchema.static('deleteDevelopment', (id:string ):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(namedevelopment)) {
-            return reject(new TypeError('Development Name is not a valid string.'));
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
         }
 
         Development
-          .findOneAndRemove({"name":namedevelopment})                
+          .findByIdAndRemove(id)                
           .exec((err, deleted) => {
               err ? reject(err)
                   : resolve();
@@ -60,14 +61,14 @@ developmentSchema.static('deleteDevelopment', (namedevelopment:string ):Promise<
     });
 });
 
-developmentSchema.static('updateDevelopment', (namedevelopment:string, development:Object):Promise<any> => {
+developmentSchema.static('updateDevelopment', (id:string, development:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(development)) {
           return reject(new TypeError('Development is not a valid object.'));
         }
 
         Development
-        .findOneAndUpdate({"name":namedevelopment}, development)
+        .findByIdAndUpdate(id, development)
         .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);
@@ -95,6 +96,7 @@ developmentSchema.static('getByIdNewsletter', (namedevelopment:string, idnewslet
 
          Development 
          .findOne({"name":namedevelopment})
+         .populate("newsletter.attachment newsletter.release_by newsletter.created_by")
          .select({"newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}})
           .exec((err, newsletters) => {
               err ? reject(err)
@@ -251,6 +253,7 @@ developmentSchema.static('getByIdProperties', (namedevelopment:string, idpropert
 
          Development 
          .findOne({"name":namedevelopment})
+         .populate ("properties.development properties.lanlord properties.created_by") 
          .select({"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})                
           .exec((err, properties) => {
               err ? reject(err)
@@ -259,16 +262,19 @@ developmentSchema.static('getByIdProperties', (namedevelopment:string, idpropert
     });
 });
 
-developmentSchema.static('createProperties', (namedevelopment:string, properties:Object):Promise<any> => {
+developmentSchema.static('createProperties', (namedevelopment:string, userId:string, developmentId:string, properties:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(properties)) {
         return reject(new TypeError('Properties is not a valid object.'));
       }
 
+      console.log(properties)
+
       Development
       .findOneAndUpdate({"name":namedevelopment},     
         {
-          $push:{"properties":properties}
+          $push:{"properties":properties                 
+          }
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -318,16 +324,16 @@ developmentSchema.static('updateProperties', (namedevelopment:string, idproperti
 
 
 //Staff Development
-developmentSchema.static('createStaffDevelopment', (namedevelopment:string, development:Object):Promise<any> => {
+developmentSchema.static('createStaffDevelopment', (namedevelopment:string, staff:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(development)) {
+      if (!_.isObject(staff)) {
         return reject(new TypeError('Staff Development is not a valid object.'));
       }
 
       Development
       .findOneAndUpdate({"name":namedevelopment},     
         {
-          $push:{"staff":development.staff}
+          $push:{"staff":staff}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -336,16 +342,16 @@ developmentSchema.static('createStaffDevelopment', (namedevelopment:string, deve
     });
 });
 
-developmentSchema.static('deleteStaffDevelopment', (namedevelopment:string, development:Object):Promise<any> => {
+developmentSchema.static('deleteStaffDevelopment', (namedevelopment:string, staff:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(development)) {
+      if (!_.isObject(staff)) {
         return reject(new TypeError('Staff Development is not a valid object.'));
       }
 
       Development
       .findOneAndUpdate({"name":namedevelopment},     
         {
-          $pull:{"staff":development.staff}
+          $pull:{"staff":staff}
         })
         .exec((err, saved) => {
               err ? reject(err)
