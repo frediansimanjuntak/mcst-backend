@@ -26,6 +26,7 @@ contractSchema.static('getById', (id:string):Promise<any> => {
 
         Contract
           .findById(id)
+          .populate("development reference_id attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
           .exec((err, contracts) => {
               err ? reject(err)
                   : resolve(contracts);
@@ -33,7 +34,7 @@ contractSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-contractSchema.static('createContract', (contract:Object, userId:string):Promise<any> => {
+contractSchema.static('createContract', (contract:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(contract)) {
         return reject(new TypeError('Contract is not a valid object.'));
@@ -53,8 +54,9 @@ contractSchema.static('createContract', (contract:Object, userId:string):Promise
           });
           var attachmentID=_attachment._id;
           var _contract = new Contract(contract);
-          _contract.attachment = attachmentId;
+          _contract.attachment = attachmentID;
           _contract.created_by = userId;
+          _contract.development = developmentId;
           _contract.save((err, saved) => {
             err ? reject(err)
                 : resolve(saved);
@@ -114,6 +116,92 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
           
           Contract
             .update(_query,contractObj)
+            .exec((err, saved) => {
+                  err ? reject(err)
+                      : resolve(saved);
+              });
+    });
+});
+
+//contract schedule
+
+contractSchema.static('getAllContractSchedule', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"_id":id};
+
+        Contract
+          .find(_query)
+          .exec((err, contracts) => {
+              err ? reject(err)
+                  : resolve(contracts);
+          });
+    });
+});
+
+contractSchema.static('getByIdContractSchedule', (id:string, idcontractschedule:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        let ObjectID = mongoose.Types.objectId;
+
+        Contract
+          .findById(id)
+          .select({"schedule":{$elemMatch:{"_id": new ObjectID (idcontractschedule)}}})
+          .exec((err, contracts) => {
+              err ? reject(err)
+                  : resolve(contracts);
+          });
+    });
+});
+
+contractSchema.static('createContractSchedule', (id:string, contractschedule:Object, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(contractschedule)) {
+        return reject(new TypeError('Contract Schedule is not a valid object.'));
+      }
+          Contract
+            .findByIdAndUpdate(id,{
+              $push:{"schedule":contractschedule}
+            })
+            .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
+contractSchema.static('deleteContractSchedule', (id:string, idcontractschedule:string ):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Contract
+          .findByIdAndUpdate(id,{
+            $pull:{"schedule":{"_id":idcontractschedule}}
+          })
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
+          });
+    });
+});
+
+contractSchema.static('updateContractSchedule', (id:string, userId:string, contractschedule:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(contractschedule)) {
+          return reject(new TypeError('Contract Schedule is not a valid object.'));
+        }   
+          let _query = {"_id":id};
+          let contractscheduleObj = {$set: {}};
+          for(var param in contractschedule) {
+            contractscheduleObj.$set["schedule.$."+param] = contractschedule[param];
+           }          
+          
+          Contract
+            .update(_query,contractscheduleObj)
             .exec((err, saved) => {
                   err ? reject(err)
                       : resolve(saved);
@@ -390,7 +478,7 @@ contractSchema.static('updateContractNotice', (id:string, idcontractnotice:strin
     });
 });
 
-contractSchema.static('publishContractNotice', (id:string, idcontractnotice:string ):Promise<any> => {
+contractSchema.static('publishContractNotice', (id:string, idcontractnotice:string, contractnotice:Object ):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -402,7 +490,7 @@ contractSchema.static('publishContractNotice', (id:string, idcontractnotice:stri
         Contract
           .findById(id)
           .update(_query,{
-              $set:{"contract_notice.$.publish":"true"}
+              $set:{"contract_notice.$.publish":contractnotice.status}
           })
           .exec((err, updated) => {
               err ? reject(err)

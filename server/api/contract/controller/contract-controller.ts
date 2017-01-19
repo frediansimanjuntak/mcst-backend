@@ -22,9 +22,10 @@ export class ContractController {
       let _contract = req.body;
       _contract.files=req.files;
       let _userId = req.user._id;
+      let _developmentId = req.user._id;
 
       ContractDAO
-        ['createContract'](_contract, _userId)
+        ['createContract'](_contract, _userId, _developmentId)
         .then(contract => res.status(201).json(contract))
         .catch(error => res.status(400).json(error));
   }
