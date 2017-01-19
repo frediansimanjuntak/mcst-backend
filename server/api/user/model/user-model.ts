@@ -4,6 +4,8 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as crypto from 'crypto';
 
+var Schema = mongoose.Schema;
+
 var UserSchema = new mongoose.Schema({
     username: {type: String, lowercase: true, unique: true, required: true},
     email: {type: String, lowercase: true, unique: true, required: true},
@@ -47,7 +49,10 @@ var UserSchema = new mongoose.Schema({
     property:{type: String}  
   }],
   active:{type: String},
-  default_development:{type: String},
+  default_development:{
+    type: Schema.Types.ObjectId,
+    ref: 'Development'
+  },
   autorized_development:{type: String},
   user_group:{type: String},
   created_at:{type: String}

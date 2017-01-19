@@ -32,6 +32,7 @@ userSchema.static('me', (userId:string):Promise<any> => {
 
         User
           .findOne({_id:userId}, '-salt -password')
+          .populate("default_development")
           .exec((err, users) => {
               err ? reject(err)
                   : resolve(users);
@@ -45,6 +46,7 @@ userSchema.static('getById', (id:string):Promise<any> => {
 
         User
           .findById(id)
+          .populate("default_development")
           .exec((err, users) => {
               err ? reject(err)
                   : resolve(users);
