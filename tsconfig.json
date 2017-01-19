@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "moduleResolution": "classic",
+        "moduleResolution": "node",
         "target": "es5",
         "sourceMap": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noImplicitAny": false,
-        "outDir":"dist"
+        "outDir":"dist",
+        "lib": ["es2015", "dom"]
     },
     "exclude": [
 	    "node_modules",
