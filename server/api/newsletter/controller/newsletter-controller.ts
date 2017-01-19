@@ -34,6 +34,7 @@ export class NewsletterController {
   static createNewsletter(req: express.Request, res: express.Response):void {
       let _newsletter= req.body;
       _newsletter.files = req.files;
+      
       let _namedevelopment = req.params.namedevelopment;
       let _userId = req.user._id;
 

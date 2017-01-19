@@ -31,14 +31,15 @@ paymentBookingSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-paymentBookingSchema.static('createPaymentBooking', (paymentbooking:Object):Promise<any> => {
+paymentBookingSchema.static('createPaymentBooking', (paymentbooking:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(paymentbooking)) {
         return reject(new TypeError('Incident is not a valid object.'));
       }
 
       var _paymentbooking = new PaymentBooking(paymentbooking);
-
+      _paymentbooking.created_by = userId;
+      _paymentbooking.development = developmentId;
       _paymentbooking.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);

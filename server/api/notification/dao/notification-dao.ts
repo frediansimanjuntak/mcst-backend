@@ -106,6 +106,7 @@ notificationSchema.static('readNotification', (userId:string, arrayId:string[]):
     });
 });
 
+
 notificationSchema.static('updateNotification', (id:string, notification:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(notification)) {
