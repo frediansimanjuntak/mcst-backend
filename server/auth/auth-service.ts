@@ -1,7 +1,8 @@
 'use strict';
 import config from '../config/environment/index';
 import * as jwt from 'jsonwebtoken';
-import * as expressJwt from 'express-jwt';
+// import * as expressJwt from 'express-jwt';
+var expressJwt = require('express-jwt')
 import * as compose from 'composable-middleware';
 import User from '../api/user/dao/user-dao';
 
@@ -63,8 +64,8 @@ export function hasRole(roleRequired) {
 /**
  * Returns a jwt token signed by the app secret
  */
-export function signToken(id, role) {
-  return jwt.sign({ _id: id, role }, config.secrets.session, {
+export function signToken(id, role, default_development) {
+  return jwt.sign({ _id: id, role, default_development }, config.secrets.session, {
     expiresIn: 60 * 60 * 5
   });
 }
@@ -76,7 +77,7 @@ export function setTokenCookie(req, res) {
   if(!req.user) {
     return res.status(404).send('It looks like you aren\'t logged in, please try again.');
   }
-  var token = signToken(req.user._id, req.user.role);
+  var token = signToken(req.user._id, req.user.role, req.user.default_development);
   res.cookie('token', token);
   res.redirect('/');
 }

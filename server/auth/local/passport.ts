@@ -1,5 +1,5 @@
-import * as passport from 'passport';
-import * as passportLocal from 'passport-local';
+var passport = require('passport')
+var passportLocal = require('passport-local')
 
 var LocalStrategy = passportLocal.Strategy;
 

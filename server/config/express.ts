@@ -13,9 +13,8 @@ import * as methodOverride from 'method-override';
 import * as cookieParser from 'cookie-parser';
 import * as errorHandler from 'errorhandler';
 import * as path from 'path';
-import * as lusca from 'lusca';
 import config from './environment';
-import * as passport from 'passport';
+var passport = require('passport')
 import * as session from 'express-session';
 import * as connectMongo from 'connect-mongo';
 import * as mongoose from 'mongoose';
