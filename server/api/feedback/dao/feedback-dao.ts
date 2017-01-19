@@ -1,0 +1,138 @@
+import * as mongoose from 'mongoose';
+import * as Promise from 'bluebird';
+import * as _ from 'lodash';
+import feedbackSchema from '../model/feedback-model';
+
+feedbackSchema.static('getAll', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {};
+
+        Feedback
+          .find(_query)
+          .exec((err, guests) => {
+              err ? reject(err)
+                  : resolve(guests);
+          });
+    });
+});
+
+feedbackSchema.static('getById', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Feedback
+          .findById(id)
+          .populate("development reply_by created_by")
+          .exec((err, feedbacks) => {
+              err ? reject(err)
+                  : resolve(feedbacks);
+          });
+    });
+});
+
+feedbackSchema.static('createFeedback', (feedback:Object, userId:string, developmentId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(feedback)) {  
+        return reject(new TypeError('Guest is not a valid object.'));
+      }
+
+      var _feedback = new Feedback(feedback);
+      _feedback.created_by = userId;
+      _feedback.development = developmentId;
+      _feedback.save((err, saved) => {
+        err ? reject(err)
+            : resolve(saved);
+      });
+    });
+});
+
+feedbackSchema.static('deleteFeedback', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Feedback
+          .findByIdAndRemove(id)
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
+          });
+    });
+});
+
+feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(feedback)) {
+          return reject(new TypeError('Guest is not a valid object.'));
+        }
+
+        Feedback
+        .findByIdAndUpdate(id, feedback)
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+feedbackSchema.static('replyFeedback', (id:string, userId:string, feedback:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(feedback)) {
+          return reject(new TypeError('Guest is not a valid object.'));
+        }
+
+        Feedback
+        .findByIdAndUpdate(id, {
+          $set:{"feedback_reply":feedback.reply,
+                "reply_by":userId,
+                "reply_at":new Date()
+                }
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+feedbackSchema.static('publishFeedback', (id:string, feedback:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(feedback)) {
+          return reject(new TypeError('Guest is not a valid object.'));
+        }
+
+        Feedback
+        .findByIdAndUpdate(id, {
+          $set:{"status":"publish"}
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+feedbackSchema.static('archieveFeedback', (id:string, feedback:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(feedback)) {
+          return reject(new TypeError('Guest is not a valid object.'));
+        }
+
+        Feedback
+        .findByIdAndUpdate(id, {
+          $set:{"archieve":"true"}
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+
+let Feedback = mongoose.model('Feedback', feedbackSchema);
+
+export default Feedback;
