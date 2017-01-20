@@ -17,11 +17,7 @@ var developmentSchema = new mongoose.Schema({
     	ref: 'User'
     }],
     description: {type: String},
-    properties:[{
-    	development:{
-    		type: Schema.Types.ObjectId,
-    		ref: 'Development'
-    	},
+    properties:[{    	
     	address:{
 		    unit_no:{type: String},
 			unit_no_2:{type: String},

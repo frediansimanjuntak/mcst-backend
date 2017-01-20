@@ -253,7 +253,7 @@ developmentSchema.static('getByIdProperties', (namedevelopment:string, idpropert
 
          Development 
          .findOne({"name":namedevelopment})
-         .populate ("properties.development properties.lanlord properties.created_by") 
+         .populate ("properties.lanlord properties.created_by") 
          .select({"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})                
           .exec((err, properties) => {
               err ? reject(err)
