@@ -39,20 +39,20 @@ export class UserGroupController {
 
   static addUser(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userGroup = req.body;
+    let _user = req.body.user;
 
     UserGroupDAO
-      ['addUser'](_id, _userGroup)
+      ['addUser'](_id, _user)
       .then(user_group => res.status(201).json(user_group))
       .catch(error => res.status(400).json(error));
   }
 
   static deleteUser(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userGroup = req.body;
+    let _user = req.body.user;
 
     UserGroupDAO
-      ['deleteUser'](_id, _userGroup)
+      ['deleteUser'](_id, _user)
       .then(user_group => res.status(201).json(user_group))
       .catch(error => res.status(400).json(error));
   }

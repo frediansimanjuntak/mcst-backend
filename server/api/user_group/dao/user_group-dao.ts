@@ -60,15 +60,15 @@ userGroupSchema.static('updateUserGroup', (id:string, userGroup:Object):Promise<
     });
 });
 
-userGroupSchema.static('addUser', (id:string, userGroup:Object):Promise<any> => {
+userGroupSchema.static('addUser', (id:string, users:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(userGroup)) {
+        if (!_.isObject(users)) {
           return reject(new TypeError('User Group is not a valid object.'));
         }
 
         UserGroup
         .findByIdAndUpdate(id, {
-            $push:{'users':userGroup.users}
+            $push:{'users':users}
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -77,15 +77,15 @@ userGroupSchema.static('addUser', (id:string, userGroup:Object):Promise<any> => 
     });
 });
 
-userGroupSchema.static('deleteUser', (id:string, userGroup:Object):Promise<any> => {
+userGroupSchema.static('deleteUser', (id:string, users:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(userGroup)) {
+        if (!_.isObject(users)) {
           return reject(new TypeError('User Group is not a valid object.'));
         }
 
         UserGroup
         .findByIdAndUpdate(id, {
-            $pull:{'users':userGroup.users}
+            $pull:{'users':users}
         })
         .exec((err, updated) => {
               err ? reject(err)
