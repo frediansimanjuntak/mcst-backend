@@ -15,12 +15,6 @@ User.find({}).remove()
       password: 'master',
       email: 'master@master.com',
       role: 'master'
-    }, {
-      provider: 'local',
-      role: 'super admin',
-      name: 'SuperAdmin',
-      email: 'superadmin@super.com',
-      password: 'superadmin'
     })
     .then(() => {
       console.log('finished populating users');

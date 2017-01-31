@@ -17,6 +17,6 @@ export default {
   },
 
   // Seed database on startup
-  seedDB: false
+  seedDB: true
 
 };
