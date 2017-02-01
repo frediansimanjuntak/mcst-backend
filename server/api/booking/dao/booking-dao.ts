@@ -2,6 +2,9 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import bookingSchema from '../model/booking-model';
+import Payment from '../../payment_booking/dao/payment_booking-dao';
+import Attachment from '../../attachment/dao/attachment-dao';
+import {AWSService} from '../../../global/aws.service';
 
 bookingSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -26,7 +29,6 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
         Booking
           .findById(id)
           .populate("created_by development facility" )
-          // .populate("development")
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
@@ -34,19 +36,36 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-bookingSchema.static('createBooking', (booking:Object, userId:string, developmentId:string):Promise<any> => {
+bookingSchema.static('createBooking', (booking:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(booking)) {
         return reject(new TypeError('Booking is not a valid object.'));
       }
-      console.log(developmentId);
-      var _booking = new Booking(booking);
-      _booking.created_by= userId;
-      _booking.development= developmentId;
-      _booking.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+
+      Attachment.createAttachment(attachment, userId,).then(res => {
+          var idAttachment=res.idAtt;
+
+          var _paymentbooking = new Payment(booking);
+              _paymentbooking.created_by = userId;
+              _paymentbooking.payment_proof = idAttachment
+              _paymentbooking.development = developmentId;
+              _paymentbooking.save((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+              });
+          var paymentID = _paymentbooking._id;
+          var _booking = new Booking(booking);
+              _booking.created_by= userId;
+              _booking.development= developmentId;
+              _booking.payment = paymentID;
+              _booking.save((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+          });
+        })
+        .catch(err=>{
+          resolve({message:"error"});
+        })      
     });
 });
 

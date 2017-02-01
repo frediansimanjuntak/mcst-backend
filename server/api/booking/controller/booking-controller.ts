@@ -21,11 +21,12 @@ export class BookingController {
   static createBooking(req: express.Request, res: express.Response):void {
       let _booking = req.body;
       let _userId= req.user._id;
+      let _attachment = req.files.payment_proof;
       let _developmentId= req.user.default_development;
       console.log(_developmentId);
 
       BookingDAO
-        ['createBooking'](_booking, _userId, _developmentId)
+        ['createBooking'](_booking, _userId, _developmentId, _attachment)
         .then(booking => res.status(201).json(booking))
         .catch(error => res.status(400).json(error));
   }
