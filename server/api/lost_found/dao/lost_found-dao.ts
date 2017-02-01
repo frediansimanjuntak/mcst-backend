@@ -11,6 +11,7 @@ lostfoundSchema.static('getAll', ():Promise<any> => {
 
         Lost_found
           .find(_query)
+          .populate("development created_by photo")
           .exec((err, lostfounds) => {
               err ? reject(err)
                   : resolve(lostfounds);

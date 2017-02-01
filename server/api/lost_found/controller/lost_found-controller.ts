@@ -19,7 +19,7 @@ export class LostfoundController {
   }
 
   static createLostfound(req: express.Request, res: express.Response):void {
-      console.log("lost",req.body.photo[0]);
+      // console.log("lost",req.body.photo[0]);
       console.log("file",req.files);
 
       let _lostfound = req.body;
