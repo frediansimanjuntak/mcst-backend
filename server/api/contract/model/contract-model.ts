@@ -11,10 +11,7 @@ var contractSchema = new mongoose.Schema({
 	title:{type: String, trim: true},		
 	contract_type:{type: String, trim: true},
 	reference_type:{type: String, trim: true},
-	reference_id:{
-		type: Schema.Types.ObjectId,
-    	ref: 'Incident'
-	},
+	reference_id:{type: String, trim: true},
 	attachment:[{
 		type: Schema.Types.ObjectId,
     	ref: 'Attachment'
@@ -56,7 +53,7 @@ var contractSchema = new mongoose.Schema({
 		}],
 	tracking_document:[{type: String, trim: true}],
 	remark:[{type: String, trim: true}],
-	status:{type: String, trim: true},
+	status:{type: String, trim: true, default:"open"},
 	created_by:{
 		type: Schema.Types.ObjectId,
     	ref: 'User'
@@ -64,4 +61,6 @@ var contractSchema = new mongoose.Schema({
 	created_at:{type: Date, default: Date.now}
 });
 
+
 export default contractSchema;
+	

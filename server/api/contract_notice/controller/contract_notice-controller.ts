@@ -24,11 +24,11 @@ export class ContractNoticeController {
   static createContractNotice(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _contractnotice = req.body;
-      _contractnotice.files=req.files;
+      let _attachment = req.files.attachment;
       let _userId = req.user._id;
 
       ContractDAO
-        ['createContractNotice'](_id, _userId, _contractnotice)
+        ['createContractNotice'](_id, _userId, _contractnotice,_attachment)
         .then(contract => res.status(201).json(contract))
         .catch(error => res.status(400).json(error));
   }
@@ -47,11 +47,11 @@ export class ContractNoticeController {
     let _id = req.params.id;
     let _idcontractnotice = req.params.idcontractnotice;
     let _contractnotice = req.body;    
-    _contractnotice.files=req.files;
+    let _attachment = req.files.attachment;
     let _userId = req.user._id;
 
     ContractDAO
-      ['updateContractNotice'](_id, _idcontractnotice, _userId, _contractnotice)
+      ['updateContractNotice'](_id, _idcontractnotice, _userId, _contractnotice, _attachment)
       .then(contract => res.status(201).json(contract))
       .catch(error => res.status(400).json(error));
   }
