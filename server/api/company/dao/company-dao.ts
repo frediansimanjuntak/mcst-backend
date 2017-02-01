@@ -64,43 +64,39 @@ companySchema.static('deleteCompany', (id:string, ):Promise<any> => {
     });
 });
 
-companySchema.static('updateCompany', (id:string, userId:string, company:Object):Promise<any> => {
+companySchema.static('updateCompany', (id:string, userId:string, company:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(company)) {
           return reject(new TypeError('Company is not a valid object.'));
         }
-            let file:any = company.files.attachmentfile;
+            let file:any = attachment;
+            let companyObj = {$set: {}};
+            for(var param in company) {
+              companyObj.$set[param] = companyObj[param];
+            }
+
             if(file!=null){
-              let key:string = 'attachment/company/'+file.name;
-              AWSService.upload(key, file).then(fileDetails => {
-              let _attachment = new Attachment(company);
-              _attachment.name = fileDetails.name;
-              _attachment.type = fileDetails.type;
-              _attachment.url = fileDetails.url;
-              _attachment.created_by=userId;
-              _attachment.save((err, saved)=>{
-                err ? reject(err)
-                    : resolve(saved);
-              });
-              var attachmentID=_attachment._id;
-              Company
-                .findByIdAndUpdate(id,{$push:{'company_logo':attachmentID}})
-                .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                 });
+              Attachment.createAttachment(attachment, userId,).then(res => {
+                var idAttachment=res.idAtt;
+
+                Company
+                  .findByIdAndUpdate(id,{$push:{'company_logo':idAttachment}})
+                  .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                   });
               })
-            }        
-        let companyObj = {$set: {}};
-        for(var param in company) {
-          companyObj.$set[param] = companyObj[param];
-         }
-        Company
-          .findByIdAndUpdate(id,companyObj)
-          .exec((err, saved) => {  
-                err ? reject(err)
-                    : resolve(saved);
-          });
+              .catch(err=>{
+                resolve({message:"error"});
+              })              
+            }              
+
+            Company
+              .findByIdAndUpdate(id,companyObj)
+              .exec((err, saved) => {  
+                    err ? reject(err)
+                        : resolve(saved);
+              });
     });
 });
 
