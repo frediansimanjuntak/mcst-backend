@@ -6,12 +6,15 @@ var lostfoundSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'Development'
 	},
-	property:{type: String, required: true, trim: true},
+	property:{type: String, trim: true},
 	type:{type: String, trim: true},
 	description:{type: String, trim: true},
-	photo:[{type: String, trim: true}],
+	photo:[{
+		type: Schema.Types.ObjectId,
+    	ref: 'Attachment'
+	}],
 	preferred_method_of_contact:{type: String, trim: true},
-	archieve:{type: String, trim: true},
+	archieve:{type: Boolean, default: false},
 	created_by:{
 		type: Schema.Types.ObjectId,
     	ref: 'User'
