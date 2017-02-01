@@ -12,16 +12,16 @@ export class DevelopmentRoutes {
         .post(auth.isAuthenticated(), DevelopmentController.createDevelopment);
 
       router
-        .route('/api/developments/:namedevelopment')
+        .route('/api/developments/:id')
         .get(auth.isAuthenticated(), DevelopmentController.getById)
         .delete(auth.isAuthenticated(), DevelopmentController.deleteDevelopment);
 
       router
-        .route('/api/developments/update/:namedevelopment')
+        .route('/api/developments/update/:id')
         .post(auth.isAuthenticated(), DevelopmentController.updateDevelopment);
 
       router
-        .route('/api/developments/staff/:namedevelopment')
+        .route('/api/developments/staff/:id')
         .post(auth.isAuthenticated(), DevelopmentController.createStaffDevelopment)
         .delete(auth.isAuthenticated(), DevelopmentController.deleteStaffDevelopment);
     }

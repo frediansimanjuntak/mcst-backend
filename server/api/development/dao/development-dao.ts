@@ -53,7 +53,7 @@ developmentSchema.static('deleteDevelopment', (id:string ):Promise<any> => {
         }
 
         Development
-          .findByIdAndRemove(id)                
+          .findByIdAndRemove(id)            
           .exec((err, deleted) => {
               err ? reject(err)
                   : resolve();
@@ -106,33 +106,24 @@ developmentSchema.static('getByIdNewsletter', (namedevelopment:string, idnewslet
     });
 });
 
-developmentSchema.static('createNewsletter', (namedevelopment:string, userId:string, newsletter:Object):Promise<any> => {
+developmentSchema.static('createNewsletter', (namedevelopment:string, userId:string, newsletter:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(newsletter)) {
         return reject(new TypeError('Newsletter is not a valid object.'));
       }
+      let body:any = newsletter;
 
-      let file:any = newsletter.files.attachmentfile;
-      let key:string = 'attachment/newsletter/'+file.name;
-      AWSService.upload(key, file).then(fileDetails => {
-        let _attachment = new Attachment(newsletter);
-        _attachment.name = fileDetails.name;
-        _attachment.type = fileDetails.type;
-        _attachment.url = fileDetails.url;
-        _attachment.created_by=userId;
-        _attachment.save((err, saved)=>{
-          err ? reject(err)
-              : resolve(saved);
-        });
-        var attachmentID=_attachment._id;
+      Attachment.createAttachment(attachment, userId,).then(res => {
+        var idAttachment=res.idAtt;
+
         Development
           .findOneAndUpdate({"name":namedevelopment}, {
-                $push:{"newsletter.title":newsletter.title,
-                       "newsletter.description":newsletter.description,
-                       "newsletter.type":newsletter.type,
-                       "newsletter.attachment":attachmentID,
-                       "newsletter.released":newsletter.released,
-                       "newsletter.pinned.rank":newsletter.rank,
+                $push:{"newsletter.title":body.title,
+                       "newsletter.description":body.description,
+                       "newsletter.type":body.type,
+                       "newsletter.attachment":idAttachment,
+                       "newsletter.released":body.released,
+                       "newsletter.pinned.rank":body.rank,
                        "newsletter.created_by":userId
                     }
               })
@@ -140,7 +131,10 @@ developmentSchema.static('createNewsletter', (namedevelopment:string, userId:str
                     err ? reject(err)
                         : resolve(saved);
               });
-        })        
+      })
+      .catch(err=>{
+        resolve({message:"error"});
+      })                     
     });
 });
 
@@ -162,7 +156,7 @@ developmentSchema.static('deleteNewsletter', (namedevelopment:string, idnewslett
     });
 });
 
-developmentSchema.static('updateNewsletter', (namedevelopment:string, idnewsletter:string, userId:string, newsletter:Object):Promise<any> => {
+developmentSchema.static('updateNewsletter', (namedevelopment:string, idnewsletter:string, userId:string, newsletter:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(newsletter)) {
           return reject(new TypeError('Properties is not a valid object.'));
@@ -175,30 +169,26 @@ developmentSchema.static('updateNewsletter', (namedevelopment:string, idnewslett
             let ObjectID = mongoose.Types.ObjectId; 
             let _query={"name":namedevelopment, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}};
 
-            let file:any = newsletter.files.attachmentfile;
+            let file:any = attachment;
+            let files = [].concat(attachment);
+            let idAttachment = [];
 
             if(file!=null){
-              let key:string = 'attachment/newsletter/'+file.name;
-              AWSService.upload(key, file).then(fileDetails => {
-              let _attachment = new Attachment(newsletter);
-              _attachment.name = fileDetails.name;
-              _attachment.type = fileDetails.type;
-              _attachment.url = fileDetails.url;
-              _attachment.created_by=userId;
-              _attachment.save((err, saved)=>{
-                err ? reject(err)
-                    : resolve(saved);
-              });
-              var attachmentID=_attachment._id;
-              Development
-                .update(_query,{$set:{'newsletter.$.attachment':attachmentID}})
-                .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                 });
+              Attachment.createAttachment(attachment, userId,).then(res => {
+                var idAttachment=res.idAtt;
+
+                Development
+                  .update(_query,{$set:{'newsletter.$.attachment':idAttachment}})
+                  .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                   });
               })
+              .catch(err=>{
+                resolve({message:"error"});
+              })                  
             } 
-            
+
             Development
               .update(_query,newsletterObj)
               .exec((err, saved) => {
@@ -381,18 +371,9 @@ developmentSchema.static('getByIdTenantProperties', (namedevelopment:string, idp
       var ObjectID = mongoose.Types.ObjectId;
 
          Development
-         // .aggregate([
-         //   {$match:{_id:id}},
-         //   {$unwind:"$properties"},
-         //   {$match:{"properties._id":new ObjectID(idproperties)}},
-         //   {$unwind:"$properties.tenant"},
-         //   {$match:{"properties.tenant._id":new ObjectID(idtenant)}},
-         //   {$project:{_id:id, tenant:"$properties.tenant"}}
-         //   ])
-
-         .find({"name": namedevelopment, "properties._id": idproperties, "properties.tenant._id": idtenant}, {"properties.tenant.$":1})
-         // .select({"properties.tenant._id":new ObjectID(idtenant)})
-         // .where({"properties.tenant._id":new ObjectID(idtenant)})
+         .find({"name":namedevelopment, "properties.tenant._id":new ObjectID(idtenant)},{"properties.tenant.$":1})
+         // .select("properties.tenant")
+         // .where({"properties.tenant._id": new ObjectID(idtenant)})
          .exec((err, properties) => {
               err ? reject(err)
                   : resolve(properties);
@@ -426,17 +407,18 @@ developmentSchema.static('deleteTenantProperties', (namedevelopment:string, idte
       if (!_.isString(idtenant)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        let ObjectID = mongoose.Types.ObjectId; 
 
-      Development
-      .findOneAndUpdate({"name":namedevelopment},     
+        Development
+        .findOneAndUpdate({"name":namedevelopment},     
         {
-          $pull:{"properties":{"tenant":{"_id":idtenant}}}
-        })
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-        });
-    });
+            $pull:{"properties.0.tenant":{"_id": new ObjectID(idtenant)}}
+        },{multi: true})
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+          });
+     });
 });
 
 developmentSchema.static('updateTenantProperties', (namedevelopment:string, idtenant:string, tenant:Object):Promise<any> => {
@@ -447,12 +429,112 @@ developmentSchema.static('updateTenantProperties', (namedevelopment:string, idte
 
         let tenantObj = {$set: {}};
         for(var param in tenant) {
-          tenantObj.$set['tenant.$.'+param] = tenant[param];
+          tenantObj.$set['properties.0.tenant.$.'+param] = tenant[param];
          }
         let ObjectID = mongoose.Types.ObjectId;
 
         Development
-        .update({"name":namedevelopment, "properties.tenant": { $elemMatch: {"_id": new ObjectID(idtenant)}}},tenantObj)
+        .update({"name":namedevelopment, "properties.tenant._id": new ObjectID(idtenant)},tenantObj)
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
+//Register Vehicle
+developmentSchema.static('getRegisterVehicleProperties', (namedevelopment:string, idproperties:string,):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      var ObjectID = mongoose.Types.ObjectId;
+
+         Development
+         .find({"name":namedevelopment},{"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})
+         .select("properties.registered_vehicle")   
+          .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
+          });
+    });
+});
+
+developmentSchema.static('getByIdRegisterVehicleProperties', (namedevelopment:string, idproperties:string, idregistervehicle:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      var ObjectID = mongoose.Types.ObjectId;
+
+         Development
+         // .aggregate([
+         //   {$match:{_id:id}},
+         //   {$unwind:"$properties"},
+         //   {$match:{"properties._id":new ObjectID(idproperties)}},
+         //   {$unwind:"$properties.tenant"},
+         //   {$match:{"properties.tenant._id":new ObjectID(idtenant)}},
+         //   {$project:{_id:id, tenant:"$properties.tenant"}}
+         //   ])
+
+         .find({"name": namedevelopment, "properties._id": idproperties, "properties.registered_vehicle._id": idregistervehicle}, {"properties.registered_vehicle.$":1})
+         // .select({"properties.tenant._id":new ObjectID(idtenant)})
+         // .where({"properties.tenant._id":new ObjectID(idtenant)})
+         .exec((err, properties) => {
+              err ? reject(err)
+                  : resolve(properties);
+                  console.log(properties)
+          });
+
+    });
+});
+
+developmentSchema.static('createRegisterVehicleProperties', (namedevelopment:string, idproperties:string, registervehicle:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(registervehicle)) {
+          return reject(new TypeError('Properties is not a valid object.'));
+        }        
+        let ObjectID = mongoose.Types.ObjectId;    
+        Development
+        .update({"name":namedevelopment, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+          $push:{
+            "properties.$.registered_vehicle":registervehicle  
+          }
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+developmentSchema.static('deleteRegisterVehicleProperties', (namedevelopment:string, idregistervehicle:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isString(idregistervehicle)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        let ObjectID = mongoose.Types.ObjectId; 
+
+        Development
+          .findOneAndUpdate({"name":namedevelopment},     
+          {
+              $pull:{"properties.0.registered_vehicle":{"_id": new ObjectID(idregistervehicle)}}
+          },{multi: true})
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+          });
+    });
+});
+
+developmentSchema.static('updateRegisterVehicleProperties', (namedevelopment:string, idregistervehicle:string, registervehicle:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(registervehicle)) {
+          return reject(new TypeError('Properties is not a valid object.'));
+        }        
+
+        let registervehicleObj = {$set: {}};
+        for(var param in registervehicle) {
+          registervehicleObj.$set['properties.0.registered_vehicle.$.'+param] = registervehicle[param];
+         }
+        let ObjectID = mongoose.Types.ObjectId;
+
+        Development
+        .update({"name":namedevelopment, "properties.registered_vehicle._id": new ObjectID(idregistervehicle)},registervehicleObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
