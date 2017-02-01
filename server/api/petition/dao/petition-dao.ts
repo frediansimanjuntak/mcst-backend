@@ -34,34 +34,26 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-petitionSchema.static('createPetition', (petition:Object, userId:string, developmentId:string):Promise<any> => {
+petitionSchema.static('createPetition', (petition:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(petition)) {
         return reject(new TypeError('Petition is not a valid object.'));
       }
+        Attachment.createAttachment(attachment, userId,).then(res => {
+          var idAttachment=res.idAtt;
 
-      let file:any = petition.files.attachmentfile;
-      let key:string = 'test/'+file.name;
-      AWSService.upload(key, file).then(fileDetails => {
-        let _attachment = new Attachment(petition);
-        _attachment.name = fileDetails.name;
-        _attachment.type = fileDetails.type;
-        _attachment.url = fileDetails.url;
-        _attachment.created_by=userId;
-        _attachment.save((err, saved)=>{
-          err ? reject(err)
-              : resolve(saved);
-        });
-        var attachmentID=_attachment._id;
-        var _petition = new Petition(petition);
-            _petition.created_by = userId;
-            _petition.attachment = attachmentID;
-            _petition.development = developmentId;
-            _petition.save((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-            });  
-        }) 
+          var _petition = new Petition(petition);
+              _petition.created_by = userId;
+              _petition.development = developmentId;
+              _petition.attachment = idAttachment;
+              _petition.save((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+              });
+        })
+        .catch(err=>{
+          resolve({message:"error"});
+        })      
     });
 });
 
@@ -80,7 +72,7 @@ petitionSchema.static('deletePetition', (id:string, ):Promise<any> => {
     });
 });
 
-petitionSchema.static('updatePetition', (id:string, userId:string, petition:Object):Promise<any> => {
+petitionSchema.static('updatePetition', (id:string, userId:string, petition:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(petition)) {
           return reject(new TypeError('Petition is not a valid object.'));
@@ -94,28 +86,23 @@ petitionSchema.static('updatePetition', (id:string, userId:string, petition:Obje
             let ObjectID = mongoose.Types.ObjectId; 
             let _query={"_id":id};
 
-            let file:any = petition.files.attachmentfile;
+            var files = [].concat(attachment);
+            var idAttachment = [];
 
-            if(file!=null){
-              let key:string = 'attachment/petition/'+file.name;
-              AWSService.upload(key, file).then(fileDetails => {
-              let _attachment = new Attachment(petition);
-              _attachment.name = fileDetails.name;
-              _attachment.type = fileDetails.type;
-              _attachment.url = fileDetails.url;
-              _attachment.created_by=userId;
-              _attachment.save((err, saved)=>{
-                err ? reject(err)
-                    : resolve(saved);
-              });
-              var attachmentID=_attachment._id;
-              Petition
-                .update(_query,{$set:{'attachment':attachmentID}})
-                .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                 });
+            if(attachment!=null){
+              Attachment.createAttachment(attachment, userId,).then(res => {
+                var idAttachment=res.idAtt;
+
+                Petition
+                  .update(_query,{$set:{'attachment':idAttachment}})
+                  .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                   });
               })
+              .catch(err=>{
+                resolve({message:"error"});
+              })                            
             } 
             
             Petition

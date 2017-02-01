@@ -9,16 +9,16 @@ var petitionSchema = new mongoose.Schema({
 	},
 	property:{type: String, trim: true},		
 	petition_type:{type: String, trim: true},
-	attachment:{
-		type: Schema.Types.ObjectId,
-    	ref: 'Attachment'
-	},
+	attachment:[{
+			type: Schema.Types.ObjectId,
+	    	ref: 'Attachment'
+		}],
 	contract:{
 		type: Schema.Types.ObjectId,
     	ref: 'Contract'
 	},
 	remark:{type: String, trim: true},
-	archieve:{type: String, trim: true, default: "false"},
+	archieve:{type: Boolean, trim: true, default: "false"},
 	status:{type: String, trim: true},
 	created_by:{
 		type: Schema.Types.ObjectId,
