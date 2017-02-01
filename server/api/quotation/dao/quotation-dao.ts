@@ -33,12 +33,12 @@ quotationSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-quotationSchema.static('createQuotation', (quotation:Object, userId:string, developmentId:string):Promise<any> => {
+quotationSchema.static('createQuotation', (quotation:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(quotation)) {
         return reject(new TypeError('Quotation is not a valid object.'));
       }
-        let file:any = quotation.files.attachmentfile;
+        let file:any = attachment;
         if(file!=null){
           let key:string = 'attachment/quotation/'+file.name;
           AWSService.upload(key, file).then(fileDetails => {
@@ -80,7 +80,7 @@ quotationSchema.static('deleteQuotation', (id:string, ):Promise<any> => {
     });
 });
 
-quotationSchema.static('updateQuotation', (id:string, userId:string, quotation:Object):Promise<any> => {
+quotationSchema.static('updateQuotation', (id:string, userId:string, quotation:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(quotation)) {
           return reject(new TypeError('Quotation is not a valid object.'));
@@ -90,7 +90,7 @@ quotationSchema.static('updateQuotation', (id:string, userId:string, quotation:O
           for(var param in quotation) {
             quotationObj.$set[param] = quotation[param];
            }
-          let file:any = quotation.files.attachmentfile;
+          let file:any = attachment;
           if(file!=null){
             let key:string = 'attachment/quotation/'+file.name;
             AWSService.upload(key, file).then(fileDetails => {
