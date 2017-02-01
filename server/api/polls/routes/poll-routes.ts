@@ -23,5 +23,9 @@ export class PollRoutes {
       router
         .route('/api/polls/vote/:id')
         .post(auth.isAuthenticated(), PollController.addVotePoll);
+
+      router
+        .route('/api/polls/start_poll/:id')
+        .post(auth.isAuthenticated(), PollController.startPoll);
     }
 }

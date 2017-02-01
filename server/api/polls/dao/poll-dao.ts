@@ -9,6 +9,7 @@ pollSchema.static('getAll', ():Promise<any> => {
 
         Poll
           .find(_query)
+          .populate("development created_by votes.voted_by")
           .exec((err, polls) => {
               err ? reject(err)
                   : resolve(polls);
@@ -78,23 +79,39 @@ pollSchema.static('updatePoll', (id:string, poll:Object):Promise<any> => {
     });
 });
 
-pollSchema.static('addVotePoll', (id:string, userId:string, poll:Object):Promise<any> => {
+pollSchema.static('addVotePoll', (id:string, userId:string, property:string, answer:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(poll)) {
-          return reject(new TypeError('Poll is not a valid object.'));
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
         }
-
         let voted_at = new Date();
-
         Poll
         .findByIdAndUpdate(id, {
-          $push:{ "votes":{                                      
-                     "property":poll.property,
-                     "answer":poll.answer,
-                     "voted_by":userId,
-                     "voted_at":voted_at
-                    }
-                  }
+          $push:{
+            votes:{
+              property:property,
+              answer:answer,
+              voted_by:userId,
+              voted_at:voted_at
+            }
+          }
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
+pollSchema.static('startPoll', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Poll
+        .findByIdAndUpdate(id,{
+          $set:{"status":"active"}
         })
         .exec((err, updated) => {
               err ? reject(err)

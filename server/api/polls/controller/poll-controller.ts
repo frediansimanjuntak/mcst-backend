@@ -24,7 +24,7 @@ export class PollController {
       let _developmentId= req.user.default_development;
 
       PollDAO
-        ['createPoll'](_poll, _userId)
+        ['createPoll'](_poll, _userId, _developmentId)
         .then(poll => res.status(201).json(poll))
         .catch(error => res.status(400).json(error));
   }
@@ -51,12 +51,20 @@ export class PollController {
   static addVotePoll(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _userId= req.user._id;
-    let _poll = req.body;
+    let _property = req.body.property;
+    let _answer = req.body.answer;
 
     PollDAO
-      ['addVotePoll'](_id, _userId, _poll)
+      ['addVotePoll'](_id, _userId, _property, _answer)
       .then(poll => res.status(201).json(poll))
       .catch(error => res.status(400).json(error));
   }
-  
+  static startPoll(req: express.Request, res: express.Response):void {
+  let _id = req.params.id;
+
+  PollDAO
+    ['startPoll'](_id)
+    .then(poll => res.status(201).json(poll))
+    .catch(error => res.status(400).json(error));
+  }
 }

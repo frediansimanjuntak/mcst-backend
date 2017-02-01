@@ -14,10 +14,13 @@ var pollSchema = new mongoose.Schema({
 		answer:{type: String, trim: true},
 		voted_by:{
 			type: Schema.Types.ObjectId,
-    		ref: 'User'
+    		ref: 'User',
+    		required: true
 		},
 		voted_at:{type: Date}			
 	}],
+	start_time:{type:Date},
+	end_time:{type:Date},
 	choices:[{type: String}],
 	outcome:{type: String},
 	status:{type: String, trim: true, default:'not active'},
