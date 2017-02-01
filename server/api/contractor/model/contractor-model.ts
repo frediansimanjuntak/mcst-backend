@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
-import * as crypto from 'crypto';
+// import * as crypto from 'crypto';
+var crypto = require('crypto');
 var Schema = mongoose.Schema;
 
 var contractorSchema = new mongoose.Schema({

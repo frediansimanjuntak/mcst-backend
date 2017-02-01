@@ -65,12 +65,12 @@ contractorSchema.static('deleteContractor', (id:string, ):Promise<any> => {
     });
 });
 
-contractorSchema.static('updateContractor', (id:string, userId:string, contractor:Object):Promise<any> => {
+contractorSchema.static('updateContractor', (id:string, userId:string, contractor:Object, attachment:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(contractor)) {
           return reject(new TypeError('Company is not a valid object.'));
         }                    
-            let file:any = contractor.files.attachmentfile;
+            let file:any = attachment;
             if(file!=null){
             let key:string = 'attachment/contractor/'+file.name;
             AWSService.upload(key, file).then(fileDetails => {
@@ -106,15 +106,15 @@ contractorSchema.static('updateContractor', (id:string, userId:string, contracto
     });
 });
 
-contractorSchema.static('activationContractor', (id:string, contractor:Object):Promise<any> => {
+contractorSchema.static('activationContractor', (id:string, active:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(contractor)) {
+        if (!_.isObject(active)) {
           return reject(new TypeError('Company is not a valid object.'));
         }
 
         Contractor
         .findByIdAndUpdate(id, {
-            $set:{active:contractor.active}
+            $set:{active:active}
         })
         .exec((err, updated) => {
               err ? reject(err)

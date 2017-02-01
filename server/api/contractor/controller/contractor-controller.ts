@@ -51,10 +51,10 @@ export class ContractorController {
 
   static activationContractor(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _contractor = req.body;
+    let _active = req.body.active;
 
     ContractorDAO
-      ['activationContractor'](_id, _contractor)
+      ['activationContractor'](_id, _active)
       .then(contractor => res.status(201).json(contractor))
       .catch(error => res.status(400).json(error));
   }
