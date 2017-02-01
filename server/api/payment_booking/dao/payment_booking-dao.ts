@@ -9,6 +9,7 @@ paymentBookingSchema.static('getAll', ():Promise<any> => {
 
         PaymentBooking
           .find(_query)
+          .populate("development payment_proof")
           .exec((err, paymentbookings) => {
               err ? reject(err)
                   : resolve(paymentbookings);
@@ -24,6 +25,7 @@ paymentBookingSchema.static('getById', (id:string):Promise<any> => {
 
         PaymentBooking
           .findById(id)
+          .populate("development payment_proof")
           .exec((err, paymentbookings) => {
               err ? reject(err)
                   : resolve(paymentbookings);

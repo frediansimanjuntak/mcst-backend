@@ -5,11 +5,14 @@ var paymentBookingSchema = new mongoose.Schema({
 	serial_no:{type: String, required: true, trim: true},
 	development:{
 		type: Schema.Types.ObjectId,
-    	ref: 'development'
+    	ref: 'Development'
 	},
 	property:{type: String, trim: true},		
 	payment_type:{type: String, trim: true},
-	payment_proof:[{type: String, trim: true}],
+	payment_proof:[{
+		type: Schema.Types.ObjectId,
+    	ref: 'Attachment'
+    }],
 	sender:{type: String, trim: true},
 	receiver:{type: String, trim: true},
 	fees:[
@@ -28,7 +31,7 @@ var paymentBookingSchema = new mongoose.Schema({
 	],
 	total_amount:{type: String, trim: true},
 	remark:{type: String, trim: true},
-	status:{type: String, trim: true},
+	status:{type: String, trim: true, default:"unpaid"},
 	created_by:{
 		type: Schema.Types.ObjectId,
     	ref: 'User'
