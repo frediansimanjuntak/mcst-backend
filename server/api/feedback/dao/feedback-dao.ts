@@ -78,15 +78,15 @@ feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any
     });
 });
 
-feedbackSchema.static('replyFeedback', (id:string, userId:string, feedback:Object):Promise<any> => {
+feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(feedback)) {
+        if (!_.isObject(reply)) {
           return reject(new TypeError('Guest is not a valid object.'));
         }
 
         Feedback
         .findByIdAndUpdate(id, {
-          $set:{"feedback_reply":feedback.reply,
+          $set:{"feedback_reply":reply,
                 "reply_by":userId,
                 "reply_at":new Date()
                 }

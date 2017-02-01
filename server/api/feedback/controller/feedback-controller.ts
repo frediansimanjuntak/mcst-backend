@@ -49,12 +49,12 @@ export class FeedbackController {
   } 
 
   static replyFeedback(req: express.Request, res: express.Response):void {
-      let _feedback = req.body;
+      let _reply = req.body.reply;
       let _userId = req.user._id;
       let _id = req.params.id;
 
       FeedbackDAO
-        ['replyFeedback'](_id, _userId, _feedback)
+        ['replyFeedback'](_id, _userId, _reply)
         .then(feedback => res.status(201).json(feedback))
         .catch(error => res.status(400).json(error));
   } 
