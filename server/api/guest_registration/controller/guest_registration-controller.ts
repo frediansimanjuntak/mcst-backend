@@ -24,7 +24,7 @@ export class GuestController {
       let _developmentId = req.user.default_development;
 
       GuestDAO
-        ['createGuest'](_guest, _userId)
+        ['createGuest'](_guest, _userId, _developmentId)
         .then(guest => res.status(201).json(guest))
         .catch(error => res.status(400).json(error));
   }

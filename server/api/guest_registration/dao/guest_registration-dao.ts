@@ -9,6 +9,7 @@ guestSchema.static('getAll', ():Promise<any> => {
 
         Guest
           .find(_query)
+          .populate("development created_by checkin_by checkout_by")
           .exec((err, guests) => {
               err ? reject(err)
                   : resolve(guests);
