@@ -8,32 +8,6 @@ import {AWSService} from '../../../global/aws.service';
 
 var fs = require('fs-extra');
 
-export function localAttachment(attachment:Object, userId:string){
-      return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(attachment)) {
-        return reject(new TypeError('Attachment is not a valid object.'));
-      }
-
-      let file:any = attachment.files.attachmentfile;
-      let key:string = 'test/'+file.name
-      console.log(file);
-      console.log(key);
-      AWSService.upload(key, file).then(fileDetails => {
-        console.log(fileDetails);
-        let _attachment = new Attachment(attachment);
-        _attachment.name = fileDetails.name;
-        _attachment.type = fileDetails.type;
-        _attachment.url = fileDetails.url;
-        _attachment.description = attachment.description;
-        _attachment.created_by=userId;
-        _attachment.save((err, saved) => {
-         err ? reject(err)
-            : resolve(saved);
-        });
-      })
-    });      
-}
-
 attachmentSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
@@ -52,23 +26,39 @@ attachmentSchema.static('createAttachment', (attachment:Object, userId:string):P
       if (!_.isObject(attachment)) {
         return reject(new TypeError('Attachment is not a valid object.'));
       }
-      let file:any = attachment.files.attachment;
-      let key:string = 'test/'+file.name
-      console.log(file);
-      console.log(key);
-      AWSService.upload(key, file).then(fileDetails => {
-        console.log(fileDetails);
-        let _attachment = new Attachment(attachment);
-        _attachment.name = fileDetails.name;
-        _attachment.type = fileDetails.type;
-        _attachment.url = fileDetails.url;
-        _attachment.description = attachment.description;
-        _attachment.created_by=userId;
-        _attachment.save((err, saved) => {
-         err ? reject(err)
-            : resolve(saved);
-        });
-      })
+          var files = [].concat(attachment);
+          var idAtt=[];
+
+          if(files.length > 0)
+          {
+              var i = 0;
+              var attachmentfile = function(){
+                let file:any = files[i];
+                let key:string = 'test/'+file.name;
+                AWSService.upload(key, file).then(fileDetails => {
+                  var _attachment = new Attachment(attachment);
+                  _attachment.name = fileDetails.name;
+                  _attachment.type = fileDetails.type;
+                  _attachment.url = fileDetails.url;                  
+                  _attachment.created_by=userId;
+                  _attachment.save(); 
+                  let idattach = _attachment.id;  
+                  idAtt.push(idattach)
+                   
+                  if (i >= files.length - 1){
+                    resolve({idAtt});
+                  }
+                  else{
+                    i++;
+                    attachmentfile();
+                  }              
+                })
+              }
+              attachmentfile();
+          }
+          else{
+            resolve({message:"success"});
+          }                   
     });      
 });
 

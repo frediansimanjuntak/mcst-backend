@@ -8,7 +8,7 @@ export class AttachmentRoutes {
     static init(router: express.Router) {
       router
         .route('/api/attachments')
-        // .get(AttachmentController.getAll)
+        .get(AttachmentController.getAll)
         .post(auth.isAuthenticated(), AttachmentController.createAttachment);
 
       router
