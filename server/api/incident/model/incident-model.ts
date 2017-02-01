@@ -15,14 +15,17 @@ var incidentSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'Attachment'
 	},
-	contract:{type: Date, trim: true},
+	contract:{
+		type: Schema.Types.ObjectId,
+    	ref: 'Contract'
+	},
 	remark:{type: String, trim: true},
 	starred_by:[{
 		type: Schema.Types.ObjectId,
     	ref: 'User'
 	}],
-	archieve:{type: String, trim: true, default: "false"},
-	status:{type: String, trim: true},
+	archieve:{type: Boolean, trim: true, default: false},
+	status:{type: String, trim: true, default: "new"},
 	created_by:{
 		type: Schema.Types.ObjectId,
     	ref: 'User'

@@ -20,12 +20,12 @@ export class IncidentController {
 
   static createIncident(req: express.Request, res: express.Response):void {
       let _incident = req.body;
-      _incident.files = req.files;
+      let _attachment = req.files.attachment;
       let _userId= req.user._id;
       let _developmentId= req.user.default_development;
       
       IncidentDAO
-        ['createIncident'](_incident, _userId, _developmentId)
+        ['createIncident'](_incident, _userId, _developmentId, _attachment)
         .then(incident => res.status(201).json(incident))
         .catch(error => res.status(400).json(error));
   }
@@ -51,31 +51,31 @@ export class IncidentController {
   static updateIncident(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _incident = req.body;
-    _incident.files = req.files;
+    let _attachment = req.files.attachment;
     let _userId= req.user._id;
 
     IncidentDAO
-      ['updateIncident'](_id,_userId, _incident)
+      ['updateIncident'](_id,_userId, _incident, _attachment)
       .then(_incident => res.status(201).json(_incident))
       .catch(error => res.status(400).json(error));
   }
 
   static starred(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userid = req.body;
+    let _starred_by = req.body.starred_by;
 
     IncidentDAO
-      ['starred'](_id, _userid)
+      ['starred'](_id, _starred_by)
       .then(_userid => res.status(201).json(_userid))
       .catch(error => res.status(400).json(error));
   }
 
   static unstarred(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userid = req.body;
+    let _starred_by = req.body.starred_by;
 
     IncidentDAO
-      ['unstarred'](_id, _userid)
+      ['unstarred'](_id, _starred_by)
       .then(_userid => res.status(201).json(_userid))
       .catch(error => res.status(400).json(error));
   }

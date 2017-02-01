@@ -11,6 +11,7 @@ incidentSchema.static('getAll', ():Promise<any> => {
 
         Incident
           .find(_query)
+          .populate("development attachment starred_by created_by contract")
           .exec((err, incidents) => {
               err ? reject(err)
                   : resolve(incidents);
@@ -26,7 +27,7 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
 
         Incident
           .findById(id)
-          .populate("development attachment starred_by created_by")
+          .populate("development attachment starred_by created_by contract")
           .exec((err, incidents) => {
               err ? reject(err)
                   : resolve(incidents);
@@ -34,34 +35,26 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-incidentSchema.static('createIncident', (incident:Object, userId:string, developmentId:string):Promise<any> => {
+incidentSchema.static('createIncident', (incident:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(incident)) {
         return reject(new TypeError('Incident is not a valid object.'));
       }
+      Attachment.createAttachment(attachment, userId,).then(res => {
+        var idAttachment=res.idAtt;
 
-      let file:any = incident.files.attachmentfile;
-      let key:string = 'test/'+file.name;
-      AWSService.upload(key, file).then(fileDetails => {
-        let _attachment = new Attachment(incident);
-        _attachment.name = fileDetails.name;
-        _attachment.type = fileDetails.type;
-        _attachment.url = fileDetails.url;
-        _attachment.created_by=userId;
-        _attachment.save((err, saved)=>{
-          err ? reject(err)
-              : resolve(saved);
-        });
-        var attachmentID=_attachment._id;
         var _incident = new Incident(incident);
             _incident.created_by = userId;
-            _incident.attachment = attachmentID;
+            _incident.attachment = idAttachment;
             _incident.development = developmentId;
             _incident.save((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-            });  
-        })    
+                err ? reject(err)
+                    : resolve(saved);
+              });
+      })
+      .catch(err=>{
+        resolve({message:"error"});
+      })             
     });
 });
 
@@ -80,7 +73,7 @@ incidentSchema.static('deleteIncident', (id:string, ):Promise<any> => {
     });
 });
 
-incidentSchema.static('updateIncident', (id:string, userId:string, incident:Object):Promise<any> => {
+incidentSchema.static('updateIncident', (id:string, userId:string, incident:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(incident)) {
           return reject(new TypeError('Incident is not a valid object.'));
@@ -94,28 +87,23 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
             let ObjectID = mongoose.Types.ObjectId; 
             let _query={"_id":id};
 
-            let file:any = incident.files.attachmentfile;
+            var files = [].concat(attachment);
+            var idAttachment = [];
 
-            if(file!=null){
-              let key:string = 'attachment/incident/'+file.name;
-              AWSService.upload(key, file).then(fileDetails => {
-              let _attachment = new Attachment(incident);
-              _attachment.name = fileDetails.name;
-              _attachment.type = fileDetails.type;
-              _attachment.url = fileDetails.url;
-              _attachment.created_by=userId;
-              _attachment.save((err, saved)=>{
-                err ? reject(err)
-                    : resolve(saved);
-              });
-              var attachmentID=_attachment._id;
-              Incident
-                .update(_query,{$set:{'attachment':attachmentID}})
+            if(attachment!=null){
+              Attachment.createAttachment(attachment, userId,).then(res => {
+                var idAttachment=res.idAtt;
+
+                Incident
+                .update(_query,{$set:{'attachment':idAttachment}})
                 .exec((err, saved) => {
                       err ? reject(err)
                           : resolve(saved);
                  });
               })
+              .catch(err=>{
+                resolve({message:"error"});
+              })                  
             } 
             
             Incident
@@ -148,15 +136,15 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
     });
 });
 
-incidentSchema.static('starred', (id:string, userid:Object):Promise<any> => {
+incidentSchema.static('starred', (id:string, starred_by:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(userid)) {
-        return reject(new TypeError('user id is not a valid object.'));
+      if (!_.isObject(starred_by)) {
+        return reject(new TypeError('Starred By is not a valid object.'));
       }
       Incident
       .findByIdAndUpdate(id,     
         {
-          $push:{"starred_by":userid.starred_by}
+          $push:{"starred_by":starred_by}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -165,15 +153,15 @@ incidentSchema.static('starred', (id:string, userid:Object):Promise<any> => {
     });
 });
 
-incidentSchema.static('unstarred', (id:string, userid:Object):Promise<any> => {
+incidentSchema.static('unstarred', (id:string, starred_by:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(userid)) {
-        return reject(new TypeError('user id is not a valid object.'));
+      if (!_.isObject(starred_by)) {
+        return reject(new TypeError('Starred By is not a valid object.'));
       }
       Incident
       .findByIdAndUpdate(id,     
         {
-          $pull:{"starred_by":userid.starred_by}
+          $pull:{"starred_by":starred_by}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -188,7 +176,7 @@ incidentSchema.static('archieve', (id:string):Promise<any> => {
       Incident
       .findByIdAndUpdate(id,     
         {
-          $set:{"archieve":"true"}
+          $set:{"archieve":false}
         })
         .exec((err, saved) => {
               err ? reject(err)
