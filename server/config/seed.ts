@@ -7,7 +7,7 @@
 import User from '../api/user/dao/user-dao';
 
 
-User.find({}).remove()
+User.find({})
   .then(() => {
     User.create({
       provider: 'local',
