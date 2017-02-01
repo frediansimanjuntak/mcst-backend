@@ -33,5 +33,17 @@ export class PropertiesRoutes {
         .get(auth.isAuthenticated(), PropertiesController.getByIdTenantProperties)
         .post(auth.isAuthenticated(), PropertiesController.updateTenantProperties)
         .delete(auth.isAuthenticated(), PropertiesController.deleteTenantProperties);
+
+      //Route Register Vehicle
+      router
+        .route('/api/properties/:namedevelopment/register_vehicle/:idproperties')
+        .get(auth.isAuthenticated(), PropertiesController.getRegisterVehicleProperties)
+        .post(auth.isAuthenticated(), PropertiesController.createRegisterVehicleProperties);
+
+      router
+        .route('/api/properties/:namedevelopment/:idproperties/register_vehicle/:idregistervehicle')
+        .get(auth.isAuthenticated(), PropertiesController.getByIdRegisterVehicleProperties)
+        .post(auth.isAuthenticated(), PropertiesController.updateRegisterVehicleProperties)
+        .delete(auth.isAuthenticated(), PropertiesController.deleteRegisterVehicleProperties);
     }
 }
