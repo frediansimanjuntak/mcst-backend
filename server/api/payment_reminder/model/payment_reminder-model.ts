@@ -1,12 +1,12 @@
 import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
-var paymentsystemSchema = new mongoose.Schema({
+var paymentreminderSchema = new mongoose.Schema({
 	development:{
 		type: Schema.Types.ObjectId,
     	ref: 'Development'
 	},
-	property:{type: String, required: true, trim: true},
+	// property:{type: String, required: true, trim: true},
 	title:{type: String, trim: true},
 	auto_issue_on:{type: String, trim: true},
 	due_on:{type: String, trim: true},
@@ -25,4 +25,4 @@ var paymentsystemSchema = new mongoose.Schema({
 	created_at:{type: Date, default: Date.now}
 });
 
-export default paymentsystemSchema;
+export default paymentreminderSchema;
