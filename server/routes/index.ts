@@ -21,7 +21,7 @@ import {DevelopmentRoutes} from '../api/development/routes/development-routes';
 import {AnnouncementRoutes} from '../api/announcement/routes/announcement-routes';
 import {NotificationRoutes} from '../api/notification/routes/notification-routes';
 import {ContractNoteRoutes} from '../api/contract_note/routes/contract_note-routes';
-import {PaymentSystemRoutes} from '../api/payment_system/routes/payment_system-routes';
+import {PaymentReminderRoutes} from '../api/payment_reminder/routes/payment_reminder-routes';
 import {AccessControlRoutes} from '../api/access_control/routes/access_control-routes';
 import {PaymentBookingRoutes} from '../api/payment_booking/routes/payment_booking-routes';
 import {ContractNoticeRoutes} from '../api/contract_notice/routes/contract_notice-routes';
@@ -51,7 +51,7 @@ export class Routes {
      AnnouncementRoutes.init(router);
      ContractNoteRoutes.init(router);
      AccessControlRoutes.init(router);
-     PaymentSystemRoutes.init(router);
+     PaymentReminderRoutes.init(router);
      ContractNoticeRoutes.init(router);
      PaymentBookingRoutes.init(router);
           
