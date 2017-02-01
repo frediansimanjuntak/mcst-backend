@@ -9,6 +9,7 @@ announcementSchema.static('getAll', ():Promise<any> => {
 
         Announcement
           .find(_query)
+          .populate("development publish_by created_by")
           .exec((err, announcements) => {
               err ? reject(err)
                   : resolve(announcements);

@@ -79,6 +79,8 @@ facilitySchema.static('updateFacility', (id:string, facility:Object):Promise<any
     });
 });
 
+//Schedule Facility
+
 facilitySchema.static('getSchedule', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
@@ -169,6 +171,27 @@ facilitySchema.static('deleteSchedule', (id:string, idschedule:string ):Promise<
           });
     });
 });
+
+//maintenance
+
+facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(facility)) {
+          return reject(new TypeError('Facility is not a valid object.'));
+        }
+
+        Facility
+        .findByIdAndUpdate(id, {
+          $push:{maintenance:facility}
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+
 
 let Facility = mongoose.model('Facility', facilitySchema);
 
