@@ -36,9 +36,20 @@ export class UserController {
 
   static createUser(req: express.Request, res: express.Response):void {
       let _user = req.body;
+      let _developmentId= req.user.default_development;
+      console.log(_developmentId)
 
       UserDAO
-        ['createUser'](_user)
+        ['createUser'](_user, _developmentId)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static createUserSuperAdmin(req: express.Request, res: express.Response):void {
+      let _user = req.body;
+
+      UserDAO
+        ['createUserSuperAdmin'](_user)
         .then(user => res.status(201).json(user))
         .catch(error => res.status(400).json(error));
   }

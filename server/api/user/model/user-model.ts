@@ -2,7 +2,8 @@
 
 import * as express from 'express';
 import * as mongoose from 'mongoose';
-import * as crypto from 'crypto';
+// import * as crypto from 'crypto';
+var crypto = require('crypto')
 
 var Schema = mongoose.Schema;
 
@@ -48,7 +49,8 @@ var UserSchema = new mongoose.Schema({
     development:{type: String},
     property:{type: String}  
   }],
-  active:{type: String},
+  active_code:{type:String},
+  active:{type: String, default:"false"},
   default_development:{
     type: Schema.Types.ObjectId,
     ref: 'Development'
@@ -77,6 +79,7 @@ UserSchema
       role: this.role
     };
   });
+
 
 /**
  * Validations

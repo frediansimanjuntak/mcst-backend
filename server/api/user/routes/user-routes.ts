@@ -9,7 +9,7 @@ export class UserRoutes {
       router
         .route('/api/users')
         .get(auth.isAuthenticated(), UserController.getAll)
-        .post(UserController.createUser);
+        .post(auth.isAuthenticated(), UserController.createUser);
 
       router
         .route('/api/users/:id')
@@ -28,8 +28,8 @@ export class UserRoutes {
         .route('/me')
         .get(auth.isAuthenticated(), UserController.me);
 
-      // router
-      //   .route('/login')
-      //   .use(require('../../../auth/local/index'));
+      router
+        .route('/api/users/super_admin')
+        .post(auth.isAuthenticated(), auth.hasRole('master'), UserController.createUserSuperAdmin);
     }
 }
