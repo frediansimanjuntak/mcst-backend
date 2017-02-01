@@ -33,13 +33,12 @@ export class NewsletterController {
   
   static createNewsletter(req: express.Request, res: express.Response):void {
       let _newsletter= req.body;
-      _newsletter.files = req.files;
-      
+      let _attachment = req.files.attachment;      
       let _namedevelopment = req.params.namedevelopment;
       let _userId = req.user._id;
 
       DevelopmentDAO         
-        ['createNewsletter'](_namedevelopment,_newsletter, _userId)
+        ['createNewsletter'](_namedevelopment,_newsletter, _userId, _attachment)
         .then(newsletter => res.status(201).json(newsletter))
         .catch(error => res.status(400).json(error));   }
 

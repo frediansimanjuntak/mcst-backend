@@ -13,6 +13,7 @@ var notificationSchema = new mongoose.Schema({
   type: { type: String, trim: true }, // or category
   message: { type: String },
   ref: { type: String },
+  ref_id: { type: String },
   created_by: { 
   	type: Schema.Types.ObjectId, 
   	ref: 'User' 

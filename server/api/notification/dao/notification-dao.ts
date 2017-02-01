@@ -51,13 +51,14 @@ notificationSchema.static('getOwnUnreadNotification', (userId:string):Promise<an
     });
 });
 
-notificationSchema.static('createNotification', (notification:Object):Promise<any> => {
+notificationSchema.static('createNotification', (idUser:string, notification:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(notification)) {
         return reject(new TypeError('Notification is not a valid object.'));
       }
 
       let _notification = new Notification(notification);
+      _notification.created_by = idUser;
       _notification.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
