@@ -20,9 +20,9 @@ export class QuotationController {
 
   static createQuotation(req: express.Request, res: express.Response):void {
       let _quotation = req.body;
-      let _attachment = req.files.attachment;
-      let _userId = req.user._id;
-      let _developmentId = req.user.default_development;
+      let _attachment = req["files"].attachment;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
 
       QuotationDAO
         ['createQuotation'](_quotation, _userId, _developmentId, _attachment)
@@ -42,8 +42,8 @@ export class QuotationController {
   static updateQuotation(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _quotation = req.body;
-    let _attachment = req.files.attachment;
-    let _userId = req.user._id;
+    let _attachment = req["files"].attachment;
+    let _userId = req["user"]._id;
 
     QuotationDAO
       ['updateQuotation'](_id, _userId, _quotation, _attachment)

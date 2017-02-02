@@ -17,7 +17,7 @@ var paymentreminderSchema = new mongoose.Schema({
 		applies_to:{type: String, trim: true},
 		amount:{type: String, trim: true}
 	}],
-	publish:{type: String, trim: true, default:"false"},
+	publish:{type: Boolean, default:false},
 	created_by:{
 		type: Schema.Types.ObjectId,
     	ref: 'User'

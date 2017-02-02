@@ -20,8 +20,8 @@ export class GuestController {
 
   static createGuest(req: express.Request, res: express.Response):void {
       let _guest = req.body;
-      let _userId = req.user._id;
-      let _developmentId = req.user.default_development;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
 
       GuestDAO
         ['createGuest'](_guest, _userId, _developmentId)
@@ -50,7 +50,7 @@ export class GuestController {
 
   static checkInGuest(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userId = req.user._id;
+    let _userId = req["user"]._id;
 
     GuestDAO
       ['checkInGuest'](_id, _userId)
@@ -60,7 +60,7 @@ export class GuestController {
 
   static checkOutGuest(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userId = req.user._id;
+    let _userId = req["user"]._id;
 
     GuestDAO
       ['checkOutGuest'](_id, _userId)

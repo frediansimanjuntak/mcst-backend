@@ -371,15 +371,21 @@ developmentSchema.static('getByIdTenantProperties', (namedevelopment:string, idp
       var ObjectID = mongoose.Types.ObjectId;
 
          Development
-         .find({"name":namedevelopment, "properties.tenant._id":new ObjectID(idtenant)},{"properties.tenant.$":1})
-         // .select("properties.tenant")
-         // .where({"properties.tenant._id": new ObjectID(idtenant)})
+         .findOne({"properties": { 
+                   $elemMatch: {
+                     "_id":  new ObjectID(idproperties), 
+                     "tenant":{
+                       $elemMatch:{
+                         "_id":  new ObjectID(idtenant),
+                         "otherField":1}}}}},
+                         (err, property)=>{
+                           console.log(property);
+                         })
          .exec((err, properties) => {
               err ? reject(err)
                   : resolve(properties);
                   console.log(properties)
           });
-
     });
 });
 

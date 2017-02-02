@@ -25,7 +25,7 @@ var contractorSchema = new mongoose.Schema({
   },
 	position:{type: String, trim: true},
 	role:{type: String, trim: true},
-	active:{type: String, trim: true, default:'false'},
+	active:{type: Boolean, default:false},
 	created_by:{
     type: Schema.Types.ObjectId,
     ref: 'User'

@@ -20,9 +20,9 @@ export class PetitionController {
 
   static createPetition(req: express.Request, res: express.Response):void {
       let _petition = req.body;
-      let _attachment = req.files.attachment;
-      let _userId= req.user._id;
-      let _developmentId= req.user.default_development;
+      let _attachment = req["files"].attachment;
+      let _userId= req["user"]._id;
+      let _developmentId= req["user"].default_development;
 
       PetitionDAO
         ['createPetition'](_petition, _userId, _developmentId, _attachment)
@@ -42,8 +42,8 @@ export class PetitionController {
   static updatePetition(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _petition = req.body;
-     let _attachment = req.files.attachment;
-     let _userId= req.user._id;
+     let _attachment = req["files"].attachment;
+     let _userId= req["user"]._id;
 
     PetitionDAO
       ['updatePetition'](_id, _userId, _petition, _attachment)

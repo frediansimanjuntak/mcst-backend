@@ -49,7 +49,7 @@ var contractSchema = new mongoose.Schema({
 				type: Schema.Types.ObjectId,
     			ref: 'Attachment'
 			}],
-			publish : {type: String, trim: true, default: "false"}
+			publish : {type: Boolean, default: false}
 		}],
 	tracking_document:[{type: String, trim: true}],
 	remark:[{type: String, trim: true}],

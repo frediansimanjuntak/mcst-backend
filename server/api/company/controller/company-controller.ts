@@ -20,7 +20,7 @@ export class CompanyController {
 
   static createCompany(req: express.Request, res: express.Response):void {
       let _company = req.body;
-      let _userId = req.user._id;
+      let _userId = req["user"]._id;
 
       CompanyDAO
         ['createCompany'](_company, _userId)
@@ -40,8 +40,8 @@ export class CompanyController {
   static updateCompany(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _company = req.body;
-    let _attachment = req.files.attachment;
-    let _userId = req.user._id;
+    let _attachment = req["files"].attachment;
+    let _userId = req["user"]._id;
 
     CompanyDAO
       ['updateCompany'](_id, _userId, _company, _attachment)

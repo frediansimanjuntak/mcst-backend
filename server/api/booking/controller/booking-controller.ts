@@ -20,10 +20,9 @@ export class BookingController {
 
   static createBooking(req: express.Request, res: express.Response):void {
       let _booking = req.body;
-      let _userId= req.user._id;
-      let _attachment = req.files.payment_proof;
-      let _developmentId= req.user.default_development;
-      console.log(_developmentId);
+      let _attachment = req["files"].payment_proof;
+      let _userId= req["user"]._id;      
+      let _developmentId= req["user"].default_development;
 
       BookingDAO
         ['createBooking'](_booking, _userId, _developmentId, _attachment)

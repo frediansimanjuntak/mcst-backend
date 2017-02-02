@@ -9,14 +9,17 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new mongoose.Schema({
     username: {type: String, lowercase: true, unique: true, required: true},
+    name:{type: String},
     email: {type: String, lowercase: true, unique: true, required: true},
     password: {type: String, required: true},  
-    // hash: {type: String},
-    
+    salt: {type: String}, 
     role: {type: String, default: 'user'}, // 'admin' and 'user'
     phone:{type: String},
     provider:  {type: String},
-    salt: {type: String},
+    emergency_contact:{
+      name:{type: String},
+      contact_number:{type: String}
+    },
     default_property:
     {
       development:{  type: String },
@@ -26,13 +29,22 @@ var UserSchema = new mongoose.Schema({
     details:
     {
       first_name:{type: String},
-      last_name:{type: String},
+      last_name:{type: String},      
       identification_type:{type: String},
       identification_no:{type: String},
       identification_proof:{
         front:{type: String},
         back:{type: String}
       }
+    },
+    social_profile:{
+      resident_since:{type: String},
+      email:{type: String},
+      phone:{type: String},
+      social_interaction:{type: String},
+      young_kids:{type: String},
+      age_kids:{type: String},
+      hobbies:{type: String}
     },
   rented_property:
   [{
@@ -50,7 +62,7 @@ var UserSchema = new mongoose.Schema({
     property:{type: String}  
   }],
   active_code:{type:String},
-  active:{type: String, default:"false"},
+  active:{type: Boolean, default:false},
   default_development:{
     type: Schema.Types.ObjectId,
     ref: 'Development'

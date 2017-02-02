@@ -79,18 +79,20 @@ pollSchema.static('updatePoll', (id:string, poll:Object):Promise<any> => {
     });
 });
 
-pollSchema.static('addVotePoll', (id:string, userId:string, property:string, answer:string):Promise<any> => {
+pollSchema.static('addVotePoll', (id:string, userId:string, poll:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        let body:any = poll;
         let voted_at = new Date();
+
         Poll
         .findByIdAndUpdate(id, {
           $push:{
             votes:{
-              property:property,
-              answer:answer,
+              property:body.property,
+              answer:body.answer,
               voted_by:userId,
               voted_at:voted_at
             }

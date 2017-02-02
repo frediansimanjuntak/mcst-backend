@@ -10,15 +10,10 @@ export class AttachmentController {
   }
 
   static createAttachment(req: express.Request, res: express.Response):void {
-      console.log("file", req.files);
-      // let _attachment = req.body;
-      // _attachment.created_by = req.user._id;
-      // _attachment.files = req.files;
-      let _attachment = req.files.attachment;
+      
+      let _attachment = req["files"].attachment;
       let _description = req.body.description;
-      let _userId = req.user._id;
-
-      // console.log (_attachment);
+      let _userId = req["user"]._id;
 
       AttachmentDAO
         ['createAttachment'](_attachment, _description, _userId)

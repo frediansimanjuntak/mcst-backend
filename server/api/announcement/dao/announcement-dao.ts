@@ -105,7 +105,7 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, stic
           .exec((err, updated) => {
                 err ? reject(err)
                     : resolve(updated);
-            });
+          });
     });
 });
 

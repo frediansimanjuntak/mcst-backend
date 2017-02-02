@@ -20,9 +20,9 @@ export class ContractController {
 
   static createContract(req: express.Request, res: express.Response):void {
       let _contract = req.body;
-      let _attachment = req.files.attachment;
-      let _userId = req.user._id;
-      let _developmentId = req.user._id;
+      let _attachment = req["files"].attachment;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
 
       ContractDAO
         ['createContract'](_contract, _userId, _developmentId, _attachment)
@@ -42,8 +42,8 @@ export class ContractController {
   static updateContract(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _contract = req.body;
-    let _attachment = req.files.attachment;
-    let _userId = req.user._id;
+    let _attachment = req["files"].attachment;
+    let _userId = req["user"]._id;
 
     ContractDAO
       ['updateContract'](_id, _userId, _contract, _attachment)

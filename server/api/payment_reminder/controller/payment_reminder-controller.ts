@@ -20,8 +20,8 @@ export class PaymentReminderController {
 
   static createPaymentReminder(req: express.Request, res: express.Response):void {
       let _paymentreminder = req.body;
-      let _userId = req.user._id;
-      let _developmentId = req.user.default_development;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
 
       PaymentreminderDAO
         ['createPaymentReminder'](_paymentreminder, _userId, _developmentId)

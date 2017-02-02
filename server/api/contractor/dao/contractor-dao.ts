@@ -71,38 +71,33 @@ contractorSchema.static('updateContractor', (id:string, userId:string, contracto
           return reject(new TypeError('Company is not a valid object.'));
         }                    
             let file:any = attachment;
+            let contractorObj = {$set: {}};
+            for(var param in contractor) {
+              contractorObj.$set[param] = contractor[param];
+             }
+
             if(file!=null){
-            let key:string = 'attachment/contractor/'+file.name;
-            AWSService.upload(key, file).then(fileDetails => {
-            let _attachment = new Attachment(contractor);
-            _attachment.name = fileDetails.name;
-            _attachment.type = fileDetails.type;
-            _attachment.url = fileDetails.url;
-            _attachment.created_by=userId;
-            _attachment.save((err, saved)=>{
-              err ? reject(err)
-                  : resolve(saved);
-            });
-            var attachmentID=_attachment._id;
+              Attachment.createAttachment(attachment, userId,).then(res => {
+              var idAttachment=res.idAtt;
+
+              Contractor
+                .findByIdAndUpdate(id,{$set:{'profile_picture':idAttachment}})
+                .exec((err, saved) => {
+                          err ? reject(err)
+                              : resolve(saved);
+                    });
+                })
+                .catch(err=>{
+                  resolve({message:"error"});
+                }) 
+            }        
+        
             Contractor
-              .findByIdAndUpdate(id,{$set:{'profile_picture':attachmentID}})
+              .findByIdAndUpdate(id,contractorObj)
               .exec((err, saved) => {
                         err ? reject(err)
                             : resolve(saved);
                   });
-            })
-        }
-        
-        let contractorObj = {$set: {}};
-        for(var param in contractor) {
-          contractorObj.$set[param] = contractor[param];
-         }
-        Contractor
-          .findByIdAndUpdate(id,contractorObj)
-          .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-              });
     });
 });
 

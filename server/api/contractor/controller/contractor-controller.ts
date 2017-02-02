@@ -20,7 +20,7 @@ export class ContractorController {
 
   static createContractor(req: express.Request, res: express.Response):void {
       let _contractor = req.body;
-      let _userId = req.user._id;
+      let _userId = req["user"]._id;
 
       ContractorDAO
         ['createContractor'](_contractor, _userId)
@@ -39,12 +39,12 @@ export class ContractorController {
 
   static updateContractor(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userId = req.user._id;
+    let _userId = req["user"]._id;
     let _contractor = req.body;
-    _contractor.files=req.files;
+    let _attachment= req["files"].attachment;
 
     ContractorDAO
-      ['updateContractor'](_id, _userId, _contractor)
+      ['updateContractor'](_id, _userId, _contractor, _attachment)
       .then(contractor => res.status(201).json(contractor))
       .catch(error => res.status(400).json(error));
   }

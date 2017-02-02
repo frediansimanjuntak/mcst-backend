@@ -105,7 +105,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
     });
 });
 
-userSchema.static('createUserSuperAdmin', (user:Object, developmentId:string):Promise<any> => {
+userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
         return reject(new TypeError('User is not a valid object.'));
@@ -166,6 +166,55 @@ userSchema.static('settingDetailUser', (id:string, user:Object):Promise<any> => 
         console.log(userObj);
         User
         .findByIdAndUpdate(id, userObj)
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(user)) {
+          return reject(new TypeError('User is not a valid object.'));
+        }
+
+        let body:any = user;
+        User
+        .findByIdAndUpdate(id, {
+          $set:{
+             "name":body.name,
+             "email":body.email,
+             "phone":body.phone,
+             "emergancy_contact.name":body.contact_name,
+             "emergency_contact.contact_number":body.contact_number
+          }
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
+
+userSchema.static('settingsocialProfile', (id:string, user:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(user)) {
+          return reject(new TypeError('User is not a valid object.'));
+        }
+        let body:any = user;
+        User
+          .findByIdAndUpdate(id,{
+            $set:{
+              "social_profile.resident_since":body.resident_since,
+              "social_profile.email":body.email,
+              "social_profile.phone":body.phone,
+              "social_profile.social_interaction":body.social_interaction,
+              "social_profile.young_kids":body.young_kids,
+              "social_profile.age_kids":body.age_kids,
+              "social_profile.hobbies":body.hobbies
+            }
+        })
         .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);

@@ -20,8 +20,8 @@ export class PaymentBookingController {
 
   static createPaymentBooking(req: express.Request, res: express.Response):void {
       let _paymentbooking = req.body;
-      let _userId = req.user._id;
-      let _developmentId = req.user.default_development;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
 
       PaymentBookingDAO
         ['createPaymentBooking'](_paymentbooking, _userId, _developmentId)

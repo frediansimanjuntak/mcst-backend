@@ -29,7 +29,7 @@ var companySchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'User'
 	}],
-	active:{type: String, trim: true, default:'false'},
+	active:{type: Boolean, default:false},
 	created_by:{
 		type: Schema.Types.ObjectId,
     	ref: 'User'

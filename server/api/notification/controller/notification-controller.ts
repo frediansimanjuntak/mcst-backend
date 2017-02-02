@@ -29,10 +29,8 @@ export class NotificationController {
 
   static createNotification(req: express.Request, res: express.Response):void {
       let _notification = req.body;
-      let _idUser = req.user._id;
-      console.log(_notification);
-      console.log(_idUser);
-
+      let _idUser = req["user"]._id;
+      
       NotificationDAO
         ['createNotification'](_idUser, _notification)
         .then(notification => res.status(201).json(notification))

@@ -20,8 +20,8 @@ export class FeedbackController {
 
   static createFeedback(req: express.Request, res: express.Response):void {
       let _feedback = req.body;
-      let _userId = req.user._id;
-      let _developmentId = req.user.default_development;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
 
       FeedbackDAO
         ['createFeedback'](_feedback, _userId, _developmentId)
@@ -50,7 +50,7 @@ export class FeedbackController {
 
   static replyFeedback(req: express.Request, res: express.Response):void {
       let _reply = req.body.reply;
-      let _userId = req.user._id;
+      let _userId = req["user"]._id;
       let _id = req.params.id;
 
       FeedbackDAO

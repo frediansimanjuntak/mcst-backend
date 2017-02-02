@@ -36,7 +36,7 @@ export class UserController {
 
   static createUser(req: express.Request, res: express.Response):void {
       let _user = req.body;
-      let _developmentId= req.user.default_development;
+      let _developmentId= req["user"].default_development;
       console.log(_developmentId)
 
       UserDAO

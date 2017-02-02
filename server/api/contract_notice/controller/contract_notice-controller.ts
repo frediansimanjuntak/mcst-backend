@@ -24,8 +24,8 @@ export class ContractNoticeController {
   static createContractNotice(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _contractnotice = req.body;
-      let _attachment = req.files.attachment;
-      let _userId = req.user._id;
+      let _attachment = req["files"].attachment;
+      let _userId = req["user"]._id;
 
       ContractDAO
         ['createContractNotice'](_id, _userId, _contractnotice,_attachment)
@@ -47,8 +47,8 @@ export class ContractNoticeController {
     let _id = req.params.id;
     let _idcontractnotice = req.params.idcontractnotice;
     let _contractnotice = req.body;    
-    let _attachment = req.files.attachment;
-    let _userId = req.user._id;
+    let _attachment = req["files"].attachment;
+    let _userId = req["user"]._id;
 
     ContractDAO
       ['updateContractNotice'](_id, _idcontractnotice, _userId, _contractnotice, _attachment)

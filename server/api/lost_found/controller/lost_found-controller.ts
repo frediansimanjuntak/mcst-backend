@@ -19,14 +19,11 @@ export class LostfoundController {
   }
 
   static createLostfound(req: express.Request, res: express.Response):void {
-      // console.log("lost",req.body.photo[0]);
-      console.log("file",req.files);
-
       let _lostfound = req.body;
-      let _attachment = req.files.photo;
-      let _file= req.files;
-      let _userId = req.user._id;
-      let _developmentId = req.user.default_development;
+      let _attachment = req["files"].photo;
+      let _file= req["files"];
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
       
 
       LostfoundDAO
@@ -47,8 +44,8 @@ export class LostfoundController {
   static updateLostfound(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
     let _lostfound = req.body;
-    let _attachment = req.files.attachment;
-    let _userId = req.user._id;
+    let _attachment = req["files"].attachment;
+    let _userId = req["user"]._id;
 
     LostfoundDAO
       ['updateLostfound'](_id, _userId, _lostfound, _attachment)

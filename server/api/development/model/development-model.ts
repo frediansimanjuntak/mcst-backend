@@ -61,7 +61,7 @@ var developmentSchema = new mongoose.Schema({
 			type: Schema.Types.ObjectId,
     		ref: 'Attachment'
 		}],
-		released:{type: String, default: false},
+		released:{type: Boolean, default: false},
 		pinned:{type: String},
 		released_by:{
 			type: Schema.Types.ObjectId,
