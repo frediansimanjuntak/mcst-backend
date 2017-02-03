@@ -368,24 +368,41 @@ developmentSchema.static('getTenantProperties', (namedevelopment:string, idprope
 
 developmentSchema.static('getByIdTenantProperties', (namedevelopment:string, idproperties:string, idtenant:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      var ObjectID = mongoose.Types.ObjectId;
+      
+      var pipeline = [{
+        $match:{
+          "name":namedevelopment
+          }
+        },
+        {
+          $unwind:"$properties"
+        },
+        {
+          $match:{
+            "properties._id": mongoose.Types.ObjectId(idproperties)
+          }
+        },
+        {
+          $unwind:"$properties.tenant"
+        },
+        {
+          $match:{
+            "properties.tenant._id": mongoose.Types.ObjectId(idtenant)
+          }
+        },
+        {
+          $project:{
+            "_id":0,
+            "tenant":"$properties.tenant"
+          }
+        }
+      ];      
 
-         Development
-         .findOne({"properties": { 
-                   $elemMatch: {
-                     "_id":  new ObjectID(idproperties), 
-                     "tenant":{
-                       $elemMatch:{
-                         "_id":  new ObjectID(idtenant),
-                         "otherField":1}}}}},
-                         (err, property)=>{
-                           console.log(property);
-                         })
-         .exec((err, properties) => {
-              err ? reject(err)
-                  : resolve(properties);
-                  console.log(properties)
-          });
+       Development
+       .aggregate(pipeline, (err, tenant)=>{
+         err ? reject(err)
+             : resolve(tenant);
+       })
     });
 });
 
@@ -465,27 +482,40 @@ developmentSchema.static('getRegisterVehicleProperties', (namedevelopment:string
 
 developmentSchema.static('getByIdRegisterVehicleProperties', (namedevelopment:string, idproperties:string, idregistervehicle:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      var ObjectID = mongoose.Types.ObjectId;
+      var pipeline = [{
+        $match:{
+          "name":namedevelopment
+          }
+        },
+        {
+          $unwind:"$properties"
+        },
+        {
+          $match:{
+            "properties._id": mongoose.Types.ObjectId(idproperties)
+          }
+        },
+        {
+          $unwind:"$properties.registered_vehicle"
+        },
+        {
+          $match:{
+            "properties.registered_vehicle._id": mongoose.Types.ObjectId(idregistervehicle)
+          }
+        },
+        {
+          $project:{
+            "_id":0,
+            "registered_vehicle":"$properties.registered_vehicle"
+          }
+        }
+      ];      
 
-         Development
-         // .aggregate([
-         //   {$match:{_id:id}},
-         //   {$unwind:"$properties"},
-         //   {$match:{"properties._id":new ObjectID(idproperties)}},
-         //   {$unwind:"$properties.tenant"},
-         //   {$match:{"properties.tenant._id":new ObjectID(idtenant)}},
-         //   {$project:{_id:id, tenant:"$properties.tenant"}}
-         //   ])
-
-         .find({"name": namedevelopment, "properties._id": idproperties, "properties.registered_vehicle._id": idregistervehicle}, {"properties.registered_vehicle.$":1})
-         // .select({"properties.tenant._id":new ObjectID(idtenant)})
-         // .where({"properties.tenant._id":new ObjectID(idtenant)})
-         .exec((err, properties) => {
-              err ? reject(err)
-                  : resolve(properties);
-                  console.log(properties)
-          });
-
+       Development
+       .aggregate(pipeline, (err, tenant)=>{
+         err ? reject(err)
+             : resolve(tenant);
+       })
     });
 });
 

@@ -34,6 +34,7 @@ export class PropertiesRoutes {
         .post(auth.isAuthenticated(), PropertiesController.updateTenantProperties)
         .delete(auth.isAuthenticated(), PropertiesController.deleteTenantProperties);
 
+
       //Route Register Vehicle
       router
         .route('/api/properties/:namedevelopment/register_vehicle/:idproperties')
@@ -45,5 +46,6 @@ export class PropertiesRoutes {
         .get(auth.isAuthenticated(), PropertiesController.getByIdRegisterVehicleProperties)
         .post(auth.isAuthenticated(), PropertiesController.updateRegisterVehicleProperties)
         .delete(auth.isAuthenticated(), PropertiesController.deleteRegisterVehicleProperties);
+
     }
 }
