@@ -11,10 +11,10 @@ var incidentSchema = new mongoose.Schema({
 	property:{type: String, trim: true},		
 	incident_type:{type: String, trim: true},
 	landlord_acceptance:{type: String, trim: true},
-	attachment:{
-		type: Schema.Types.ObjectId,
-    	ref: 'Attachment'
-	},
+	attachment:[{
+			type: Schema.Types.ObjectId,
+	    	ref: 'Attachment'
+		}],
 	contract:{
 		type: Schema.Types.ObjectId,
     	ref: 'Contract'
