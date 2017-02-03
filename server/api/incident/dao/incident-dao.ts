@@ -136,11 +136,12 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
     });
 });
 
-incidentSchema.static('starred', (id:string, starred_by:Object):Promise<any> => {
+incidentSchema.static('starred', (id:string, starred_by:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(starred_by)) {
         return reject(new TypeError('Starred By is not a valid object.'));
       }
+      console.log(starred_by);
       Incident
       .findByIdAndUpdate(id,     
         {
@@ -153,7 +154,7 @@ incidentSchema.static('starred', (id:string, starred_by:Object):Promise<any> => 
     });
 });
 
-incidentSchema.static('unstarred', (id:string, starred_by:Object):Promise<any> => {
+incidentSchema.static('unstarred', (id:string, starred_by:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(starred_by)) {
         return reject(new TypeError('Starred By is not a valid object.'));
@@ -176,7 +177,7 @@ incidentSchema.static('archieve', (id:string):Promise<any> => {
       Incident
       .findByIdAndUpdate(id,     
         {
-          $set:{"archieve":false}
+          $set:{"archieve":true}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -190,7 +191,7 @@ incidentSchema.static('unarchieve', (id:string):Promise<any> => {
       Incident
       .findByIdAndUpdate(id,     
         {
-          $set:{"archieve":"false"}
+          $set:{"archieve":false}
         })
         .exec((err, saved) => {
               err ? reject(err)

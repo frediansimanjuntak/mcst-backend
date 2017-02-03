@@ -62,7 +62,7 @@ export class IncidentController {
 
   static starred(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _starred_by = req.body.starred_by;
+    let _starred_by = req["user"]._id;
 
     IncidentDAO
       ['starred'](_id, _starred_by)
@@ -72,7 +72,7 @@ export class IncidentController {
 
   static unstarred(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _starred_by = req.body.starred_by;
+    let _starred_by = req["user"]._id
 
     IncidentDAO
       ['unstarred'](_id, _starred_by)
