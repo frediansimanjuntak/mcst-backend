@@ -97,7 +97,7 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, stic
             $set:{
               "sticky":sticky,
               "valid_till":valid_till,
-              "publish":"yes",
+              "publish":true,
               "publish_by":userId,
               "publish_at": date
             }

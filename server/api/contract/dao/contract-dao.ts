@@ -3,6 +3,8 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import contractSchema from '../model/contract-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import Incident from '../../incident/dao/incident-dao';
+import Petition from '../../petition/dao/petition-dao';
 import {AWSService} from '../../../global/aws.service';
 
 contractSchema.static('getAll', ():Promise<any> => {
@@ -39,6 +41,8 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
       if (!_.isObject(contract)) {
         return reject(new TypeError('Contract is not a valid object.'));
       }
+        let body:any = contract;
+
         Attachment.createAttachment(attachment, userId,).then(res => {
           var idAttachment=res.idAtt;
 
@@ -50,6 +54,23 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                 err ? reject(err)
                     : resolve(saved);
               });
+              if(body.type = "incident"){
+                 Incident
+                 .findOneAndUpdate({"reference_no":body.reference_no},{
+                   $set:{
+                     "status":"in progress"
+                   }
+                 })
+              }
+              if(body.type = "petition"){
+                Petition
+                .findByIdAndUpdate(body.reference_id, {
+                  $set:{
+                    "status":"in progress"
+                  }
+                })
+              }
+
         })
         .catch(err=>{
           resolve({message:"error"});

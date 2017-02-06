@@ -46,7 +46,7 @@ userSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
 
         User
-          .findById(id)
+          .findById(id, '-salt -password')
           .populate("default_development")
           .exec((err, users) => {
               err ? reject(err)

@@ -9,6 +9,7 @@ var contractorSchema = new mongoose.Schema({
 	password:{type: String, trim: true},
 	salt: {type: String},
 	phone:{type: String, trim: true},
+  role:{type: String, trim: true, default:"contractor"},
 	email:{type: String, lowercase: true, unique: true, trim: true},	
 	address:{
 		street_name:{type: String, trim: true},
@@ -24,7 +25,6 @@ var contractorSchema = new mongoose.Schema({
     ref: 'Company'
   },
 	position:{type: String, trim: true},
-	role:{type: String, trim: true},
 	active:{type: Boolean, default:false},
 	created_by:{
     type: Schema.Types.ObjectId,

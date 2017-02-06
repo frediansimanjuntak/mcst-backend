@@ -12,7 +12,7 @@ var announcementSchema = new mongoose.Schema({
 	sticky:{type: String, trim: true, default:'no'},		
 	auto_post_on:{type: String, trim: true},
 	valid_till:{type: Date, trim: true},
-	publish:{type: String, trim: true, default:'no'},
+	publish:{type: Boolean, trim: true, default:false},
 	publish_by:{
 		type: Schema.Types.ObjectId,
     	ref: 'User'
