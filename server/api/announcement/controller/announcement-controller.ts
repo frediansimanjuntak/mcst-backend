@@ -19,13 +19,13 @@ export class AnnouncementController {
   }
 
   static createAnnouncement(req: express.Request, res: express.Response):void {
-      let _annoncement = req.body;
+      let _announcement = req.body;
       let _userId = req["user"]._id;
       let _developmentId= req["user"].default_development;
 
       AnnouncementDAO
-        ['createAnnouncement'](_annoncement, _userId, _developmentId)
-        .then(annoncement => res.status(201).json(annoncement))
+        ['createAnnouncement'](_announcement, _userId, _developmentId)
+        .then(announcement => res.status(201).json(announcement))
         .catch(error => res.status(400).json(error));
   }
 
@@ -40,22 +40,21 @@ export class AnnouncementController {
 
   static updateAnnouncement(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _annoncement = req.body;
+    let _announcement = req.body;
 
     AnnouncementDAO
-      ['updateAnnouncement'](_id, _annoncement)
-      .then(_annoncement => res.status(201).json(_annoncement))
+      ['updateAnnouncement'](_id, _announcement)
+      .then(announcement => res.status(201).json(announcement))
       .catch(error => res.status(400).json(error));
   }
 
   static publishAnnouncement(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _sticky = req.body.sticky;
-    let _valid_till = req.body.valid_till;
+    let _announcement = req.body;
     let _userId = req["user"]._id;
 
     AnnouncementDAO
-      ['publishAnnouncement'](_id, _userId, _sticky, _valid_till)
+      ['publishAnnouncement'](_id, _userId, _announcement)
       .then(_annoncement => res.status(201).json(_annoncement))
       .catch(error => res.status(400).json(error));
   }

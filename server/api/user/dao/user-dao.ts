@@ -110,9 +110,6 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
       if (!_.isObject(user)) {
         return reject(new TypeError('User is not a valid object.'));
       }
-
-      console.log(user)
-
       var _user = new User(user);
       _user.role="super admin"
       _user.save((err, saved) => {
@@ -163,7 +160,6 @@ userSchema.static('settingDetailUser', (id:string, user:Object):Promise<any> => 
         for(var param in user) {
           userObj.$set['details.'+param] = user[param];
          }
-        console.log(userObj);
         User
         .findByIdAndUpdate(id, userObj)
         .exec((err, updated) => {

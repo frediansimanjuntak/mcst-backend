@@ -42,6 +42,7 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
         return reject(new TypeError('Contract is not a valid object.'));
       }
         let body:any = contract;
+        console.log(contract)
 
         Attachment.createAttachment(attachment, userId,).then(res => {
           var idAttachment=res.idAtt;
@@ -54,17 +55,17 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                 err ? reject(err)
                     : resolve(saved);
               });
-              if(body.type = "incident"){
+              if(_contract.reference_type = "incident"){
                  Incident
-                 .findOneAndUpdate({"reference_no":body.reference_no},{
+                 .findByIdAndUpdate(_contract.reference_id,{
                    $set:{
                      "status":"in progress"
                    }
                  })
               }
-              if(body.type = "petition"){
+              if(_contract.reference_type = "petition"){
                 Petition
-                .findByIdAndUpdate(body.reference_id, {
+                .findByIdAndUpdate(_contract.reference_id, {
                   $set:{
                     "status":"in progress"
                   }

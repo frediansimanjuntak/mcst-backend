@@ -112,6 +112,7 @@ developmentSchema.static('createNewsletter', (namedevelopment:string, userId:str
         return reject(new TypeError('Newsletter is not a valid object.'));
       }
       let body:any = newsletter;
+      console.log(body)
 
       Attachment.createAttachment(attachment, userId,).then(res => {
         var idAttachment=res.idAtt;

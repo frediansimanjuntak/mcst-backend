@@ -24,7 +24,7 @@ var incidentSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'User'
 	}],
-	archieve:{type: Boolean, trim: true, default: false},
+	archieve:{type: Boolean, default: false},
 	status:{type: String, trim: true, default: "new"},
 	created_by:{
 		type: Schema.Types.ObjectId,

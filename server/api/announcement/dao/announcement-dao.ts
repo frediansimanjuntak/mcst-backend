@@ -79,24 +79,22 @@ announcementSchema.static('updateAnnouncement', (id:string, announcement:Object)
     });
 });
 
-announcementSchema.static('publishAnnouncement', (id:string, userId:string, sticky:Object, valid_till:Object):Promise<any> => {
+announcementSchema.static('publishAnnouncement', (id:string, userId:string, announcement:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(sticky)) {
-          return reject(new TypeError('Sticky is not a valid object.'));
-        }
-        if (!_.isObject(valid_till)) {
-          return reject(new TypeError('Valid Till is not a valid object.'));
+        if (!_.isObject(announcement)) {
+          return reject(new TypeError('Announcement is not a valid object.'));
         }
 
+        let body:any = announcement
         let date= new Date();
 
         Announcement
           .findById(id)
-          .where('publish').equals('no')
+          .where('publish').equals(false)
           .update({
             $set:{
-              "sticky":sticky,
-              "valid_till":valid_till,
+              "sticky":body.sticky,
+              "valid_till":body.valid_till,
               "publish":true,
               "publish_by":userId,
               "publish_at": date

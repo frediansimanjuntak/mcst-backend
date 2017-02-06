@@ -100,18 +100,18 @@ paymentreminderSchema.static('publishAutoPaymentReminder', (id:string):Promise<a
         if (!_.isString(id)) {
           return reject(new TypeError('Id is not a valid string.'));
         }
-        Payment_reminder
-        .find()
+        // Payment_reminder
+        // .find()
         
 
-        Payment_reminder
-        .findByIdAndUpdate(id,{
-          $set:{publish:"true"}
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+        // Payment_reminder
+        // .findById(id,(err, reminder)=>{
+        //   var today = ne
+        // })
+        // .exec((err, updated) => {
+        //       err ? reject(err)
+        //           : resolve(updated);
+        //   });
     });
 });
 
