@@ -1,0 +1,11 @@
+{
+  "generator-ng-fullstack": {
+    "username": "frediansimanjuntak",
+    "appName": "mcst-backend",
+    "stack": "server",
+    "server": "node",
+    "client": "",
+    "transpilerServer": "typescript",
+    "secure": true
+  }
+}
