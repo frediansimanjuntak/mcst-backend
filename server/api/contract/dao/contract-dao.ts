@@ -28,7 +28,7 @@ contractSchema.static('getById', (id:string):Promise<any> => {
 
         Contract
           .findById(id)
-          .populate("development reference_id attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
+          .populate("development attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
           .exec((err, contracts) => {
               err ? reject(err)
                   : resolve(contracts);

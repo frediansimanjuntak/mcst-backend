@@ -25,7 +25,6 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
         Facility
           .findById(id)
           .populate("created_by development")
-          // .populate('development')
           .exec((err, facilities) => {
               err ? reject(err)
                   : resolve(facilities);
