@@ -112,21 +112,23 @@ developmentSchema.static('createNewsletter', (namedevelopment:string, newsletter
         return reject(new TypeError('Newsletter is not a valid object.'));
       }
       let body:any = newsletter;
-      console.log(body)
 
       Attachment.createAttachment(attachment, userId,).then(res => {
         var idAttachment=res.idAtt;
 
         Development
           .findOneAndUpdate({"name":namedevelopment}, {
-                $push:{"newsletter.title":body.title,
-                       "newsletter.description":body.description,
-                       "newsletter.type":body.type,
-                       "newsletter.attachment":idAttachment,
-                       "newsletter.released":body.released,
-                       "newsletter.pinned.rank":body.rank,
-                       "newsletter.created_by":userId
+                $push:{
+                  "newsletter":{
+                        "title":body.title,
+                        "description":body.description,
+                        "type":body.type,
+                        "attachment":idAttachment,
+                        "released":body.released,
+                        "pinned.rank":body.rank,
+                        "created_by":userId
                     }
+                 }
               })
           .exec((err, saved) => {
                     err ? reject(err)
