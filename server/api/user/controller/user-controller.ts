@@ -72,4 +72,22 @@ export class UserController {
       .then(user => res.status(201).json(user))
       .catch(error => res.status(400).json(error));
   }
+
+  static activationUser(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+
+    UserDAO
+      ['activationUser'](_id)
+      .then(user => res.status(201).json(user))
+      .catch(error => res.status(400).json(error));
+  }
+
+  static unActiveUser(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+
+    UserDAO
+      ['unActiveUser'](_id)
+      .then(user => res.status(201).json(user))
+      .catch(error => res.status(400).json(error));
+  }
 }
