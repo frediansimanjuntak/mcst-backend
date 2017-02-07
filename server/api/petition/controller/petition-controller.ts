@@ -52,21 +52,19 @@ export class PetitionController {
   }
 
   static archieve(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _arrayId = req.body._ids;
+    let _arrayId = req.body;
 
     PetitionDAO
-      ['archieve'](_id, _arrayId)
+      ['archieve']( _arrayId)
       .then(_userid => res.status(201).json(_userid))
       .catch(error => res.status(400).json(error));
   }
 
-  static unarchieve(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _arrayId = req.body._ids;
+  static unarchieve(req: express.Request, res: express.Response):void {    
+    let _arrayId = req.body;
 
     PetitionDAO
-      ['unarchieve'](_id, _arrayId)
+      ['unarchieve'](_arrayId)
       .then(_userid => res.status(201).json(_userid))
       .catch(error => res.status(400).json(error));
   }

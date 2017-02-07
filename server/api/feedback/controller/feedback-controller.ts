@@ -9,6 +9,20 @@ export class FeedbackController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getAllPublish(req: express.Request, res: express.Response):void {
+      FeedbackDAO
+        ['getAllPublish']()
+        .then(feedbacks => res.status(200).json(feedbacks))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static getAllUnPublish(req: express.Request, res: express.Response):void {
+      FeedbackDAO
+        ['getAllUnPublish']()
+        .then(feedbacks => res.status(200).json(feedbacks))
+        .catch(error => res.status(400).json(error));
+  }
+
   static getById(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
 

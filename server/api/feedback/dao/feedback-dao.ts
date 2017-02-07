@@ -16,6 +16,32 @@ feedbackSchema.static('getAll', ():Promise<any> => {
     });
 });
 
+feedbackSchema.static('getAllPublish', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"status":"publish"};
+
+        Feedback
+          .find(_query)
+          .exec((err, guests) => {
+              err ? reject(err)
+                  : resolve(guests);
+          });
+    });
+});
+
+feedbackSchema.static('getAllUnPublish', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"status":"unpublish"};
+
+        Feedback
+          .find(_query)
+          .exec((err, guests) => {
+              err ? reject(err)
+                  : resolve(guests);
+          });
+    });
+});
+
 feedbackSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
@@ -35,7 +61,7 @@ feedbackSchema.static('getById', (id:string):Promise<any> => {
 feedbackSchema.static('createFeedback', (feedback:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(feedback)) {  
-        return reject(new TypeError('Guest is not a valid object.'));
+        return reject(new TypeError('Feedback is not a valid object.'));
       }
 
       var _feedback = new Feedback(feedback);
@@ -66,7 +92,7 @@ feedbackSchema.static('deleteFeedback', (id:string):Promise<any> => {
 feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(feedback)) {
-          return reject(new TypeError('Guest is not a valid object.'));
+          return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
@@ -81,7 +107,7 @@ feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any
 feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(reply)) {
-          return reject(new TypeError('Guest is not a valid object.'));
+          return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
@@ -101,7 +127,7 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
 feedbackSchema.static('publishFeedback', (id:string, feedback:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(feedback)) {
-          return reject(new TypeError('Guest is not a valid object.'));
+          return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
@@ -118,12 +144,12 @@ feedbackSchema.static('publishFeedback', (id:string, feedback:Object):Promise<an
 feedbackSchema.static('archieveFeedback', (id:string, feedback:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(feedback)) {
-          return reject(new TypeError('Guest is not a valid object.'));
+          return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
         .findByIdAndUpdate(id, {
-          $set:{"archieve":"true"}
+          $set:{"archieve":true}
         })
         .exec((err, updated) => {
               err ? reject(err)

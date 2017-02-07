@@ -106,7 +106,7 @@ developmentSchema.static('getByIdNewsletter', (namedevelopment:string, idnewslet
     });
 });
 
-developmentSchema.static('createNewsletter', (namedevelopment:string, userId:string, newsletter:Object, attachment:Object):Promise<any> => {
+developmentSchema.static('createNewsletter', (namedevelopment:string, newsletter:Object, userId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(newsletter)) {
         return reject(new TypeError('Newsletter is not a valid object.'));

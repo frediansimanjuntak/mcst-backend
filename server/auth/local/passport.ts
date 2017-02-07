@@ -5,7 +5,8 @@ var LocalStrategy = passportLocal.Strategy;
 
 function localAuthenticate(User, username, password, done) {
   User.findOne({
-    username: username.toLowerCase()
+    username: username.toLowerCase(),
+    active:true
   }).exec()
     .then(user => {
       if(!user) {
@@ -24,6 +25,7 @@ function localAuthenticate(User, username, password, done) {
         }
       });
     })
+ 
     .catch(err => done(err));
 }
 

@@ -141,7 +141,6 @@ incidentSchema.static('starred', (id:string, starred_by:string):Promise<any> => 
       if (!_.isObject(starred_by)) {
         return reject(new TypeError('Starred By is not a valid object.'));
       }
-      console.log(starred_by);
       Incident
       .findByIdAndUpdate(id,     
         {

@@ -19,12 +19,14 @@ export class PaymentBookingController {
   }
 
   static createPaymentBooking(req: express.Request, res: express.Response):void {
+    
       let _paymentbooking = req.body;
       let _userId = req["user"]._id;
       let _developmentId = req["user"].default_development;
+      let _attachment = req["files"].payment_proof;
 
       PaymentBookingDAO
-        ['createPaymentBooking'](_paymentbooking, _userId, _developmentId)
+        ['createPaymentBooking'](_paymentbooking, _userId, _developmentId, _attachment)
         .then(paymentbooking => res.status(201).json(paymentbooking))
         .catch(error => res.status(400).json(error));
   }
@@ -40,10 +42,12 @@ export class PaymentBookingController {
 
   static updatePaymentBooking(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
+    let _userId = req["user"]._id;
     let _paymentbooking = req.body;
+    let _attachment = req["files"].payment_proof;
 
     PaymentBookingDAO
-      ['updatePaymentBooking'](_id, _paymentbooking)
+      ['updatePaymentBooking'](_id, _userId, _paymentbooking, _attachment)
       .then(_paymentbooking => res.status(201).json(_paymentbooking))
       .catch(error => res.status(400).json(error));
   }

@@ -21,6 +21,14 @@ export class UserRoutes {
         .post(auth.isAuthenticated(), UserController.updateUser);
 
       router
+        .route('/api/users/active/:id')
+        .post(auth.isAuthenticated(), UserController.activationUser);
+
+      router
+        .route('/api/users/unactive/:id')
+        .post(auth.isAuthenticated(), UserController.unActiveUser);
+
+      router
         .route('/')
         .get(auth.hasRole('admin'), UserController.index);
 

@@ -74,10 +74,19 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         return reject(new TypeError('User is not a valid object.'));
       }
       let ObjectID = mongoose.Types.ObjectId;  
-
+      let body:any =user;
       var _user = new User(user);
       _user.default_development = developmentId;
       _user.default_property.development=developmentId;
+      if(body.authorized_property.property != null){
+        _user.authorized_property.developmetn=developmentId;
+      }
+      if(body.owned_property.property != null){
+        _user.authorized_property.developmetn=developmentId;
+      }
+      if(body.default_property.property != null){
+        _user.authorized_property.developmetn=developmentId;
+      }
       _user.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
@@ -87,7 +96,6 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
       var ownned_property_development = _user.owned_property.development;
       var rented_property_property = _user.rented_property.property;
       var rented_property_development = _user.rented_property.development;
-
       if (ownned_property_property!=null){
         Development
         .update({"_id":ownned_property_development, "properties": { $elemMatch: {"_id": new ObjectID(ownned_property_property)}}},{
@@ -146,6 +154,40 @@ userSchema.static('updateUser', (id:string, user:Object):Promise<any> => {
         .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);
+          });
+    });
+});
+
+userSchema.static('activationUser', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        User
+          .findByIdAndUpdate(id,{
+            $set:{active:true}
+          })
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
+          });
+    });
+});
+
+userSchema.static('unActiveUser', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        User
+          .findByIdAndUpdate(id,{
+            $set:{active:false}
+          })
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
           });
     });
 });

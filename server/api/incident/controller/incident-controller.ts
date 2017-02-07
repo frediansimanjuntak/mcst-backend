@@ -44,7 +44,7 @@ export class IncidentController {
 
     IncidentDAO
       ['statusIncident'](_id)
-      .then(_incident => res.status(201).json(_incident))
+      .then(incident => res.status(201).json(incident))
       .catch(error => res.status(400).json(error));
   }
 
@@ -56,7 +56,7 @@ export class IncidentController {
 
     IncidentDAO
       ['updateIncident'](_id,_userId, _incident, _attachment)
-      .then(_incident => res.status(201).json(_incident))
+      .then(incident => res.status(201).json(incident))
       .catch(error => res.status(400).json(error));
   }
 
@@ -66,7 +66,7 @@ export class IncidentController {
 
     IncidentDAO
       ['starred'](_id, _starred_by)
-      .then(_userid => res.status(201).json(_userid))
+      .then(incident => res.status(201).json(incident))
       .catch(error => res.status(400).json(error));
   }
 
@@ -76,7 +76,7 @@ export class IncidentController {
 
     IncidentDAO
       ['unstarred'](_id, _starred_by)
-      .then(_userid => res.status(201).json(_userid))
+      .then(incident => res.status(201).json(incident))
       .catch(error => res.status(400).json(error));
   }
 
@@ -85,7 +85,7 @@ export class IncidentController {
 
     IncidentDAO
       ['archieve'](_id)
-      .then(_userid => res.status(201).json(_userid))
+      .then(incident => res.status(201).json(incident))
       .catch(error => res.status(400).json(error));
   }
 
@@ -94,7 +94,7 @@ export class IncidentController {
 
     IncidentDAO
       ['unarchieve'](_id)
-      .then(_userid => res.status(201).json(_userid))
+      .then(incident => res.status(201).json(incident))
       .catch(error => res.status(400).json(error));
   }
 }
