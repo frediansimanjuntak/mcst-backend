@@ -6,6 +6,7 @@ import {GuestRoutes} from '../api/guest_registration/routes/guest_registration-r
 import {SettingRoutes} from '../api/setting/routes/setting-routes';
 import {BookingRoutes} from '../api/booking/routes/booking-routes';
 import {CompanyRoutes} from '../api/company/routes/company-routes';
+import {FeedbackRoutes} from '../api/feedback/routes/feedback-routes';
 import {IncidentRoutes} from '../api/incident/routes/incident-routes';
 import {PetitionRoutes} from '../api/petition/routes/petition-routes';
 import {FacilityRoutes} from '../api/facility/routes/facility-routes';
@@ -26,6 +27,7 @@ import {AccessControlRoutes} from '../api/access_control/routes/access_control-r
 import {PaymentBookingRoutes} from '../api/payment_booking/routes/payment_booking-routes';
 import {ContractNoticeRoutes} from '../api/contract_notice/routes/contract_notice-routes';
 
+
 export class Routes {
    static init(app: express.Application, router: express.Router) {
      TodoRoutes.init(router);
@@ -40,6 +42,7 @@ export class Routes {
      PetitionRoutes.init(router);
      FacilityRoutes.init(router);
      ScheduleRoutes.init(router);
+     FeedbackRoutes.init(router);
      UserGroupRoutes.init(router);     
      ContratorRoutes.init(router);  
      LostfoundRoutes.init(router);     

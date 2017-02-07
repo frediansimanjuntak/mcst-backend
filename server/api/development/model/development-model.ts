@@ -62,7 +62,9 @@ var developmentSchema = new mongoose.Schema({
     		ref: 'Attachment'
 		}],
 		released:{type: Boolean, default: false},
-		pinned:{type: String},
+		pinned:{
+			rank: {type:Number}
+		},
 		released_by:{
 			type: Schema.Types.ObjectId,
     		ref: 'User'

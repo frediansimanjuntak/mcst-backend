@@ -4,7 +4,7 @@ import * as express from 'express';
 import {FeedbackController} from '../controller/feedback-controller';
 import * as auth from '../../../auth/auth-service';
 
-export class GuestRoutes {
+export class FeedbackRoutes {
     static init(router: express.Router) {
       router
         .route('/api/feedback')
