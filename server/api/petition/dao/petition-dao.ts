@@ -114,11 +114,12 @@ petitionSchema.static('updatePetition', (id:string, userId:string, petition:Obje
     });
 });
 
-petitionSchema.static('archieve', (id:string, arrayId:string):Promise<any> => {
+petitionSchema.static('archieve', (arrayId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-
+      console.log(arrayId);
+      let body:any = arrayId
       Petition
-        .update({_id:{$in:arrayId}}, {$set:{ archieve : "true"}}, {multi:true})
+        .update({_id:{$in:body.ids}}, {$set:{ archieve : true}}, {multi:true})
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -126,10 +127,12 @@ petitionSchema.static('archieve', (id:string, arrayId:string):Promise<any> => {
     });
 });
 
-petitionSchema.static('unarchieve', (id:string, arrayId:string):Promise<any> => {
+petitionSchema.static('unarchieve', (arrayId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+      console.log(arrayId);
+      let body:any = arrayId
       Petition
-        .update({_id:{$in:arrayId}}, {$set:{ archieve : "false"}}, {multi:true})
+        .update({_id:{$in:body.ids}}, {$set:{ archieve : false}}, {multi:true})
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
