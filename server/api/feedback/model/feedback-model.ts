@@ -11,7 +11,7 @@ var feedbackSchema = new mongoose.Schema({
 	feedback_type:{type: String, trim: true},
 	feedback_reply:{type: String, trim: true},
 	feedback_privacy:{type: String, trim: true},
-	archieve:{type: String, trim: true},
+	archieve:{type: Boolean, trim: true, default: false},
 	remarks:{type: String, trim: true},
 	status:{type: String, trim: true, default:"unpublish"},
 	reply_by:{

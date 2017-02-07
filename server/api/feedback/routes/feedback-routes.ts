@@ -21,6 +21,14 @@ export class GuestRoutes {
         .post(auth.isAuthenticated(), FeedbackController.updateFeedback);
 
       router
+        .route('/api/feedback/get_publish/:id')
+        .get(auth.isAuthenticated(), FeedbackController.getAllPublish);
+
+      router
+        .route('/api/feedback/get_unpublish/:id')
+        .get(auth.isAuthenticated(), FeedbackController.getAllUnPublish);
+
+      router
         .route('/api/feedback/reply/:id')
         .post(auth.isAuthenticated(), FeedbackController.replyFeedback);
 
