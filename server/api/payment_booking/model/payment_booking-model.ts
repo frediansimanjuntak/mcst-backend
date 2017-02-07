@@ -18,13 +18,7 @@ var paymentBookingSchema = new mongoose.Schema({
 	fees:[
 		{
 			deposit_fee: {type: String, trim: true},
-			status:{type: String, trim: true}
-		},
-		{
 			booking_fee:{type: String, trim: true},
-			status:{type: String, trim: true}
-		},
-		{
 			admin_fee:{type: String, trim: true},
 			status:{type: String, trim: true}
 		}
