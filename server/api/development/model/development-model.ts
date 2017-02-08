@@ -12,13 +12,13 @@ var developmentSchema = new mongoose.Schema({
     	type: Schema.Types.ObjectId,
     	ref: 'User'
     },
-    staff:[{
+    staff: [{
     	type: Schema.Types.ObjectId,
     	ref: 'User'
     }],
     description: {type: String},
-    properties:[{    	
-    	address:{
+    properties: [{    	
+    	address: {
 		    unit_no:{type: String},
 			unit_no_2:{type: String},
 			block_no:{type: String},
@@ -27,18 +27,18 @@ var developmentSchema = new mongoose.Schema({
 			country:{type: String},
 			full_address:{type: String}
 		},
-		landlord:{
+		landlord: {
 			type: Schema.Types.ObjectId,
     		ref: 'User'
 		},
-		tenant:[{
+		tenant: [{
 			resident:{type: String},
 			type:{type: String},
 			added_on:{type: String},
 			social_page:{type: String},
 			remarks:{type: String}
 		}],
-		registered_vehicle:[{
+		registered_vehicle: [{
 			license_plate:{type:String},
 			owner:{type:String},
 			transponder:{type: String},
@@ -46,35 +46,35 @@ var developmentSchema = new mongoose.Schema({
 			registered_on:{type: Date},
 			remarks:{type: String}
 		}],
-		status:{type: String},
-		created_by:{
+		status: {type: String},
+		created_by: {
 			type: Schema.Types.ObjectId,
     		ref: 'User'
 		},
-		created_at:{type: Date, default: Date.now}
+		created_at: {type: Date, default: Date.now}
     }],
-    newsletter:[{
-		title:{type: String},
-		description:{type: String},
-		type:{type: String},
-		attachment:[{
+    newsletter: [{
+		title: {type: String},
+		description: {type: String},
+		type: {type: String},
+		attachment: [{
 			type: Schema.Types.ObjectId,
     		ref: 'Attachment'
 		}],
-		released:{type: Boolean, default: false},
-		pinned:{
+		released: {type: Boolean, default: false},
+		pinned: {
 			rank: {type:Number}
 		},
-		released_by:{
+		released_by: {
 			type: Schema.Types.ObjectId,
     		ref: 'User'
 		},
-		created_by:{
+		created_by: {
 			type: Schema.Types.ObjectId,
     		ref: 'User'
 		},
-		release_at:{type: Date},
-		created_at:{type: Date, default: Date.now}
+		release_at: {type: Date},
+		created_at: {type: Date, default: Date.now}
     }]      
 });	
 

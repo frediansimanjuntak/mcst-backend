@@ -29,7 +29,7 @@ var contractSchema = new mongoose.Schema({
 			end_time:{type: Date, trim: true}			
 		}],
 	contract_note : [{
-			note_remark : {type: String, trim: true},
+			note_remark : {type: String},
 			attachment : [{
 				type: Schema.Types.ObjectId,
     			ref: 'Attachment'
@@ -49,6 +49,8 @@ var contractSchema = new mongoose.Schema({
 				type: Schema.Types.ObjectId,
     			ref: 'Attachment'
 			}],
+			update_at: {type: Date},
+			created_at:{type: Date},
 			publish : {type: Boolean, default: false}
 		}],
 	tracking_document:[{type: String, trim: true}],

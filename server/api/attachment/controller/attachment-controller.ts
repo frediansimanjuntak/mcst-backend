@@ -5,7 +5,7 @@ export class AttachmentController {
   static getAll(req: express.Request, res: express.Response):void {
       AttachmentDAO
         ['getAll']()
-        .then(developments => res.status(200).json(developments))
+        .then(attachments => res.status(200).json(attachments))
         .catch(error => res.status(400).json(error));
   }
 
@@ -17,7 +17,7 @@ export class AttachmentController {
 
       AttachmentDAO
         ['createAttachment'](_attachment, _description, _userId)
-        .then(development => res.status(201).json(development))
+        .then(attachment => res.status(201).json(attachment))
         .catch(error => res.status(400).json(error));
   }
 
@@ -36,7 +36,7 @@ export class AttachmentController {
 
     AttachmentDAO
       ['updateAttachment'](_id, _attachment)
-      .then(development => res.status(201).json(development))
+      .then(attachment => res.status(201).json(attachment))
       .catch(error => res.status(400).json(error));
   }
 }

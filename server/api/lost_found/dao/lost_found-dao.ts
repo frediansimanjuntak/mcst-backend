@@ -41,8 +41,8 @@ lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, deve
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
 
-        Attachment.createAttachment(attachment, userId,).then(res => {
-        var idAttachment=res.idAtt;
+        Attachment.createAttachment(attachment, userId).then(res => {
+        var idAttachment = res.idAtt;
 
         var _lostfound = new Lost_found(lostfound);
             _lostfound.created_by = userId;
@@ -54,7 +54,7 @@ lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, deve
               });
       })
       .catch(err=>{
-        resolve({message:"error"});
+        resolve({message: "attachment error"});
       })
     });
 });
@@ -80,40 +80,44 @@ lostfoundSchema.static('updateLostfound', (id:string, userId:string, lostfound:O
           return reject(new TypeError('Lost and Found is not a valid object.'));
         }
 
-        let Lost_foundObj = {$set: {}};
-            for(var param in lostfound) {
-              Lost_foundObj.$set[param] = lostfound[param];
-             }
+        let lostFoundObj = {$set: {}};
+        for(var param in lostfound) {
+          lostFoundObj.$set[param] = lostfound[param];
+         }
 
-            let ObjectID = mongoose.Types.ObjectId; 
-            let _query={"_id":id};
+        let ObjectID = mongoose.Types.ObjectId; 
+        let _query={"_id": id};
 
-            let file:any = attachment;
-            var files = [].concat(attachment);
-            var idAttachment = [];
+        let file:any = attachment;
+        var files = [].concat(attachment);
+        var idAttachment = [];
 
-            if(file!=null){
-              Attachment.createAttachment(attachment, userId,).then(res => {
-                var idAttachment=res.idAtt;
+        if(file != null){
+          Attachment.createAttachment(attachment, userId).then(res => {
+            var idAttachment = res.idAtt;
 
-                Lost_found
-                  .update(_query,{$set:{'photo':idAttachment}})
-                  .exec((err, saved) => {
-                        err ? reject(err)
-                            : resolve(saved);
-                   });
-              })
-              .catch(err=>{
-                resolve({message:"error"});
-              })              
-            } 
-            
             Lost_found
-              .update(_query,Lost_foundObj)
+              .update(_query,{
+                $set: {
+                  "photo": idAttachment
+                }
+              })
               .exec((err, saved) => {
                     err ? reject(err)
                         : resolve(saved);
-                });        
+               });
+          })
+          .catch(err=>{
+            resolve({message: "attachment error"});
+          })              
+        } 
+        
+        Lost_found
+          .update(_query, lostFoundObj)
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });        
     });
 });
 
@@ -127,7 +131,7 @@ lostfoundSchema.static('archieveLostfound', (id:string):Promise<any> => {
         Lost_found
         .findByIdAndUpdate(id, {
             $set:{
-              archieve:true
+              "archieve": true
             }
         })
         .exec((err, updated) => {

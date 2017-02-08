@@ -39,12 +39,12 @@ facilitySchema.static('createFacility', (facility:Object, userId:string, develop
       }
 
       var _facility = new Facility(facility);
-      _facility.development = developmentId;
-      _facility.created_by = userId;
-      _facility.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _facility.development = developmentId;
+          _facility.created_by = userId;
+          _facility.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -79,7 +79,6 @@ facilitySchema.static('updateFacility', (id:string, facility:Object):Promise<any
 });
 
 //Schedule Facility
-
 facilitySchema.static('getSchedule', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
@@ -106,7 +105,13 @@ facilitySchema.static('getByIdSchedule', (id:string, idschedule:string):Promise<
 
          Facility 
          .findById(id)
-         .select({"schedule": { $elemMatch: {"_id": new ObjectID(idschedule)}}})
+         .select({
+           "schedule": {
+             $elemMatch: {
+               "_id": new ObjectID(idschedule)
+             }
+           }
+         })
           .exec((err, schedules) => {
               err ? reject(err)
                   : resolve(schedules);
@@ -143,9 +148,11 @@ facilitySchema.static('updateSchedule', (id:string, idschedule:string, schedule:
         for(var param in schedule) {
           scheduleObj.$set['schedule.$.'+param] = schedule[param];
          }
+
         let ObjectID = mongoose.Types.ObjectId;
+
         Facility
-        .update({"_id":id, "schedule": { $elemMatch: {"_id": new ObjectID(idschedule)}}},scheduleObj)
+        .update({"_id":id, "schedule": {$elemMatch: {"_id": new ObjectID(idschedule)}}}, scheduleObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -162,7 +169,11 @@ facilitySchema.static('deleteSchedule', (id:string, idschedule:string ):Promise<
         Facility
           .findByIdAndUpdate(id,
           {
-            $pull:{"schedule":{_id:idschedule}}
+            $pull: {
+              "schedule": {
+                "_id": idschedule
+              }
+            }
           })
           .exec((err, deleted) => {
               err ? reject(err)
@@ -172,7 +183,6 @@ facilitySchema.static('deleteSchedule', (id:string, idschedule:string ):Promise<
 });
 
 //maintenance
-
 facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(facility)) {
@@ -181,7 +191,7 @@ facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):
 
         Facility
         .findByIdAndUpdate(id, {
-          $push:{maintenance:facility}
+          $push: {"maintenance": facility}
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -189,8 +199,6 @@ facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):
           });
     });
 });
-
-
 
 let Facility = mongoose.model('Facility', facilitySchema);
 

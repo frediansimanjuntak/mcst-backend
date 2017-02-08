@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
-// import * as fs from 'fs-extra';
 import notificationSchema from '../model/notification-model';
 import {GlobalService} from '../../../global/global.service';
 
@@ -25,7 +24,7 @@ notificationSchema.static('getOwnNotification', (userId:string):Promise<any> => 
         return reject(new TypeError('User ID is not a valid ObjectId.'));
       }
 
-      let _query = { user: userId };
+      let _query = {user: userId};
       Notification
         .find(_query)
         .exec((err, notifications) => {
@@ -58,11 +57,11 @@ notificationSchema.static('createNotification', (idUser:string, notification:Obj
       }
 
       let _notification = new Notification(notification);
-      _notification.created_by = idUser;
-      _notification.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _notification.created_by = idUser;
+          _notification.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -99,7 +98,11 @@ notificationSchema.static('readNotification', (userId:string, arrayId:string[]):
         }
 
         Notification
-        .update({ _id: { $in: arrayId } }, { $set: { read_at: new Date() } }, { multi: true })
+        .update({_id: {$in: arrayId}}, {
+          $set: {
+            "read_at": new Date()
+          }
+        }, {multi: true})
         .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);

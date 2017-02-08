@@ -21,7 +21,7 @@ export class PetitionController {
   static createPetition(req: express.Request, res: express.Response):void {
       let _petition = req.body;
       let _attachment = req["files"].attachment;
-      let _userId= req["user"]._id;
+      let _userId = req["user"]._id;
       let _developmentId= req["user"].default_development;
 
       PetitionDAO

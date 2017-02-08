@@ -40,12 +40,12 @@ announcementSchema.static('createAnnouncement', (announcement:Object, userId:str
       }
 
       var _announcement = new Announcement(announcement);
-      _announcement.created_by = userId;
-      _announcement.development = developmentId;
-      _announcement.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _announcement.created_by = userId;
+          _announcement.development = developmentId;
+          _announcement.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -86,17 +86,17 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, anno
         }
 
         let body:any = announcement
-        let date= new Date();
+        let date = new Date();
 
         Announcement
           .findById(id)
           .where('publish').equals(false)
           .update({
-            $set:{
-              "sticky":body.sticky,
-              "valid_till":body.valid_till,
-              "publish":true,
-              "publish_by":userId,
+            $set: {
+              "sticky": body.sticky,
+              "valid_till": body.valid_till,
+              "publish": true,
+              "publish_by": userId,
               "publish_at": date
             }
           })

@@ -71,10 +71,10 @@ export class CompanyController {
 
   static activationCompany(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _active = req.body.active;
+    let _company = req.body;
 
     CompanyDAO
-      ['activationCompany'](_id, _active)
+      ['activationCompany'](_id, _company)
       .then(company => res.status(201).json(company))
       .catch(error => res.status(400).json(error));
   }

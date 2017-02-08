@@ -41,8 +41,8 @@ paymentBookingSchema.static('createPaymentBooking', (paymentbooking:Object, user
         return reject(new TypeError('Incident is not a valid object.'));
       }
 
-      Attachment.createAttachment(attachment, userId,).then(res => {
-          var idAttachment=res.idAtt;
+      Attachment.createAttachment(attachment, userId).then(res => {
+          var idAttachment = res.idAtt;
 
           var _paymentbooking = new PaymentBooking(paymentbooking);
               _paymentbooking.created_by = userId;
@@ -54,7 +54,7 @@ paymentBookingSchema.static('createPaymentBooking', (paymentbooking:Object, user
               });
         })
         .catch(err=>{
-          resolve({message:"error"});
+          resolve({message: "attachment error"});
         })
     });
 });
@@ -80,46 +80,40 @@ paymentBookingSchema.static('updatePaymentBooking', (id:string, userId:string, p
           return reject(new TypeError('Incident is not a valid object.'));
         }
 
-        PaymentBooking
-        .findByIdAndUpdate(id, paymentbooking)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+        let paymentObj = {$set: {}};
+        for(var param in paymentbooking) {
+          paymentObj.$set[param] = paymentbooking[param];
+         }
 
-         let paymentObj = {$set: {}};
-            for(var param in paymentbooking) {
-              paymentObj.$set[param] = paymentbooking[param];
-             }
+        let ObjectID = mongoose.Types.ObjectId; 
+        let _query = {"_id": id};
 
-            let ObjectID = mongoose.Types.ObjectId; 
-            let _query={"_id":id};
+        if(attachment != null){
+          Attachment.createAttachment(attachment, userId).then(res => {
+            var idAttachment=res.idAtt;
 
-            var files = [].concat(attachment);
-            var idAttachment = [];
-
-            if(attachment!=null){
-              Attachment.createAttachment(attachment, userId).then(res => {
-                var idAttachment=res.idAtt;
-
-                PaymentBooking
-                  .update(_query,{$set:{'payment_proof':idAttachment}})
-                  .exec((err, saved) => {
-                        err ? reject(err)
-                            : resolve(saved);
-                   });
-              })
-              .catch(err=>{
-                resolve({message:"error"});
-              })                            
-            } 
-            
             PaymentBooking
-              .update(_query,paymentObj)
+              .update(_query,{
+                $set: {
+                  "payment_proof": idAttachment
+                }
+              })
               .exec((err, saved) => {
                     err ? reject(err)
                         : resolve(saved);
-                });
+               });
+          })
+          .catch(err=>{
+            resolve({message: "attachment error"});
+          })                            
+        } 
+        
+        PaymentBooking
+          .update(_query, paymentObj)
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });
     });
 });
 

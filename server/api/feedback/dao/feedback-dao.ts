@@ -18,7 +18,7 @@ feedbackSchema.static('getAll', ():Promise<any> => {
 
 feedbackSchema.static('getAllPublish', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"status":"publish"};
+        let _query = {"status": "publish"};
 
         Feedback
           .find(_query)
@@ -31,7 +31,7 @@ feedbackSchema.static('getAllPublish', ():Promise<any> => {
 
 feedbackSchema.static('getAllUnPublish', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"status":"unpublish"};
+        let _query = {"status": "unpublish"};
 
         Feedback
           .find(_query)
@@ -65,12 +65,12 @@ feedbackSchema.static('createFeedback', (feedback:Object, userId:string, develop
       }
 
       var _feedback = new Feedback(feedback);
-      _feedback.created_by = userId;
-      _feedback.development = developmentId;
-      _feedback.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _feedback.created_by = userId;
+          _feedback.development = developmentId;
+          _feedback.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -112,10 +112,11 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
 
         Feedback
         .findByIdAndUpdate(id, {
-          $set:{"feedback_reply":reply,
-                "reply_by":userId,
-                "reply_at":new Date()
-                }
+          $set:{
+            "feedback_reply": reply,
+            "reply_by": userId,
+            "reply_at": new Date()
+          }
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -132,7 +133,7 @@ feedbackSchema.static('publishFeedback', (id:string, feedback:Object):Promise<an
 
         Feedback
         .findByIdAndUpdate(id, {
-          $set:{"status":"publish"}
+          $set:{"status": "publish"}
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -149,7 +150,7 @@ feedbackSchema.static('archieveFeedback', (id:string, feedback:Object):Promise<a
 
         Feedback
         .findByIdAndUpdate(id, {
-          $set:{"archieve":true}
+          $set:{"archieve": true}
         })
         .exec((err, updated) => {
               err ? reject(err)

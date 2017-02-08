@@ -21,8 +21,8 @@ export class IncidentController {
   static createIncident(req: express.Request, res: express.Response):void {
       let _incident = req.body;
       let _attachment = req["files"].attachment;
-      let _userId= req["user"]._id;
-      let _developmentId= req["user"].default_development;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
       
       IncidentDAO
         ['createIncident'](_incident, _userId, _developmentId, _attachment)
@@ -52,7 +52,7 @@ export class IncidentController {
     let _id = req.params.id;
     let _incident = req.body;
     let _attachment = req["files"].attachment;
-    let _userId= req["user"]._id;
+    let _userId = req["user"]._id;
 
     IncidentDAO
       ['updateIncident'](_id,_userId, _incident, _attachment)
