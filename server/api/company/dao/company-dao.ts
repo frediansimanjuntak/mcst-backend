@@ -41,11 +41,11 @@ companySchema.static('createCompany', (company:Object, userId:string):Promise<an
       }
 
       var _company = new Company(company);
-      _company.created_by = userId;
-      _company.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _company.created_by = userId;
+          _company.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -70,29 +70,34 @@ companySchema.static('updateCompany', (id:string, userId:string, company:Object,
           return reject(new TypeError('Company is not a valid object.'));
         }
             let file:any = attachment;
+
             let companyObj = {$set: {}};
             for(var param in company) {
               companyObj.$set[param] = companyObj[param];
             }
 
-            if(file!=null){
-              Attachment.createAttachment(attachment, userId,).then(res => {
+            if(file != null){
+              Attachment.createAttachment(attachment, userId).then(res => {
                 var idAttachment=res.idAtt;
 
                 Company
-                  .findByIdAndUpdate(id,{$push:{'company_logo':idAttachment}})
+                  .findByIdAndUpdate(id,{
+                    $push:{
+                      "company_logo": idAttachment
+                    }
+                  })
                   .exec((err, saved) => {
                         err ? reject(err)
                             : resolve(saved);
                    });
               })
               .catch(err=>{
-                resolve({message:"error"});
+                resolve({message: "attachment error"});
               })              
             }              
 
             Company
-              .findByIdAndUpdate(id,companyObj)
+              .findByIdAndUpdate(id, companyObj)
               .exec((err, saved) => {  
                     err ? reject(err)
                         : resolve(saved);
@@ -108,7 +113,9 @@ companySchema.static('addEmployeeCompany', (id:string, employee:Object):Promise<
 
         Company
         .findByIdAndUpdate(id,{
-          $push:{employee:employee}
+          $push: {
+            "employee": employee
+          }
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -125,7 +132,9 @@ companySchema.static('removeEmployeeCompany', (id:string, employee:Object):Promi
 
         Company
         .findByIdAndUpdate(id,{
-          $pull:{employee:employee}
+          $pull: {
+            "employee": employee
+          }
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -134,15 +143,19 @@ companySchema.static('removeEmployeeCompany', (id:string, employee:Object):Promi
     });
 });
 
-companySchema.static('activationCompany', (id:string, active:Object):Promise<any> => {
+companySchema.static('activationCompany', (id:string, company:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(active)) {
+        if (!_.isObject(company)) {
           return reject(new TypeError('Company Activation is not a valid object.'));
         }
 
+        let body:any = company;
+
         Company
         .findByIdAndUpdate(id,{
-          $set:{active:active}
+          $set: {
+            "active": body.active
+          }
         })
         .exec((err, updated) => {
               err ? reject(err)

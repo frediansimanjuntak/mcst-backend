@@ -68,7 +68,7 @@ userGroupSchema.static('addUser', (id:string, users:Object):Promise<any> => {
 
         UserGroup
         .findByIdAndUpdate(id, {
-            $push:{'users':users}
+            $push:{"users": users}
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -85,7 +85,7 @@ userGroupSchema.static('deleteUser', (id:string, users:Object):Promise<any> => {
 
         UserGroup
         .findByIdAndUpdate(id, {
-            $pull:{'users':users}
+            $pull:{"users": users}
         })
         .exec((err, updated) => {
               err ? reject(err)

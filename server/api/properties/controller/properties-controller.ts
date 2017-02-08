@@ -25,8 +25,8 @@ export class PropertiesController {
   static createProperties(req: express.Request, res: express.Response):void {
         let _properties = req.body;
         let _namedevelopment = req.params.namedevelopment;
-        let _userId=req["user"]._id;
-        let _developmentId=req["user"].default_development;
+        let _userId = req["user"]._id;
+        let _developmentId = req["user"].default_development;
 
         DevelopmentDAO
           ['createProperties'](_namedevelopment, _userId, _developmentId, _properties)

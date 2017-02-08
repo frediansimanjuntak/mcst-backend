@@ -20,8 +20,8 @@ export class PollController {
 
   static createPoll(req: express.Request, res: express.Response):void {
       let _poll = req.body;
-      let _userId= req["user"]._id;
-      let _developmentId= req["user"].default_development;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
 
       PollDAO
         ['createPoll'](_poll, _userId, _developmentId)
@@ -50,7 +50,7 @@ export class PollController {
 
   static addVotePoll(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _userId= req["user"]._id;
+    let _userId = req["user"]._id;
     let _poll = req.body;
 
     PollDAO

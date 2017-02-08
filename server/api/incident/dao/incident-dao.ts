@@ -40,8 +40,8 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
       if (!_.isObject(incident)) {
         return reject(new TypeError('Incident is not a valid object.'));
       }
-      Attachment.createAttachment(attachment, userId,).then(res => {
-        var idAttachment=res.idAtt;
+      Attachment.createAttachment(attachment, userId).then(res => {
+        var idAttachment = res.idAtt;
 
         var _incident = new Incident(incident);
             _incident.created_by = userId;
@@ -53,7 +53,7 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
               });
       })
       .catch(err=>{
-        resolve({message:"error"});
+        resolve({message: "attachment error"});
       })             
     });
 });
@@ -80,38 +80,42 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
         }
 
         let incidentObj = {$set: {}};
-            for(var param in incident) {
-              incidentObj.$set[param] = incident[param];
-             }
+        for(var param in incident) {
+          incidentObj.$set[param] = incident[param];
+         }
 
-            let ObjectID = mongoose.Types.ObjectId; 
-            let _query={"_id":id};
+        let ObjectID = mongoose.Types.ObjectId; 
+        let _query={"_id":id};
 
-            var files = [].concat(attachment);
-            var idAttachment = [];
+        var files = [].concat(attachment);
+        var idAttachment = [];
 
-            if(attachment!=null){
-              Attachment.createAttachment(attachment, userId,).then(res => {
-                var idAttachment=res.idAtt;
+        if(attachment!=null){
+          Attachment.createAttachment(attachment, userId).then(res => {
+            var idAttachment=res.idAtt;
 
-                Incident
-                .update(_query,{$set:{'attachment':idAttachment}})
-                .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                 });
-              })
-              .catch(err=>{
-                resolve({message:"error"});
-              })                  
-            } 
-            
             Incident
-              .update(_query,incidentObj)
-              .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                }); 
+            .update(_query,{
+              $set: {
+                "attachment": idAttachment
+              }
+            })
+            .exec((err, saved) => {
+                  err ? reject(err)
+                      : resolve(saved);
+             });
+          })
+          .catch(err=>{
+            resolve({message: "attachment error"});
+          })                  
+        } 
+        
+        Incident
+          .update(_query, incidentObj)
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            }); 
     });
 });
 
@@ -123,10 +127,10 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
 
         Incident
         .findById(id)
-        .where('status').equals('pending')
+        .where("status").equals("pending")
         .update({
           $set:{
-            "status":"reviewing"
+            "status": "reviewing"
           }
         })     
           .exec((err, updated) => {
@@ -144,7 +148,7 @@ incidentSchema.static('starred', (id:string, starred_by:string):Promise<any> => 
       Incident
       .findByIdAndUpdate(id,     
         {
-          $push:{"starred_by":starred_by}
+          $push: {"starred_by": starred_by}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -161,7 +165,7 @@ incidentSchema.static('unstarred', (id:string, starred_by:string):Promise<any> =
       Incident
       .findByIdAndUpdate(id,     
         {
-          $pull:{"starred_by":starred_by}
+          $pull: {"starred_by": starred_by}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -176,7 +180,7 @@ incidentSchema.static('archieve', (id:string):Promise<any> => {
       Incident
       .findByIdAndUpdate(id,     
         {
-          $set:{"archieve":true}
+          $set: {"archieve": true}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -190,7 +194,7 @@ incidentSchema.static('unarchieve', (id:string):Promise<any> => {
       Incident
       .findByIdAndUpdate(id,     
         {
-          $set:{"archieve":false}
+          $set: {"archieve": false}
         })
         .exec((err, saved) => {
               err ? reject(err)

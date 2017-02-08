@@ -37,14 +37,15 @@ paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
       if (!_.isObject(paymentreminder)) {  
         return reject(new TypeError('Payment Reminder is not a valid object.'));
       }
+      console.log(paymentreminder);
 
       var _paymentreminder = new Payment_reminder(paymentreminder);
-      _paymentreminder.created_by = userId;
-      _paymentreminder.development = developmentId;
-      _paymentreminder.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _paymentreminder.created_by = userId;
+          _paymentreminder.development = developmentId;
+          _paymentreminder.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -95,11 +96,11 @@ paymentreminderSchema.static('publishPaymentReminder', (id:string):Promise<any> 
     });
 });
 
-paymentreminderSchema.static('publishAutoPaymentReminder', (id:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-          return reject(new TypeError('Id is not a valid string.'));
-        }
+// paymentreminderSchema.static('publishAutoPaymentReminder', (id:string):Promise<any> => {
+//     return new Promise((resolve:Function, reject:Function) => {
+//         if (!_.isString(id)) {
+//           return reject(new TypeError('Id is not a valid string.'));
+//         }
         // Payment_reminder
         // .find()
         
@@ -112,8 +113,8 @@ paymentreminderSchema.static('publishAutoPaymentReminder', (id:string):Promise<a
         //       err ? reject(err)
         //           : resolve(updated);
         //   });
-    });
-});
+//     });
+// });
 
 
 let Payment_reminder = mongoose.model('Payment_reminder', paymentreminderSchema);

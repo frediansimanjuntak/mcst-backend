@@ -41,16 +41,16 @@ contractorSchema.static('createContractor', (contractor:Object, userId:string):P
       }
 
       var _contractor = new Contractor(contractor);
-      _contractor.created_by = userId;
-      _contractor.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _contractor.created_by = userId;
+          _contractor.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
 
-contractorSchema.static('deleteContractor', (id:string, ):Promise<any> => {
+contractorSchema.static('deleteContractor', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -71,29 +71,34 @@ contractorSchema.static('updateContractor', (id:string, userId:string, contracto
           return reject(new TypeError('Company is not a valid object.'));
         }                    
             let file:any = attachment;
+
             let contractorObj = {$set: {}};
             for(var param in contractor) {
               contractorObj.$set[param] = contractor[param];
              }
 
-            if(file!=null){
-              Attachment.createAttachment(attachment, userId,).then(res => {
-              var idAttachment=res.idAtt;
+            if(file != null){
+              Attachment.createAttachment(attachment, userId).then(res => {
+              var idAttachment = res.idAtt;
 
               Contractor
-                .findByIdAndUpdate(id,{$set:{'profile_picture':idAttachment}})
+                .findByIdAndUpdate(id, {
+                  $set:{
+                    "profile_picture": idAttachment
+                  }
+                })
                 .exec((err, saved) => {
                           err ? reject(err)
                               : resolve(saved);
                     });
                 })
                 .catch(err=>{
-                  resolve({message:"error"});
+                  resolve({message:"attachment error"});
                 }) 
             }        
         
             Contractor
-              .findByIdAndUpdate(id,contractorObj)
+              .findByIdAndUpdate(id, contractorObj)
               .exec((err, saved) => {
                         err ? reject(err)
                             : resolve(saved);
@@ -109,7 +114,9 @@ contractorSchema.static('activationContractor', (id:string, active:Object):Promi
 
         Contractor
         .findByIdAndUpdate(id, {
-            $set:{active:active}
+            $set:{
+              "active": active
+            }
         })
         .exec((err, updated) => {
               err ? reject(err)

@@ -5,32 +5,32 @@ var crypto = require('crypto');
 var Schema = mongoose.Schema;
 
 var contractorSchema = new mongoose.Schema({
-	username:{type: String, lowercase: true, unique: true, required: true, trim: true},
-	password:{type: String, trim: true},
+	username: {type: String, lowercase: true, unique: true, required: true, trim: true},
+	password: {type: String, trim: true},
 	salt: {type: String},
-	phone:{type: String, trim: true},
-  role:{type: String, trim: true, default:"contractor"},
-	email:{type: String, lowercase: true, unique: true, trim: true},	
-	address:{
+	phone: {type: String, trim: true},
+  role: {type: String, trim: true, default: "contractor"},
+	email: {type: String, lowercase: true, unique: true, trim: true},	
+	address: {
 		street_name:{type: String, trim: true},
 		block_no:{type: String, trim: true},
 		postal_code:{type: String, trim: true},
 		country:{type: String, trim: true},
 		full_address:{type: String, trim: true}
 	},
-	profile_picture:{type: String, trim: true},
-	description:{type: String, trim: true},
-	company:{
+	profile_picture: {type: String, trim: true},
+	description: {type: String, trim: true},
+	company: {
     type: Schema.Types.ObjectId,
     ref: 'Company'
   },
-	position:{type: String, trim: true},
-	active:{type: Boolean, default:false},
-	created_by:{
+	position: {type: String, trim: true},
+	active: {type: Boolean, default:false},
+	created_by: {
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-	created_at:{type: Date, default: Date.now}
+	created_at: {type: Date, default: Date.now}
 });
 
 // Public profile information

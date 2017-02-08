@@ -40,12 +40,12 @@ pollSchema.static('createPoll', (poll:Object, userId:string, developmentId:strin
       }
 
       var _poll = new Poll(poll);
-      _poll.created_by = userId;
-      _poll.development = developmentId;
-      _poll.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _poll.created_by = userId;
+          _poll.development = developmentId;
+          _poll.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -91,10 +91,10 @@ pollSchema.static('addVotePoll', (id:string, userId:string, poll:Object):Promise
         .findByIdAndUpdate(id, {
           $push:{
             votes:{
-              property:body.property,
-              answer:body.answer,
-              voted_by:userId,
-              voted_at:voted_at
+              "property": body.property,
+              "answer": body.answer,
+              "voted_by": userId,
+              "voted_at": voted_at
             }
           }
         })
@@ -113,7 +113,7 @@ pollSchema.static('startPoll', (id:string):Promise<any> => {
 
         Poll
         .findByIdAndUpdate(id,{
-          $set:{"status":"active"}
+          $set:{"status": "active"}
         })
         .exec((err, updated) => {
               err ? reject(err)

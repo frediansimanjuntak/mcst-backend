@@ -22,13 +22,14 @@ export class ContractNoticeController {
   }
 
   static createContractNotice(req: express.Request, res: express.Response):void {
+    console.log(req["files"])
       let _id = req.params.id;
       let _contractnotice = req.body;
       let _attachment = req["files"].attachment;
       let _userId = req["user"]._id;
 
       ContractDAO
-        ['createContractNotice'](_id, _userId, _contractnotice,_attachment)
+        ['createContractNotice'](_id, _userId, _contractnotice, _attachment)
         .then(contract => res.status(201).json(contract))
         .catch(error => res.status(400).json(error));
   }

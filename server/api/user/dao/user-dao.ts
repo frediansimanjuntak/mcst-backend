@@ -74,39 +74,44 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         return reject(new TypeError('User is not a valid object.'));
       }
       let ObjectID = mongoose.Types.ObjectId;  
-      let body:any =user;
+      let body:any = user;
+
       var _user = new User(user);
-      _user.default_development = developmentId;
-      _user.default_property.development=developmentId;
-      if(body.authorized_property.property != null){
-        _user.authorized_property.developmetn=developmentId;
-      }
-      if(body.owned_property.property != null){
-        _user.authorized_property.developmetn=developmentId;
-      }
-      if(body.default_property.property != null){
-        _user.authorized_property.developmetn=developmentId;
-      }
-      _user.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
-      var userId=_user._id
+          _user.default_development = developmentId;
+          _user.default_property.development = developmentId;
+
+          if(body.authorized_property.property != null){
+            _user.authorized_property.developmetn=developmentId;
+          }
+
+          if(body.owned_property.property != null){
+            _user.authorized_property.developmetn=developmentId;
+          }
+
+          if(body.default_property.property != null){
+            _user.authorized_property.developmetn=developmentId;
+          }
+          _user.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
+
+      var userId = _user._id
       var ownned_property_property = _user.owned_property.property;
       var ownned_property_development = _user.owned_property.development;
       var rented_property_property = _user.rented_property.property;
       var rented_property_development = _user.rented_property.development;
-      if (ownned_property_property!=null){
+      if (ownned_property_property != null){
         Development
-        .update({"_id":ownned_property_development, "properties": { $elemMatch: {"_id": new ObjectID(ownned_property_property)}}},{
-          $set:{"properties.$.lanlord":userId}
+        .update({"_id": ownned_property_development, "properties": {$elemMatch: {"_id": new ObjectID(ownned_property_property)}}},{
+          $set:{"properties.$.lanlord": userId}
         })
       }
       
-      if (rented_property_property!=null){
+      if (rented_property_property != null){
         Development
         .update({"_id":rented_property_development, "properties": { $elemMatch: {"_id": new ObjectID(rented_property_property)}}},{
-          $push:{"properties.0.tenant.$.recident":userId}
+          $push:{"properties.0.tenant.$.recident": userId}
         })
       }
 
@@ -119,7 +124,7 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
         return reject(new TypeError('User is not a valid object.'));
       }
       var _user = new User(user);
-      _user.role="super admin"
+      _user.role = "super admin"
       _user.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
@@ -166,7 +171,7 @@ userSchema.static('activationUser', (id:string):Promise<any> => {
 
         User
           .findByIdAndUpdate(id,{
-            $set:{active:true}
+            $set:{"active": true}
           })
           .exec((err, deleted) => {
               err ? reject(err)
@@ -183,7 +188,7 @@ userSchema.static('unActiveUser', (id:string):Promise<any> => {
 
         User
           .findByIdAndUpdate(id,{
-            $set:{active:false}
+            $set:{"active": false}
           })
           .exec((err, deleted) => {
               err ? reject(err)
@@ -221,11 +226,11 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
         User
         .findByIdAndUpdate(id, {
           $set:{
-             "name":body.name,
-             "email":body.email,
-             "phone":body.phone,
-             "emergancy_contact.name":body.contact_name,
-             "emergency_contact.contact_number":body.contact_number
+             "name": body.name,
+             "email": body.email,
+             "phone": body.phone,
+             "emergancy_contact.name": body.contact_name,
+             "emergency_contact.contact_number": body.contact_number
           }
         })
         .exec((err, updated) => {
@@ -244,13 +249,13 @@ userSchema.static('settingsocialProfile', (id:string, user:Object):Promise<any> 
         User
           .findByIdAndUpdate(id,{
             $set:{
-              "social_profile.resident_since":body.resident_since,
-              "social_profile.email":body.email,
-              "social_profile.phone":body.phone,
-              "social_profile.social_interaction":body.social_interaction,
-              "social_profile.young_kids":body.young_kids,
-              "social_profile.age_kids":body.age_kids,
-              "social_profile.hobbies":body.hobbies
+              "social_profile.resident_since": body.resident_since,
+              "social_profile.email": body.email,
+              "social_profile.phone": body.phone,
+              "social_profile.social_interaction": body.social_interaction,
+              "social_profile.young_kids": body.young_kids,
+              "social_profile.age_kids": body.age_kids,
+              "social_profile.hobbies": body.hobbies
             }
         })
         .exec((err, updated) => {

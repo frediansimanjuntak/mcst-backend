@@ -55,8 +55,8 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
               });
           var paymentID = _paymentbooking._id;
           var _booking = new Booking(booking);
-              _booking.created_by= userId;
-              _booking.development= developmentId;
+              _booking.created_by = userId;
+              _booking.development = developmentId;
               _booking.payment = paymentID;
               _booking.save((err, saved) => {
                 err ? reject(err)
@@ -64,7 +64,7 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
           });
         })
         .catch(err=>{
-          resolve({message:"error"});
+          resolve({message: "attachment error"});
         })      
     });
 });

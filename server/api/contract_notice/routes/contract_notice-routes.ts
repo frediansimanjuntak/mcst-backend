@@ -12,16 +12,16 @@ export class ContractNoticeRoutes {
         .post(auth.isAuthenticated(), ContractNoticeController.createContractNotice);
 
       router
-        .route('/api/contract_notice/:id/:idcontractnote')
+        .route('/api/contract_notice/:id/:idcontractnotice')
         .get(auth.isAuthenticated(), ContractNoticeController.getByIdContractNotice)
         .delete(auth.isAuthenticated(), ContractNoticeController.deleteContractNotice);
 
       router
-        .route('/api/contract_notice/:id/update/:idcontractnote')
+        .route('/api/contract_notice/:id/update/:idcontractnotice')
         .post(auth.isAuthenticated(), ContractNoticeController.updateContractNotice); 
 
       router
-        .route('/api/contract_notice/:id/publish/:idcontractnote')
+        .route('/api/contract_notice/:id/publish/:idcontractnotice')
         .post(auth.isAuthenticated(), ContractNoticeController.publishContractNotice);      
     }
 }

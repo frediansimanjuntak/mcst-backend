@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
-// import * as fs from 'fs-extra';
 import attachmentSchema from '../model/attachment-model';
 import Development from '../../development/dao/development-dao';
 import {AWSService} from '../../../global/aws.service';
@@ -27,20 +26,20 @@ attachmentSchema.static('createAttachment', (attachment:Object, userId:string):P
         return reject(new TypeError('Attachment is not a valid object.'));
       }
           var files = [].concat(attachment);
-          var idAtt=[];
+          var idAtt = [];
 
           if(files.length > 0)
           {
               var i = 0;
               var attachmentfile = function(){
                 let file:any = files[i];
-                let key:string = 'test/'+file.name;
+                let key:string = 'MCST/attachment/'+file.name;
                 AWSService.upload(key, file).then(fileDetails => {
                   var _attachment = new Attachment(attachment);
                   _attachment.name = fileDetails.name;
                   _attachment.type = fileDetails.type;
                   _attachment.url = fileDetails.url;                  
-                  _attachment.created_by=userId;
+                  _attachment.created_by = userId;
                   _attachment.save(); 
                   let idattach = _attachment.id;  
                   idAtt.push(idattach)
@@ -57,7 +56,7 @@ attachmentSchema.static('createAttachment', (attachment:Object, userId:string):P
               attachmentfile();
           }
           else{
-            resolve({message:"success"});
+            resolve({message: "success"});
           }                   
     });      
 });

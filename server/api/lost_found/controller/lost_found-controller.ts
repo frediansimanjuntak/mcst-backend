@@ -21,10 +21,8 @@ export class LostfoundController {
   static createLostfound(req: express.Request, res: express.Response):void {
       let _lostfound = req.body;
       let _attachment = req["files"].photo;
-      let _file= req["files"];
       let _userId = req["user"]._id;
-      let _developmentId = req["user"].default_development;
-      
+      let _developmentId = req["user"].default_development;      
 
       LostfoundDAO
         ['createLostfound'](_lostfound, _userId, _developmentId, _attachment)

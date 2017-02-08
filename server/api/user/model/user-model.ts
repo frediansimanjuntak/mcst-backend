@@ -9,67 +9,67 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new mongoose.Schema({
     username: {type: String, lowercase: true, unique: true, required: true},
-    name:{type: String},
+    name: {type: String},
     email: {type: String, lowercase: true, unique: true, required: true},
     password: {type: String, required: true},  
     salt: {type: String}, 
     role: {type: String, default: 'user'}, // 'admin' and 'user'
     phone:{type: String},
-    provider:  {type: String},
+    provider: {type: String},
     emergency_contact:{
-      name:{type: String},
-      contact_number:{type: String}
+      name: {type: String},
+      contact_number: {type: String}
     },
     default_property:
     {
-      development:{  type: String },
-      property:{ type: String },
-      role:{ type: String }
+      development: {type: String },
+      property: {type: String },
+      role: {type: String }
     },
     details:
     {
-      first_name:{type: String},
-      last_name:{type: String},      
-      identification_type:{type: String},
-      identification_no:{type: String},
-      identification_proof:{
-        front:{type: String},
-        back:{type: String}
+      first_name: {type: String},
+      last_name: {type: String},      
+      identification_type: {type: String},
+      identification_no: {type: String},
+      identification_proof: {
+        front: {type: String},
+        back: {type: String}
       }
     },
-    social_profile:{
-      resident_since:{type: String},
-      email:{type: String},
-      phone:{type: String},
-      social_interaction:{type: String},
-      young_kids:{type: String},
-      age_kids:{type: String},
-      hobbies:{type: String}
+    social_profile: {
+      resident_since: {type: String},
+      email: {type: String},
+      phone: {type: String},
+      social_interaction: {type: String},
+      young_kids: {type: String},
+      age_kids: {type: String},
+      hobbies: {type: String}
     },
   rented_property:
   [{
-    development:{type: String},
-    property:{type: String}
+    development: {type: String},
+    property: {type: String}
   }],
   owned_property:
   [{
-    development:{type: String},
-    property:{type: String}  
+    development: {type: String},
+    property: {type: String}  
   }],
   authorized_property:
   [{
-    development:{type: String},
-    property:{type: String}  
+    development: {type: String},
+    property: {type: String}  
   }],
-  active_code:{type:String},
-  active:{type: Boolean, default:false},
-  default_development:{
+  active_code: {type:String},
+  active: {type: Boolean, default:false},
+  default_development: {
     type: Schema.Types.ObjectId,
     ref: 'Development'
   },
-  autorized_development:{type: String},
-  user_group:{type: String},
-  created_at:{type: String}
+  autorized_development: {type: String},
+  user_group: {type: String},
+  created_at: {type: String}
 });
 
 // Public profile information

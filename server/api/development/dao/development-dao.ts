@@ -37,12 +37,10 @@ developmentSchema.static('createDevelopment', (development:Object):Promise<any> 
       }
 
       var _development = new Development(development);
-
-      _development.save((err, saved) => {
-
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _development.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -81,7 +79,7 @@ developmentSchema.static('updateDevelopment', (id:string, development:Object):Pr
 developmentSchema.static('getNewsletter', (namedevelopment:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
          Development
-          .findOne({"name":namedevelopment})
+          .findOne({"name": namedevelopment})
           .select("newsletter")
           .exec((err, newsletters) => {
               err ? reject(err)
@@ -95,9 +93,15 @@ developmentSchema.static('getByIdNewsletter', (namedevelopment:string, idnewslet
       var ObjectID = mongoose.Types.ObjectId;
 
          Development 
-         .findOne({"name":namedevelopment})
+         .findOne({"name": namedevelopment})
          .populate("newsletter.attachment newsletter.release_by newsletter.created_by")
-         .select({"newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}})
+         .select({
+           "newsletter": {
+             $elemMatch: {
+               "_id": new ObjectID(idnewsletter)
+             }
+           }
+         })
           .exec((err, newsletters) => {
               err ? reject(err)
                   : resolve(newsletters);
@@ -113,22 +117,22 @@ developmentSchema.static('createNewsletter', (namedevelopment:string, newsletter
       }
       let body:any = newsletter;
 
-      Attachment.createAttachment(attachment, userId,).then(res => {
+      Attachment.createAttachment(attachment, userId).then(res => {
         var idAttachment=res.idAtt;
 
         Development
-          .findOneAndUpdate({"name":namedevelopment}, {
+          .findOneAndUpdate({"name": namedevelopment}, {
                 $push:{
-                  "newsletter":{
-                        "title":body.title,
-                        "description":body.description,
-                        "type":body.type,
-                        "attachment":idAttachment,
-                        "released":body.released,
-                        "pinned.rank":body.rank,
-                        "created_by":userId
-                    }
-                 }
+                  "newsletter": {
+                    "title": body.title,
+                    "description": body.description,
+                    "type": body.type,
+                    "attachment": idAttachment,
+                    "released": body.released,
+                    "pinned.rank": body.rank,
+                    "created_by": userId
+                  }
+                }
               })
           .exec((err, saved) => {
                     err ? reject(err)
@@ -136,7 +140,7 @@ developmentSchema.static('createNewsletter', (namedevelopment:string, newsletter
               });
       })
       .catch(err=>{
-        resolve({message:"error"});
+        resolve({message: "attachment error"});
       })                     
     });
 });
@@ -148,9 +152,13 @@ developmentSchema.static('deleteNewsletter', (namedevelopment:string, idnewslett
         }
 
         Development
-          .findOneAndUpdate({"name":namedevelopment},
+          .findOneAndUpdate({"name": namedevelopment},
           {
-            $pull:{"newsletter":{_id:idnewsletter}}
+            $pull:{
+              "newsletter": {
+                "_id": idnewsletter
+              }
+            }
           })
           .exec((err, deleted) => {
               err ? reject(err)
@@ -170,30 +178,32 @@ developmentSchema.static('updateNewsletter', (namedevelopment:string, idnewslett
              }
 
             let ObjectID = mongoose.Types.ObjectId; 
-            let _query={"name":namedevelopment, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}};
+            let _query={"name": namedevelopment, "newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}};
 
             let file:any = attachment;
-            let files = [].concat(attachment);
-            let idAttachment = [];
 
             if(file!=null){
-              Attachment.createAttachment(attachment, userId,).then(res => {
+              Attachment.createAttachment(attachment, userId).then(res => {
                 var idAttachment=res.idAtt;
 
                 Development
-                  .update(_query,{$set:{'newsletter.$.attachment':idAttachment}})
+                  .update(_query,{
+                    $set: {
+                      "newsletter.$.attachment": idAttachment
+                    }
+                  })
                   .exec((err, saved) => {
                         err ? reject(err)
                             : resolve(saved);
                    });
               })
               .catch(err=>{
-                resolve({message:"error"});
+                resolve({message: "attachment error"});
               })                  
             } 
 
             Development
-              .update(_query,newsletterObj)
+              .update(_query, newsletterObj)
               .exec((err, saved) => {
                     err ? reject(err)
                         : resolve(saved);
@@ -207,17 +217,17 @@ developmentSchema.static('releaseNewsletter',(namedevelopment:string, userId:str
             return reject(new TypeError('Development Name is not a valid string.'));
         }
         var ObjectID = mongoose.Types.ObjectId;   
-        var released=true;
-        var released_by=userId; 
-        var release_at= Date.now();                      
+        var released = true;
+        var released_by = userId; 
+        var release_at = Date.now();                      
 
         Development
-        .update({"name":namedevelopment, "newsletter": { $elemMatch: {"_id": new ObjectID(idnewsletter)}}},
+        .update({"name": namedevelopment, "newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}},
           { 
             $set:{
-              "newsletter.$.released":released,
-              "newsletter.$.released_by":released_by,
-              "newsletter.$.release_at":release_at
+              "newsletter.$.released": released,
+              "newsletter.$.released_by": released_by,
+              "newsletter.$.release_at": release_at
             }            
           })
         .exec((err, saved) => {
@@ -231,7 +241,7 @@ developmentSchema.static('releaseNewsletter',(namedevelopment:string, userId:str
 developmentSchema.static('getProperties', (namedevelopment:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
          Development
-          .findOne({"name":namedevelopment})
+          .findOne({"name": namedevelopment})
           .select("properties")
           .exec((err, properties) => {
               err ? reject(err)
@@ -245,9 +255,15 @@ developmentSchema.static('getByIdProperties', (namedevelopment:string, idpropert
       var ObjectID = mongoose.Types.ObjectId;
 
          Development 
-         .findOne({"name":namedevelopment})
+         .findOne({"name": namedevelopment})
          .populate ("properties.lanlord properties.created_by") 
-         .select({"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})                
+         .select({
+           "properties": {
+             $elemMatch: {
+               "_id": new ObjectID(idproperties)
+             }
+           }
+         })                
           .exec((err, properties) => {
               err ? reject(err)
                   : resolve(properties);
@@ -264,9 +280,9 @@ developmentSchema.static('createProperties', (namedevelopment:string, userId:str
       console.log(properties)
 
       Development
-      .findOneAndUpdate({"name":namedevelopment},     
+      .findOneAndUpdate({"name": namedevelopment},     
         {
-          $push:{"properties":properties                 
+          $push:{"properties": properties                 
           }
         })
         .exec((err, saved) => {
@@ -283,9 +299,13 @@ developmentSchema.static('deleteProperties', (namedevelopment:string, idproperti
         }
 
         Development
-          .findOneAndUpdate({"name":namedevelopment},
+          .findOneAndUpdate({"name": namedevelopment},
           {
-            $pull:{"properties":{_id:idproperties}}
+            $pull:{
+              "properties": {
+                "_id": idproperties
+              }
+            }
           })
           .exec((err, deleted) => {
               err ? reject(err)
@@ -304,10 +324,11 @@ developmentSchema.static('updateProperties', (namedevelopment:string, idproperti
         for(var param in properties) {
           propertiesObj.$set['properties.$.'+param] = properties[param];
          }
+
         let ObjectID = mongoose.Types.ObjectId;    
 
         Development
-        .update({"name":namedevelopment, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}},propertiesObj)
+        .update({"name": namedevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, propertiesObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -324,9 +345,9 @@ developmentSchema.static('createStaffDevelopment', (namedevelopment:string, staf
       }
 
       Development
-      .findOneAndUpdate({"name":namedevelopment},     
+      .findOneAndUpdate({"name": namedevelopment},     
         {
-          $push:{"staff":staff}
+          $push:{"staff": staff}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -342,9 +363,9 @@ developmentSchema.static('deleteStaffDevelopment', (namedevelopment:string, staf
       }
 
       Development
-      .findOneAndUpdate({"name":namedevelopment},     
+      .findOneAndUpdate({"name": namedevelopment},     
         {
-          $pull:{"staff":staff}
+          $pull:{"staff": staff}
         })
         .exec((err, saved) => {
               err ? reject(err)
@@ -360,9 +381,9 @@ developmentSchema.static('getTenantProperties', (namedevelopment:string, idprope
       var ObjectID = mongoose.Types.ObjectId;
 
          Development
-         .find({"name":namedevelopment},{"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})
+         .find({"name":namedevelopment},{"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})
          .select("properties.tenant")   
-          .exec((err, properties) => {
+         .exec((err, properties) => {
               err ? reject(err)
                   : resolve(properties);
           });
@@ -373,30 +394,30 @@ developmentSchema.static('getByIdTenantProperties', (namedevelopment:string, idp
     return new Promise((resolve:Function, reject:Function) => {
       
       var pipeline = [{
-        $match:{
-          "name":namedevelopment
+        $match: {
+          "name": namedevelopment
           }
         },
         {
-          $unwind:"$properties"
+          $unwind: "$properties"
         },
         {
-          $match:{
+          $match: {
             "properties._id": mongoose.Types.ObjectId(idproperties)
           }
         },
         {
-          $unwind:"$properties.tenant"
+          $unwind: "$properties.tenant"
         },
         {
-          $match:{
+          $match: {
             "properties.tenant._id": mongoose.Types.ObjectId(idtenant)
           }
         },
         {
-          $project:{
-            "_id":0,
-            "tenant":"$properties.tenant"
+          $project: {
+            "_id": 0,
+            "tenant": "$properties.tenant"
           }
         }
       ];      
@@ -416,9 +437,9 @@ developmentSchema.static('createTenantProperties', (namedevelopment:string, idpr
         }        
         let ObjectID = mongoose.Types.ObjectId;    
         Development
-        .update({"name":namedevelopment, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+        .update({"name": namedevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
           $push:{
-            "properties.$.tenant":tenant  
+            "properties.$.tenant": tenant  
           }
         })
         .exec((err, updated) => {
@@ -436,10 +457,14 @@ developmentSchema.static('deleteTenantProperties', (namedevelopment:string, idte
         let ObjectID = mongoose.Types.ObjectId; 
 
         Development
-        .findOneAndUpdate({"name":namedevelopment},     
+        .findOneAndUpdate({"name": namedevelopment},     
         {
-            $pull:{"properties.0.tenant":{"_id": new ObjectID(idtenant)}}
-        },{multi: true})
+            $pull: {
+              "properties.0.tenant": {
+                "_id": new ObjectID(idtenant)
+              }
+            }
+        }, {multi: true})
           .exec((err, updated) => {
                 err ? reject(err)
                     : resolve(updated);
@@ -457,10 +482,11 @@ developmentSchema.static('updateTenantProperties', (namedevelopment:string, idte
         for(var param in tenant) {
           tenantObj.$set['properties.0.tenant.$.'+param] = tenant[param];
          }
+
         let ObjectID = mongoose.Types.ObjectId;
 
         Development
-        .update({"name":namedevelopment, "properties.tenant._id": new ObjectID(idtenant)},tenantObj)
+        .update({"name": namedevelopment, "properties.tenant._id": new ObjectID(idtenant)}, tenantObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -474,8 +500,8 @@ developmentSchema.static('getRegisterVehicleProperties', (namedevelopment:string
       var ObjectID = mongoose.Types.ObjectId;
 
          Development
-         .find({"name":namedevelopment},{"properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}})
-         .select("properties.registered_vehicle")   
+          .find({"name": namedevelopment},{"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})
+          .select("properties.registered_vehicle")   
           .exec((err, properties) => {
               err ? reject(err)
                   : resolve(properties);
@@ -487,29 +513,29 @@ developmentSchema.static('getByIdRegisterVehicleProperties', (namedevelopment:st
     return new Promise((resolve:Function, reject:Function) => {
       var pipeline = [{
         $match:{
-          "name":namedevelopment
+          "name": namedevelopment
           }
         },
         {
-          $unwind:"$properties"
+          $unwind: "$properties"
         },
         {
-          $match:{
+          $match: {
             "properties._id": mongoose.Types.ObjectId(idproperties)
           }
         },
         {
-          $unwind:"$properties.registered_vehicle"
+          $unwind: "$properties.registered_vehicle"
         },
         {
-          $match:{
+          $match: {
             "properties.registered_vehicle._id": mongoose.Types.ObjectId(idregistervehicle)
           }
         },
         {
-          $project:{
-            "_id":0,
-            "registered_vehicle":"$properties.registered_vehicle"
+          $project: {
+            "_id": 0,
+            "registered_vehicle": "$properties.registered_vehicle"
           }
         }
       ];      
@@ -529,9 +555,9 @@ developmentSchema.static('createRegisterVehicleProperties', (namedevelopment:str
         }        
         let ObjectID = mongoose.Types.ObjectId;    
         Development
-        .update({"name":namedevelopment, "properties": { $elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+        .update({"name": namedevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
           $push:{
-            "properties.$.registered_vehicle":registervehicle  
+            "properties.$.registered_vehicle": registervehicle  
           }
         })
         .exec((err, updated) => {
@@ -549,10 +575,14 @@ developmentSchema.static('deleteRegisterVehicleProperties', (namedevelopment:str
         let ObjectID = mongoose.Types.ObjectId; 
 
         Development
-          .findOneAndUpdate({"name":namedevelopment},     
+          .findOneAndUpdate({"name": namedevelopment},     
           {
-              $pull:{"properties.0.registered_vehicle":{"_id": new ObjectID(idregistervehicle)}}
-          },{multi: true})
+            $pull:{
+              "properties.0.registered_vehicle": {
+                "_id": new ObjectID(idregistervehicle)
+              }
+            }
+          }, {multi: true})
           .exec((err, saved) => {
                 err ? reject(err)
                     : resolve(saved);
@@ -570,10 +600,11 @@ developmentSchema.static('updateRegisterVehicleProperties', (namedevelopment:str
         for(var param in registervehicle) {
           registervehicleObj.$set['properties.0.registered_vehicle.$.'+param] = registervehicle[param];
          }
+
         let ObjectID = mongoose.Types.ObjectId;
 
         Development
-        .update({"name":namedevelopment, "properties.registered_vehicle._id": new ObjectID(idregistervehicle)},registervehicleObj)
+        .update({"name": namedevelopment, "properties.registered_vehicle._id": new ObjectID(idregistervehicle)}, registervehicleObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);

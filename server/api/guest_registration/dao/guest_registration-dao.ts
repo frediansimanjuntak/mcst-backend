@@ -41,12 +41,12 @@ guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:st
       }
 
       var _guest = new Guest(guest);
-      _guest.created_by = userId;
-      _guest.development = developmentId;
-      _guest.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+          _guest.created_by = userId;
+          _guest.development = developmentId;
+          _guest.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
     });
 });
 
@@ -72,11 +72,11 @@ guestSchema.static('updateGuest', (id:string, guest:Object):Promise<any> => {
         }
 
         Guest
-        .findByIdAndUpdate(id, guest)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+          .findByIdAndUpdate(id, guest)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+            });
     });
 });
 
@@ -87,15 +87,16 @@ guestSchema.static('checkInGuest', (id:string, userId:string):Promise<any> => {
         }
         let checkIn = Date.now();
         Guest
-        .findByIdAndUpdate(id, {
-          $set:{check_in:checkIn,
-                checkin_by:userId
-                }
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+          .findByIdAndUpdate(id, {
+            $set:{
+              "check_in": checkIn,
+              "checkin_by": userId
+            }
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+            });
     });
 });
 
@@ -107,9 +108,10 @@ guestSchema.static('checkOutGuest', (id:string, userId:string):Promise<any> => {
         let checkOut = Date.now();
         Guest
         .findByIdAndUpdate(id, {
-          $set:{check_out:checkOut,
-                checkout_by:userId
-                }
+          $set:{
+            "check_out": checkOut,
+            "checkout_by": userId
+          }
         })
         .exec((err, updated) => {
               err ? reject(err)
