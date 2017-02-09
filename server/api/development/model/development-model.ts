@@ -32,19 +32,25 @@ var developmentSchema = new mongoose.Schema({
     		ref: 'User'
 		},
 		tenant: [{
-			resident:{type: String},
-			type:{type: String},
-			added_on:{type: String},
-			social_page:{type: String},
-			remarks:{type: String}
+			resident: {
+				type: Schema.Types.ObjectId,
+    			ref: 'User'
+			},
+			type: {type: String},
+			social_page: {type: String},
+			remarks: {type: String},
+			created_at: {type: Date}
 		}],
 		registered_vehicle: [{
-			license_plate:{type:String},
-			owner:{type:String},
-			transponder:{type: String},
-			document:{type:String},
-			registered_on:{type: Date},
-			remarks:{type: String}
+			license_plate: {type:String},
+			owner: {
+				type: Schema.Types.ObjectId,
+    			ref: 'User'
+			},
+			transponder: {type: String},
+			document: {type:String},
+			registered_on: {type: Date},
+			remarks: {type: String}
 		}],
 		status: {type: String},
 		created_by: {

@@ -54,23 +54,32 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                 err ? reject(err)
                     : resolve(saved);
               });
-              if(_contract.reference_type = "incident"){
-                 Incident
-                 .findByIdAndUpdate(_contract.reference_id, {
-                   $set:{
-                     "status": "in progress"
-                   }
-                 })
-              }
-              if(_contract.reference_type = "petition"){
-                Petition
-                .findByIdAndUpdate(_contract.reference_id, {
-                  $set:{
-                    "status": "in progress"
-                  }
-                })
-              }
 
+            if(_contract.reference_type == "incident"){
+               Incident
+               .findByIdAndUpdate(_contract.reference_id, {
+                 $set:{
+                   "status": "in progress",
+                   "contract":_contract._id
+                 }
+               })
+               .exec((err, saved) => {
+                    err ? reject(err)
+                        : resolve(saved);
+                });
+            }
+            if(_contract.reference_type == "petition"){
+              Petition
+              .findByIdAndUpdate(_contract.reference_id, {
+                $set:{
+                  "status": "in progress"
+                }
+              })
+              .exec((err, saved) => {
+                  err ? reject(err)
+                      : resolve(saved);
+              });
+            }
         })
         .catch(err => {
           resolve({message: "attachment error"});
@@ -280,7 +289,10 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
         return reject(new TypeError('Contract Note is not a valid object.'));
       } 
 
-        let body:any = contract_note;             
+        let body:any = contract_note; 
+        var referenceId = body.reference_id;  
+        console.log(referenceId);
+        console.log(body.status);
 
         Attachment.createAttachment(attachment, userId).then(res => {
           var idAttachment = res.idAtt;
@@ -300,9 +312,20 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
               }
             })
             .exec((err, saved)=>{
-                err ? reject(err)
-                    : resolve(saved);
-            });
+                if(saved.status == "closed"){
+                  console.log(body.status)
+                  Incident
+                  .findByIdAndUpdate(referenceId, {
+                    $set: {
+                      "status": "resolved"
+                    }
+                  })
+                  .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                  });
+                }
+            });          
         })
         .catch(err=>{
           resolve({message: "attachment error"});

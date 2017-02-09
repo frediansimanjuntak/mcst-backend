@@ -10,8 +10,8 @@ var contractSchema = new mongoose.Schema({
 	property:{type: String, trim: true},
 	title:{type: String, trim: true},		
 	contract_type:{type: String, trim: true},
-	reference_type:{type: String, trim: true},
-	reference_id:{type: String, trim: true},
+	reference_type:{type: String},
+	reference_id:{type: String},
 	attachment:[{
 		type: Schema.Types.ObjectId,
     	ref: 'Attachment'
