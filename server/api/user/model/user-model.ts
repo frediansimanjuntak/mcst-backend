@@ -62,7 +62,7 @@ var UserSchema = new mongoose.Schema({
     property: {type: String}  
   }],
   active_code: {type:String},
-  active: {type: Boolean, default:false},
+  active: {type: Boolean, default: false},
   default_development: {
     type: Schema.Types.ObjectId,
     ref: 'Development'

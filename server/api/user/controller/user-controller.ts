@@ -37,7 +37,6 @@ export class UserController {
   static createUser(req: express.Request, res: express.Response):void {
       let _user = req.body;
       let _developmentId = req["user"].default_development;
-      console.log(_developmentId)
 
       UserDAO
         ['createUser'](_user, _developmentId)
@@ -56,9 +55,10 @@ export class UserController {
 
   static deleteUser(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
+    let _development = req.body;
 
     UserDAO
-      ['deleteUser'](_id)
+      ['deleteUser'](_id, _development)
       .then(() => res.status(200).end())
       .catch(error => res.status(400).json(error));
   }

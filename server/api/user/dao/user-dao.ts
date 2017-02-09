@@ -73,48 +73,61 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
       if (!_.isObject(user)) {
         return reject(new TypeError('User is not a valid object.'));
       }
-      let ObjectID = mongoose.Types.ObjectId;  
+      var ObjectID = mongoose.Types.ObjectId;  
       let body:any = user;
-
+      
       var _user = new User(user);
           _user.default_development = developmentId;
           _user.default_property.development = developmentId;
-
-          if(body.authorized_property.property != null){
-            _user.authorized_property.developmetn=developmentId;
-          }
-
-          if(body.owned_property.property != null){
-            _user.authorized_property.developmetn=developmentId;
-          }
-
-          if(body.default_property.property != null){
-            _user.authorized_property.developmetn=developmentId;
-          }
-          _user.save((err, saved) => {
+          _user.save((err, saved)=>{
             err ? reject(err)
                 : resolve(saved);
+              console.log(saved);
           });
 
-      var userId = _user._id
-      var ownned_property_property = _user.owned_property.property;
-      var ownned_property_development = _user.owned_property.development;
-      var rented_property_property = _user.rented_property.property;
-      var rented_property_development = _user.rented_property.development;
-      if (ownned_property_property != null){
-        Development
-        .update({"_id": ownned_property_development, "properties": {$elemMatch: {"_id": new ObjectID(ownned_property_property)}}},{
-          $set:{"properties.$.lanlord": userId}
-        })
+      var userId = _user._id; 
+
+      if (_user.owned_property != null){
+        var owned_property_property = [].concat(_user.owned_property); 
+        console.log(owned_property_property) 
+        for (var i = 0; i < owned_property_property.length; i++) {
+          var ownedProperty = owned_property_property[i];
+          let developmentId = ownedProperty.development;
+          let propertyId= ownedProperty.property;
+          Development
+            .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
+                {
+                  $set: {  
+                    "properties.$.landlord": userId
+                  }
+                }, {upsert: true})
+            .exec((err, saved) => {
+                  err ? reject(err)
+                      : resolve(saved);
+              });
+        }    
       }
       
-      if (rented_property_property != null){
-        Development
-        .update({"_id":rented_property_development, "properties": { $elemMatch: {"_id": new ObjectID(rented_property_property)}}},{
-          $push:{"properties.0.tenant.$.recident": userId}
-        })
-      }
+      if(_user.rented_property != null){
+        let developmentId = body.rented_property.development;
+        let propertyId = body.rented_property.property;
 
+          Development
+            .update({"_id": developmentId, "properties": { $elemMatch: {"_id": new ObjectID(propertyId)}}},{
+              $push:{
+                "properties.$.tenant": {
+                  "resident": userId,
+                  "type": "tenant",
+                  "created_at": new Date()
+                }
+               }
+            })
+            .exec((err, saved) => {
+                  err ? reject(err)
+                      : resolve(saved);
+                      console.log("rented"+saved);
+              });
+        }     
     });
 });
 
@@ -133,11 +146,13 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
     });
 });
 
-userSchema.static('deleteUser', (id:string):Promise<any> => {
+userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+
+        let body:any = development;
 
         User
           .findByIdAndRemove(id)
@@ -145,6 +160,22 @@ userSchema.static('deleteUser', (id:string):Promise<any> => {
               err ? reject(err)
                   : resolve();
           });
+
+        Development
+          .findByIdAndUpdate(body.development, {
+            $pull: {
+              "properties.0.tenant": {
+                "resident": id
+              }
+            },
+          })
+
+        Development
+          .update({"_id": body.development, "properties.landlord": id},{
+            $set: {
+              "properties.$.landlord": "empty"
+            }
+          })
     });
 });
 
