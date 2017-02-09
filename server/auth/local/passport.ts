@@ -6,7 +6,7 @@ var LocalStrategy = passportLocal.Strategy;
 function localAuthenticate(User, username, password, done) {
   User.findOne({
     username: username.toLowerCase(),
-    active:true
+    active: true
   }).exec()
     .then(user => {
       if(!user) {
