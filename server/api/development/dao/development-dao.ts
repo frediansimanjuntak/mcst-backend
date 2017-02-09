@@ -256,7 +256,7 @@ developmentSchema.static('getByIdProperties', (namedevelopment:string, idpropert
 
          Development 
          .findOne({"name": namedevelopment})
-         .populate ("properties.lanlord properties.created_by") 
+         .populate ("properties.lanlord properties.created_by properties.tenant.resident properties.landlord") 
          .select({
            "properties": {
              $elemMatch: {
@@ -381,7 +381,7 @@ developmentSchema.static('getTenantProperties', (namedevelopment:string, idprope
       var ObjectID = mongoose.Types.ObjectId;
 
          Development
-         .find({"name":namedevelopment},{"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})
+         .find({"name": namedevelopment},{"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})
          .select("properties.tenant")   
          .exec((err, properties) => {
               err ? reject(err)
@@ -548,22 +548,38 @@ developmentSchema.static('getByIdRegisterVehicleProperties', (namedevelopment:st
     });
 });
 
-developmentSchema.static('createRegisterVehicleProperties', (namedevelopment:string, idproperties:string, registervehicle:Object):Promise<any> => {
+developmentSchema.static('createRegisterVehicleProperties', (namedevelopment:string, idproperties:string, userId:string, registervehicle:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(registervehicle)) {
           return reject(new TypeError('Properties is not a valid object.'));
         }        
-        let ObjectID = mongoose.Types.ObjectId;    
-        Development
-        .update({"name": namedevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-          $push:{
-            "properties.$.registered_vehicle": registervehicle  
-          }
+        let ObjectID = mongoose.Types.ObjectId; 
+        let body:any = registervehicle;
+
+        Attachment.createAttachment(attachment, userId).then(res => {
+          var idAttachment = res.idAtt;
+
+          Development
+            .update({"name": namedevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+              $push:{
+                "properties.$.registered_vehicle": {
+                  "license_plate": body.license_plate,
+                  "owner": body.owner,
+                  "transponder": body.transponder,
+                  "document": idAttachment,
+                  "registered_on": new Date(),
+                  "remarks": body.remarks
+                }  
+              }
+            })
+            .exec((err, updated) => {
+                  err ? reject(err)
+                      : resolve(updated);
+              });
         })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+        .catch(err=>{
+          resolve({message: "attachment error"});
+        })         
     });
 });
 
@@ -590,21 +606,42 @@ developmentSchema.static('deleteRegisterVehicleProperties', (namedevelopment:str
     });
 });
 
-developmentSchema.static('updateRegisterVehicleProperties', (namedevelopment:string, idregistervehicle:string, registervehicle:Object):Promise<any> => {
+developmentSchema.static('updateRegisterVehicleProperties', (namedevelopment:string, idregistervehicle:string, userId:string, registervehicle:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(registervehicle)) {
           return reject(new TypeError('Properties is not a valid object.'));
-        }        
+        }       
+        let ObjectID = mongoose.Types.ObjectId; 
+        let body:any = registervehicle;
+        var query = {"name": namedevelopment, "properties.registered_vehicle._id": new ObjectID(idregistervehicle)};
 
         let registervehicleObj = {$set: {}};
         for(var param in registervehicle) {
           registervehicleObj.$set['properties.0.registered_vehicle.$.'+param] = registervehicle[param];
          }
 
-        let ObjectID = mongoose.Types.ObjectId;
+        if(attachment != null){
+          Attachment.createAttachment(attachment, userId).then(res => {
+          var idAttachment = res.idAtt;
+
+          Development
+            .update(query, {
+              $set: {
+                "properties.0.registered_vehicle.$.document": idAttachment
+              } 
+            })
+            .exec((err, updated) => {
+                  err ? reject(err)
+                      : resolve(updated);
+              });
+          })
+          .catch(err=>{
+            resolve({message: "attachment error"});
+          })    
+        }
 
         Development
-        .update({"name": namedevelopment, "properties.registered_vehicle._id": new ObjectID(idregistervehicle)}, registervehicleObj)
+        .update(query, registervehicleObj)
         .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);

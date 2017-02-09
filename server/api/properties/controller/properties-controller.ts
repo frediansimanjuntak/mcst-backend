@@ -131,9 +131,11 @@ export class PropertiesController {
         let _registervehicle = req.body;
         let _namedevelopment = req.params.namedevelopment;
         let _idproperties = req.params.idproperties;
+        let _userId = req["user"]._id;
+        let _attachment = req["files"].document;
 
         DevelopmentDAO
-          ['createRegisterVehicleProperties'](_namedevelopment, _idproperties, _registervehicle)
+          ['createRegisterVehicleProperties'](_namedevelopment, _idproperties, _userId, _registervehicle, _attachment)
           .then(properties => res.status(201).json(properties))
           .catch(error => res.status(400).json(error));
   }
@@ -152,9 +154,11 @@ export class PropertiesController {
         let _registervehicle = req.body;
         let _namedevelopment = req.params.namedevelopment;
         let _idregistervehicle = req.params.idregistervehicle;
+        let _userId = req["user"]._id;
+        let _attachment = req["files"].document;
 
         DevelopmentDAO
-          ['updateRegisterVehicleProperties'](_namedevelopment, _idregistervehicle, _registervehicle)
+          ['updateRegisterVehicleProperties'](_namedevelopment, _idregistervehicle, _userId, _registervehicle, _attachment)
           .then(properties => res.status(201).json(properties))
           .catch(error => res.status(400).json(error));
   }
