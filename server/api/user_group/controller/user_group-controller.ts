@@ -9,11 +9,22 @@ export class UserGroupController {
         .catch(error => res.status(400).json(error));
   }
 
-  static createUserGroup(req: express.Request, res: express.Response):void {
-      let _userGroup = req.body;
+  static getById(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
 
       UserGroupDAO
-        ['createUserGroup'](_userGroup)
+        ['getById'](_id)
+        .then(user_groups => res.status(200).json(user_groups))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static createUserGroup(req: express.Request, res: express.Response):void {
+      let _userGroup = req.body;
+      let _userId = req["user"]._id;
+      let _developmentId = req["user"].default_development;
+
+      UserGroupDAO
+        ['createUserGroup'](_userGroup, _userId, _developmentId)
         .then(user_group => res.status(201).json(user_group))
         .catch(error => res.status(400).json(error));
   }
@@ -49,7 +60,7 @@ export class UserGroupController {
 
   static deleteUser(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
-    let _user = req.body.user;
+    let _user = req.body;
 
     UserGroupDAO
       ['deleteUser'](_id, _user)

@@ -14,7 +14,7 @@ export class UserRoutes {
       router
         .route('/api/users/:id')
         .get(auth.isAuthenticated(), UserController.getById)
-        .delete(auth.isAuthenticated(), UserController.deleteUser);
+        .put(auth.isAuthenticated(), UserController.deleteUser);
 
       router
         .route('/api/users/update/:id')

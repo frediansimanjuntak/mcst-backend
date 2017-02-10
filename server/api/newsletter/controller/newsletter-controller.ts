@@ -26,7 +26,7 @@ export class NewsletterController {
       let _idnewsletter = req.params.idnewsletter;
 
       DevelopmentDAO         
-        ['releaseNewsletter'](_namedevelopment,_idnewsletter, _userId)
+        ['releaseNewsletter'](_namedevelopment, _userId, _idnewsletter)
         .then(newsletter => res.status(201).json(newsletter))
         .catch(error => res.status(400).json(error));   
   }
