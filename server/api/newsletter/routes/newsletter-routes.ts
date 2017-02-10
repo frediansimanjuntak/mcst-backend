@@ -18,6 +18,10 @@ export class NewsletterRoutes {
 
       router
         .route('/api/newsletters/:namedevelopment/update/:idnewsletter')
-        .post(auth.isAuthenticated(), NewsletterController.updateNewsletter);      
+        .post(auth.isAuthenticated(), NewsletterController.updateNewsletter); 
+
+      router
+        .route('/api/newsletters/:namedevelopment/release/:idnewsletter')
+        .post(auth.isAuthenticated(), NewsletterController.releaseNewsletter);      
     }
 }

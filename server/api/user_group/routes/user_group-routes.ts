@@ -13,6 +13,7 @@ export class UserGroupRoutes {
 
       router
         .route('/api/user_groups/:id')
+        .get(auth.isAuthenticated(), UserGroupController.getById)
         .delete(auth.isAuthenticated(), UserGroupController.deleteUserGroup);
 
       router
@@ -22,6 +23,6 @@ export class UserGroupRoutes {
       router
         .route('/api/user_groups/users/:id')
         .post(auth.isAuthenticated(), UserGroupController.addUser)
-        .delete(auth.isAuthenticated(), UserGroupController.deleteUser);
+        .put(auth.isAuthenticated(), UserGroupController.deleteUser);
     }
 }

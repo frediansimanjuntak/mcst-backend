@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import userSchema from '../model/user-model';
 import Development from '../../development/dao/development-dao'
+import UserGroup from '../../user_group/dao/user_group-dao'
 
 userSchema.static('index', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -82,14 +83,12 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
           _user.save((err, saved)=>{
             err ? reject(err)
                 : resolve(saved);
-              console.log(saved);
           });
 
       var userId = _user._id; 
 
       if (_user.owned_property != null){
         var owned_property_property = [].concat(_user.owned_property); 
-        console.log(owned_property_property) 
         for (var i = 0; i < owned_property_property.length; i++) {
           var ownedProperty = owned_property_property[i];
           let developmentId = ownedProperty.development;
@@ -125,7 +124,6 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
             .exec((err, saved) => {
                   err ? reject(err)
                       : resolve(saved);
-                      console.log("rented"+saved);
               });
         }     
     });
@@ -167,15 +165,57 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
               "properties.0.tenant": {
                 "resident": id
               }
-            },
-          })
-
-        Development
-          .update({"_id": body.development, "properties.landlord": id},{
-            $set: {
-              "properties.$.landlord": "empty"
             }
           })
+          .exec((err, update) => {
+              err ? reject(err)
+                  : resolve(update);
+          });
+
+        User
+          .findById(id, (err, user) => {
+            
+            if (user.owned_property != null){
+              var ObjectID = mongoose.Types.ObjectId; 
+              var ownedProperty_landlord = [].concat(user.owned_property)
+              for (var i = 0; i < ownedProperty_landlord.length; i++) {
+                var ownedProperty = ownedProperty_landlord[i];
+                let developmentId = ownedProperty.development;
+                let propertyId= ownedProperty.property;
+                Development
+                  .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
+                      {
+                        $set: {  
+                          "properties.$.landlord": ""
+                        }
+                      }, {upsert: true})
+                  .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                    });
+              }
+            }  
+          })
+          .update({"_id": body.development, "properties.landlord": id},{
+            $set: {
+              "properties.$.landlord": ""
+            }
+          })
+          .exec((err, update) => {
+              err ? reject(err)
+                  : resolve(update);
+          });
+
+        UserGroup
+          .findByIdAndUpdate(body.user_group, {
+            $pull: {
+              "users": id
+            }
+          })
+          .exec((err, update) => {
+              err ? reject(err)
+                  : resolve(update);
+          });
     });
 });
 
