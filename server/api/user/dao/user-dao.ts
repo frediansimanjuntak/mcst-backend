@@ -172,39 +172,29 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
                   : resolve(update);
           });
 
-        User
-          .findById(id, (err, user) => {
-            
-            if (user.owned_property != null){
-              var ObjectID = mongoose.Types.ObjectId; 
-              var ownedProperty_landlord = [].concat(user.owned_property)
-              for (var i = 0; i < ownedProperty_landlord.length; i++) {
-                var ownedProperty = ownedProperty_landlord[i];
-                let developmentId = ownedProperty.development;
-                let propertyId= ownedProperty.property;
-                Development
-                  .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
-                      {
-                        $set: {  
-                          "properties.$.landlord": ""
-                        }
-                      }, {upsert: true})
-                  .exec((err, saved) => {
-                        err ? reject(err)
-                            : resolve(saved);
-                    });
-              }
-            }  
-          })
-          .update({"_id": body.development, "properties.landlord": id},{
-            $set: {
-              "properties.$.landlord": ""
-            }
-          })
-          .exec((err, update) => {
-              err ? reject(err)
-                  : resolve(update);
-          });
+        // User
+        //   .findById(id, (err, userr) => {            
+        //     if (userr.owned_property != null){
+        //       var ObjectID = mongoose.Types.ObjectId; 
+        //       var ownedProperty_landlord = [].concat(userr.owned_property)
+        //       for (var i = 0; i < ownedProperty_landlord.length; i++) {
+        //         var ownedProperty = ownedProperty_landlord[i];
+        //         let developmentId = ownedProperty.development;
+        //         let propertyId= ownedProperty.property;
+        //         Development
+        //           .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
+        //               {
+        //                 $set: {  
+        //                   "properties.$.landlord": ""
+        //                 }
+        //               }, {upsert: true})
+        //           .exec((err, saved) => {
+        //                 err ? reject(err)
+        //                     : resolve(saved);
+        //             });
+        //       }
+        //     }  
+        //   })
 
         UserGroup
           .findByIdAndUpdate(body.user_group, {
