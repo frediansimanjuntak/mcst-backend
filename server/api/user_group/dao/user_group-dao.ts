@@ -152,8 +152,8 @@ userGroupSchema.static('deleteUser', (id:string, users:Object):Promise<any> => {
 
         User
         .findByIdAndUpdate(body.user, {
-          $set: {
-            "user_group":""
+          $pull: {
+            "user_group": id
           }
         })
     });
