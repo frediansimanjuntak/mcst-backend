@@ -174,6 +174,25 @@ incidentSchema.static('unstarred', (id:string, starred_by:string):Promise<any> =
     });
 });
 
+incidentSchema.static('resolve', (id:string, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+      Incident
+      .findByIdAndUpdate(id,     
+        {
+          $set: {
+            "resolved_by": userId,
+            "resolved_at": new Date(),
+            "status": "resolve"
+          }
+        })
+        .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+        });
+    });
+});
+
 incidentSchema.static('archieve', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
 
@@ -188,6 +207,7 @@ incidentSchema.static('archieve', (id:string):Promise<any> => {
         });
     });
 });
+
 
 incidentSchema.static('unarchieve', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {

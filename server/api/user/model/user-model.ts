@@ -68,7 +68,10 @@ var UserSchema = new mongoose.Schema({
     ref: 'Development'
   },
   autorized_development: {type: String},
-  user_group: {type: String},
+  user_group: {
+    type: Schema.Types.ObjectId,
+    ref: 'UserGroup'
+  },
   created_at: {type: String}
 });
 

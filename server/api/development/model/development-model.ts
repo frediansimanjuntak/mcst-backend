@@ -8,6 +8,7 @@ import {AWSService} from '../../../global/aws.service';
 
 var developmentSchema = new mongoose.Schema({
     name: {type: String, required: true},
+    name_url: {type: String},
     owner: {
     	type: Schema.Types.ObjectId,
     	ref: 'User'
@@ -48,7 +49,10 @@ var developmentSchema = new mongoose.Schema({
     			ref: 'User'
 			},
 			transponder: {type: String},
-			document: {type:String},
+			document: {
+				type: Schema.Types.ObjectId,
+    			ref: 'Attachment'
+			},
 			registered_on: {type: Date},
 			remarks: {type: String}
 		}],

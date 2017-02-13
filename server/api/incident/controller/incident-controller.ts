@@ -80,6 +80,16 @@ export class IncidentController {
       .catch(error => res.status(400).json(error));
   }
 
+  static resolve(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+    let _userId = req["user"]._id;
+
+    IncidentDAO
+      ['resolve'](_id, _userId)
+      .then(incident => res.status(201).json(incident))
+      .catch(error => res.status(400).json(error));
+  }
+
   static archieve(req: express.Request, res: express.Response):void {
     let _id = req.params.id;
 
