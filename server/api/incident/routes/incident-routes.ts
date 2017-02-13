@@ -30,5 +30,9 @@ export class IncidentRoutes {
         .route('/api/incidents/archieve/:id')
         .post(auth.isAuthenticated(), IncidentController.archieve)
         .put(auth.isAuthenticated(), IncidentController.unarchieve);
+
+      router
+        .route('/api/incidents/resolve/:id')
+        .post(auth.isAuthenticated(), IncidentController.resolve);
     }
 }
