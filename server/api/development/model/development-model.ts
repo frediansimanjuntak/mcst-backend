@@ -49,7 +49,10 @@ var developmentSchema = new mongoose.Schema({
     			ref: 'User'
 			},
 			transponder: {type: String},
-			document: {type:String},
+			document: {
+				type: Schema.Types.ObjectId,
+    			ref: 'Attachment'
+			},
 			registered_on: {type: Date},
 			remarks: {type: String}
 		}],
