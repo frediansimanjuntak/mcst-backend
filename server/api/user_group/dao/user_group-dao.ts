@@ -62,6 +62,7 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
                       : resolve(saved);
               });
         }
+        resolve({message: "Success"});
       }
     });
 });
@@ -88,8 +89,8 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
 
                 User
                   .findByIdAndUpdate(iduser, {
-                    $set: {
-                      "user_group": "empy"
+                    $pull: {
+                      "user_group": id
                     }
                   }, {upsert: true})
                   .exec((err, saved) => {
@@ -97,6 +98,7 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
                         : resolve(saved);
                       });
               }
+              resolve({message: "Success"})
             }            
           })
     });

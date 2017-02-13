@@ -88,9 +88,9 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
       var userId = _user._id; 
 
       if (_user.owned_property != null){
-        var owned_property_property = [].concat(_user.owned_property); 
-        for (var i = 0; i < owned_property_property.length; i++) {
-          var ownedProperty = owned_property_property[i];
+        var ownedProperty_landlord = [].concat(_user.owned_property)
+        for (var i = 0; i < ownedProperty_landlord.length; i++) {
+          var ownedProperty = ownedProperty_landlord[i];
           let developmentId = ownedProperty.development;
           let propertyId= ownedProperty.property;
           Development
@@ -104,7 +104,8 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
                   err ? reject(err)
                       : resolve(saved);
               });
-        }    
+        }
+        resolve({message: "Success"});
       }
       
       if(_user.rented_property != null){
@@ -112,7 +113,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         let propertyId = body.rented_property.property;
 
           Development
-            .update({"_id": developmentId, "properties": { $elemMatch: {"_id": new ObjectID(propertyId)}}},{
+            .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},{
               $push:{
                 "properties.$.tenant": {
                   "resident": userId,
@@ -159,7 +160,7 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
               for (var i = 0; i < ownedProperty_landlord.length; i++) {
                 var ownedProperty = ownedProperty_landlord[i];
                 let developmentId = ownedProperty.development;
-                let propertyId= ownedProperty.property;
+                let propertyId = ownedProperty.property;
                 Development
                   .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
                       {
@@ -174,9 +175,8 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
               }
             }  
           })
-          .exec((err, update) => {
-              err ? reject(err)
-                  : resolve(update);
+          .exec((err) => {
+              resolve({message: "error"});
           });
 
         Development
