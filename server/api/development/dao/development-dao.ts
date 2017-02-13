@@ -5,6 +5,8 @@ import developmentSchema from '../model/development-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
+var slug = require('slug')
+
 developmentSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
@@ -35,8 +37,10 @@ developmentSchema.static('createDevelopment', (development:Object):Promise<any> 
       if (!_.isObject(development)) {
         return reject(new TypeError('Development is not a valid object.'));
       }
+      let body:any = development;
 
       var _development = new Development(development);
+          _development.name_url = slug(body.name);
           _development.save((err, saved) => {
             err ? reject(err)
                 : resolve(saved);
@@ -243,6 +247,7 @@ developmentSchema.static('getProperties', (namedevelopment:string):Promise<any> 
          Development
           .findOne({"name": namedevelopment})
           .select("properties")
+          .populate ("properties.landlord properties.created_by properties.tenant.resident") 
           .exec((err, properties) => {
               err ? reject(err)
                   : resolve(properties);
@@ -256,7 +261,7 @@ developmentSchema.static('getByIdProperties', (namedevelopment:string, idpropert
 
          Development 
          .findOne({"name": namedevelopment})
-         .populate ("properties.lanlord properties.created_by properties.tenant.resident properties.landlord") 
+         .populate ("properties.landlord properties.created_by properties.tenant.resident") 
          .select({
            "properties": {
              $elemMatch: {
@@ -276,8 +281,6 @@ developmentSchema.static('createProperties', (namedevelopment:string, userId:str
       if (!_.isObject(properties)) {
         return reject(new TypeError('Properties is not a valid object.'));
       }
-
-      console.log(properties)
 
       Development
       .findOneAndUpdate({"name": namedevelopment},     
