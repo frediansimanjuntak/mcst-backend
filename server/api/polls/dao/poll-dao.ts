@@ -3,6 +3,8 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import pollSchema from '../model/poll-model';
 
+var DateOnly = require('mongoose-dateonly')(mongoose);
+
 pollSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
@@ -113,7 +115,10 @@ pollSchema.static('startPoll', (id:string):Promise<any> => {
 
         Poll
         .findByIdAndUpdate(id,{
-          $set:{"status": "active"}
+          $set: {
+            "status": "active",
+            "start_time": new DateOnly()
+          }
         })
         .exec((err, updated) => {
               err ? reject(err)

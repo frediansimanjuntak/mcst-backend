@@ -5,6 +5,8 @@ export class Cron{
     AutoPost.autoPostPaymentReminder();
     AutoPost.autoPostPublishAnnouncement();
     AutoPost.autoPostValidAnnouncement();
+    AutoPost.autoStartPoll();
+    AutoPost.autoEndPoll();
   }
 }
 
