@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
+var DateOnly = require('mongoose-dateonly')(mongoose);
 
 var paymentreminderSchema = new mongoose.Schema({
 	development: {
@@ -8,7 +9,7 @@ var paymentreminderSchema = new mongoose.Schema({
 	},
 	// property:{type: String, required: true, trim: true},
 	title: {type: String, trim: true},
-	auto_issue_on: {type: Date, trim: true},
+	auto_issue_on: {type: DateOnly, trim: true},
 	due_on: {type: String, trim: true},
 	message_to_receiver: {type: String, trim: true},
 	notification_list: [{
