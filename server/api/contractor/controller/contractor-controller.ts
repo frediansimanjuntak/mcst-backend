@@ -29,33 +29,33 @@ export class ContractorController {
   }
 
   static deleteContractor(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    ContractorDAO
-      ['deleteContractor'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      ContractorDAO
+        ['deleteContractor'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateContractor(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _userId = req["user"]._id;
-    let _contractor = req.body;
-    let _attachment= req["files"].attachment;
+      let _id = req.params.id;
+      let _userId = req["user"]._id;
+      let _contractor = req.body;
+      let _attachment= req["files"].attachment;
 
-    ContractorDAO
-      ['updateContractor'](_id, _userId, _contractor, _attachment)
-      .then(contractor => res.status(201).json(contractor))
-      .catch(error => res.status(400).json(error));
+      ContractorDAO
+        ['updateContractor'](_id, _userId, _contractor, _attachment)
+        .then(contractor => res.status(201).json(contractor))
+        .catch(error => res.status(400).json(error));
   }
 
   static activationContractor(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _active = req.body.active;
+      let _id = req.params.id;
+      let _active = req.body.active;
 
-    ContractorDAO
-      ['activationContractor'](_id, _active)
-      .then(contractor => res.status(201).json(contractor))
-      .catch(error => res.status(400).json(error));
+      ContractorDAO
+        ['activationContractor'](_id, _active)
+        .then(contractor => res.status(201).json(contractor))
+        .catch(error => res.status(400).json(error));
   }
 }

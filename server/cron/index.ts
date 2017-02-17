@@ -9,4 +9,3 @@ export class Cron{
     AutoPost.autoEndPoll();
   }
 }
-

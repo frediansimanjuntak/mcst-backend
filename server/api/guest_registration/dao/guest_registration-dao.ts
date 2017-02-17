@@ -46,7 +46,7 @@ guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:st
           _guest.save((err, saved) => {
             err ? reject(err)
                 : resolve(saved);
-          });
+              });
     });
 });
 
@@ -61,7 +61,7 @@ guestSchema.static('deleteGuest', (id:string):Promise<any> => {
           .exec((err, deleted) => {
               err ? reject(err)
                   : resolve();
-          });
+                });
     });
 });
 
@@ -76,7 +76,7 @@ guestSchema.static('updateGuest', (id:string, guest:Object):Promise<any> => {
           .exec((err, updated) => {
                 err ? reject(err)
                     : resolve(updated);
-            });
+                  });
     });
 });
 
@@ -86,9 +86,10 @@ guestSchema.static('checkInGuest', (id:string, userId:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         let checkIn = Date.now();
+
         Guest
           .findByIdAndUpdate(id, {
-            $set:{
+            $set: {
               "check_in": checkIn,
               "checkin_by": userId
             }
@@ -96,7 +97,7 @@ guestSchema.static('checkInGuest', (id:string, userId:string):Promise<any> => {
           .exec((err, updated) => {
                 err ? reject(err)
                     : resolve(updated);
-            });
+                  });
     });
 });
 
@@ -106,9 +107,10 @@ guestSchema.static('checkOutGuest', (id:string, userId:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         let checkOut = Date.now();
+
         Guest
         .findByIdAndUpdate(id, {
-          $set:{
+          $set: {
             "check_out": checkOut,
             "checkout_by": userId
           }

@@ -30,32 +30,32 @@ export class AnnouncementController {
   }
 
   static deleteAnnouncement(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    AnnouncementDAO
-      ['deleteAnnouncement'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      AnnouncementDAO
+        ['deleteAnnouncement'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateAnnouncement(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _announcement = req.body;
+      let _id = req.params.id;
+      let _announcement = req.body;
 
-    AnnouncementDAO
-      ['updateAnnouncement'](_id, _announcement)
-      .then(announcement => res.status(201).json(announcement))
-      .catch(error => res.status(400).json(error));
+      AnnouncementDAO
+        ['updateAnnouncement'](_id, _announcement)
+        .then(announcement => res.status(201).json(announcement))
+        .catch(error => res.status(400).json(error));
   }
 
   static publishAnnouncement(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _announcement = req.body;
-    let _userId = req["user"]._id;
+      let _id = req.params.id;
+      let _announcement = req.body;
+      let _userId = req["user"]._id;
 
-    AnnouncementDAO
-      ['publishAnnouncement'](_id, _userId, _announcement)
-      .then(_annoncement => res.status(201).json(_annoncement))
-      .catch(error => res.status(400).json(error));
+      AnnouncementDAO
+        ['publishAnnouncement'](_id, _userId, _announcement)
+        .then(_annoncement => res.status(201).json(_annoncement))
+        .catch(error => res.status(400).json(error));
   }
 }

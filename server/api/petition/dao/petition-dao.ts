@@ -37,13 +37,14 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
 
 petitionSchema.static('createPetition', (petition:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(petition)) {
-        return reject(new TypeError('Petition is not a valid object.'));
-      }
-        Attachment.createAttachment(attachment, userId).then(res => {
-          var idAttachment = res.idAtt;
+        if (!_.isObject(petition)) {
+          return reject(new TypeError('Petition is not a valid object.'));
+        }
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
+              var idAttachment = res.idAtt;
 
-          var _petition = new Petition(petition);
+              var _petition = new Petition(petition);
               _petition.created_by = userId;
               _petition.development = developmentId;
               _petition.attachment = idAttachment;
@@ -51,10 +52,10 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
                 err ? reject(err)
                     : resolve(saved);
               });
-        })
-        .catch(err=>{
-          resolve({message: "attachment error"});
-        })      
+            })
+            .catch(err=>{
+              resolve({message: "attachment error"});
+            })      
     });
 });
 
@@ -80,65 +81,64 @@ petitionSchema.static('updatePetition', (id:string, userId:string, petition:Obje
         }
 
         let petitionObj = {$set: {}};
-            for(var param in petition) {
-              petitionObj.$set[param] = petition[param];
-             }
+        for(var param in petition) {
+          petitionObj.$set[param] = petition[param];
+        }
 
-            let ObjectID = mongoose.Types.ObjectId; 
-            let _query = {"_id": id};
+        let ObjectID = mongoose.Types.ObjectId; 
+        let _query = {"_id": id};
 
-            var files = [].concat(attachment);
-            var idAttachment = [];
+        var files = [].concat(attachment);
+        var idAttachment = [];
 
-            if(attachment != null){
-              Attachment.createAttachment(attachment, userId).then(res => {
-                var idAttachment=res.idAtt;
+        if(attachment != null){
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
+              var idAttachment=res.idAtt;
 
-                Petition
-                  .update(_query,{
-                    $set: {
-                      "attachment": idAttachment
-                    }
-                  })
-                  .exec((err, saved) => {
-                        err ? reject(err)
-                            : resolve(saved);
-                   });
-              })
-              .catch(err=>{
-                resolve({message: "attachment error"});
-              })                            
-            } 
-            
-            Petition
-              .update(_query, petitionObj)
-              .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                }); 
+              Petition
+                .update(_query,{
+                  $set: {
+                    "attachment": idAttachment
+                  }
+                })
+                .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                 });
+            })
+            .catch(err=>{
+              resolve({message: "attachment error"});
+            })                            
+        } 
+        
+        Petition
+          .update(_query, petitionObj)
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            }); 
     });
 });
 
 petitionSchema.static('archieve', (arrayId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      console.log(arrayId);
-      let body:any = arrayId
-      Petition
-        .update({"_id": {$in: body.ids}}, {
-          $set: {
-            "archieve": true
-          }
-        }, {multi: true})
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-        });
+        let body:any = arrayId
+        Petition
+          .update({"_id": {$in: body.ids}}, {
+            $set: {
+              "archieve": true
+            }
+          }, {multi: true})
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+          });
     });
 });
 
 petitionSchema.static('unarchieve', (arrayId:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-      console.log(arrayId);
+    return new Promise((resolve:Function, reject:Function) => {      
       let body:any = arrayId
       Petition
         .update({"_id": {$in: body.ids}}, {

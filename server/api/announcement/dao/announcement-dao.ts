@@ -35,17 +35,17 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
 
 announcementSchema.static('createAnnouncement', (announcement:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(announcement)) {
-        return reject(new TypeError('Announcement is not a valid object.'));
-      }
+        if (!_.isObject(announcement)) {
+          return reject(new TypeError('Announcement is not a valid object.'));
+        }
 
-      var _announcement = new Announcement(announcement);
-          _announcement.created_by = userId;
-          _announcement.development = developmentId;
-          _announcement.save((err, saved) => {
-            err ? reject(err)
-                : resolve(saved);
-          });
+        var _announcement = new Announcement(announcement);
+        _announcement.created_by = userId;
+        _announcement.development = developmentId;
+        _announcement.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
     });
 });
 
@@ -66,21 +66,27 @@ announcementSchema.static('deleteAnnouncement', (id:string, ):Promise<any> => {
 
 announcementSchema.static('updateAnnouncement', (id:string, announcement:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(announcement)) {
           return reject(new TypeError('Announcement is not a valid object.'));
         }
 
         Announcement
-        .findByIdAndUpdate(id, announcement)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, announcement)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
 
 announcementSchema.static('publishAnnouncement', (id:string, userId:string, announcement:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(announcement)) {
           return reject(new TypeError('Announcement is not a valid object.'));
         }
@@ -106,7 +112,6 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, anno
           });
     });
 });
-
 
 let Announcement = mongoose.model('Announcement', announcementSchema);
 

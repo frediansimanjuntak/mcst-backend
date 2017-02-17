@@ -12,11 +12,11 @@ var contractorSchema = new mongoose.Schema({
   role: {type: String, trim: true, default: "contractor"},
 	email: {type: String, lowercase: true, unique: true, trim: true},	
 	address: {
-		street_name:{type: String, trim: true},
-		block_no:{type: String, trim: true},
-		postal_code:{type: String, trim: true},
-		country:{type: String, trim: true},
-		full_address:{type: String, trim: true}
+		street_name: {type: String, trim: true},
+		block_no: {type: String, trim: true},
+		postal_code: {type: String, trim: true},
+		country: {type: String, trim: true},
+		full_address: {type: String, trim: true}
 	},
 	profile_picture: {type: String, trim: true},
 	description: {type: String, trim: true},

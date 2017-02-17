@@ -84,73 +84,85 @@ feedbackSchema.static('deleteFeedback', (id:string):Promise<any> => {
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "Delete Success"});
           });
     });
 });
 
 feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(feedback)) {
-          return reject(new TypeError('Feedback is not a valid object.'));
+            return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
-        .findByIdAndUpdate(id, feedback)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, feedback)
+          .exec((err, updated) => {
+            err ? reject(err)
+                : resolve(updated);
           });
     });
 });
 
 feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(reply)) {
           return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
-        .findByIdAndUpdate(id, {
-          $set:{
-            "feedback_reply": reply,
-            "reply_by": userId,
-            "reply_at": new Date()
-          }
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+          .findByIdAndUpdate(id, {
+            $set: {
+              "feedback_reply": reply,
+              "reply_by": userId,
+              "reply_at": new Date()
+            }
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+                  });
     });
 });
 
 feedbackSchema.static('publishFeedback', (id:string, feedback:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(feedback)) {
           return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
-        .findByIdAndUpdate(id, {
-          $set:{"status": "publish"}
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+          .findByIdAndUpdate(id, {
+            $set: {"status": "publish"}
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+                  });
     });
 });
 
 feedbackSchema.static('archieveFeedback', (id:string, feedback:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(feedback)) {
           return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
         .findByIdAndUpdate(id, {
-          $set:{"archieve": true}
+          $set: {"archieve": true}
         })
         .exec((err, updated) => {
               err ? reject(err)
@@ -158,7 +170,6 @@ feedbackSchema.static('archieveFeedback', (id:string, feedback:Object):Promise<a
           });
     });
 });
-
 
 let Feedback = mongoose.model('Feedback', feedbackSchema);
 

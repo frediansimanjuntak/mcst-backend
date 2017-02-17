@@ -31,21 +31,21 @@ export class BookingController {
   }
 
   static deleteBooking(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    BookingDAO
-      ['deleteBooking'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      BookingDAO
+        ['deleteBooking'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateBooking(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _booking = req.body;
+      let _id = req.params.id;
+      let _booking = req.body;
 
-    BookingDAO
-      ['updateBooking'](_id, _booking)
-      .then(booking => res.status(201).json(booking))
-      .catch(error => res.status(400).json(error));
+      BookingDAO
+        ['updateBooking'](_id, _booking)
+        .then(booking => res.status(201).json(booking))
+        .catch(error => res.status(400).json(error));
   }
 }

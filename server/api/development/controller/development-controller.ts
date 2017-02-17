@@ -9,8 +9,8 @@ export class DevelopmentController {
         .catch(error => res.status(400).json(error));
   }
 
-   static getById(req: express.Request, res: express.Response):void {
-     let _id = req.params.id;
+  static getById(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
 
       DevelopmentDAO
         ['getById'](_id)
@@ -29,22 +29,22 @@ export class DevelopmentController {
   
 
   static deleteDevelopment(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    DevelopmentDAO
-      ['deleteDevelopment'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      DevelopmentDAO
+        ['deleteDevelopment'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateDevelopment(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _development = req.body;
+      let _id = req.params.id;
+      let _development = req.body;
 
-    DevelopmentDAO
-      ['updateDevelopment'](_id, _development)
-      .then(development => res.status(201).json(development))
-      .catch(error => res.status(400).json(error));
+      DevelopmentDAO
+        ['updateDevelopment'](_id, _development)
+        .then(development => res.status(201).json(development))
+        .catch(error => res.status(400).json(error));
   }
 
   static createStaffDevelopment(req: express.Request, res: express.Response):void {

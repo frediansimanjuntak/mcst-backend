@@ -29,54 +29,54 @@ export class CompanyController {
   }
 
   static deleteCompany(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    CompanyDAO
-      ['deleteCompany'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      CompanyDAO
+        ['deleteCompany'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateCompany(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _company = req.body;
-    let _attachment = req["files"].attachment;
-    let _userId = req["user"]._id;
+      let _id = req.params.id;
+      let _company = req.body;
+      let _attachment = req["files"].attachment;
+      let _userId = req["user"]._id;
 
-    CompanyDAO
-      ['updateCompany'](_id, _userId, _company, _attachment)
-      .then(company => res.status(201).json(company))
-      .catch(error => res.status(400).json(error));
+      CompanyDAO
+        ['updateCompany'](_id, _userId, _company, _attachment)
+        .then(company => res.status(201).json(company))
+        .catch(error => res.status(400).json(error));
   }
 
   static addEmployeeCompany(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _employee = req.body.employee;
+      let _id = req.params.id;
+      let _employee = req.body.employee;
 
-    CompanyDAO
-      ['addEmployeeCompany'](_id, _employee)
-      .then(company => res.status(201).json(company))
-      .catch(error => res.status(400).json(error));
+      CompanyDAO
+        ['addEmployeeCompany'](_id, _employee)
+        .then(company => res.status(201).json(company))
+        .catch(error => res.status(400).json(error));
   }
 
   static removeEmployeeCompany(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _employee = req.body.employee;
+      let _id = req.params.id;
+      let _employee = req.body.employee;
 
-    CompanyDAO
-      ['removeEmployeeCompany'](_id, _employee)
-      .then(company => res.status(201).json(company))
-      .catch(error => res.status(400).json(error));
+      CompanyDAO
+        ['removeEmployeeCompany'](_id, _employee)
+        .then(company => res.status(201).json(company))
+        .catch(error => res.status(400).json(error));
   }
 
   static activationCompany(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _company = req.body;
+      let _id = req.params.id;
+      let _company = req.body;
 
-    CompanyDAO
-      ['activationCompany'](_id, _company)
-      .then(company => res.status(201).json(company))
-      .catch(error => res.status(400).json(error));
+      CompanyDAO
+        ['activationCompany'](_id, _company)
+        .then(company => res.status(201).json(company))
+        .catch(error => res.status(400).json(error));
   }
 
 
