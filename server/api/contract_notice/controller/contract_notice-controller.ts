@@ -35,26 +35,26 @@ export class ContractNoticeController {
   }
 
   static deleteContractNotice(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _idcontractnotice = req.params.idcontractnotice;
+      let _id = req.params.id;
+      let _idcontractnotice = req.params.idcontractnotice;
 
-    ContractDAO
-      ['deleteContractNotice'](_id, _idcontractnotice)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      ContractDAO
+        ['deleteContractNotice'](_id, _idcontractnotice)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateContractNotice(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _idcontractnotice = req.params.idcontractnotice;
-    let _contractnotice = req.body;    
-    let _attachment = req["files"].attachment;
-    let _userId = req["user"]._id;
+      let _id = req.params.id;
+      let _idcontractnotice = req.params.idcontractnotice;
+      let _contractnotice = req.body;    
+      let _attachment = req["files"].attachment;
+      let _userId = req["user"]._id;
 
-    ContractDAO
-      ['updateContractNotice'](_id, _idcontractnotice, _userId, _contractnotice, _attachment)
-      .then(contract => res.status(201).json(contract))
-      .catch(error => res.status(400).json(error));
+      ContractDAO
+        ['updateContractNotice'](_id, _idcontractnotice, _userId, _contractnotice, _attachment)
+        .then(contract => res.status(201).json(contract))
+        .catch(error => res.status(400).json(error));
   }
 
   static publishContractNotice(req: express.Request, res: express.Response):void {

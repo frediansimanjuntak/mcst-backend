@@ -44,22 +44,22 @@ export class FeedbackController {
   }
 
   static deleteFeedback(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    FeedbackDAO
-      ['deleteFeedback'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      FeedbackDAO
+        ['deleteFeedback'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateFeedback(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _feedback = req.body;
+      let _id = req.params.id;
+      let _feedback = req.body;
 
-    FeedbackDAO
-      ['updateFeedback'](_id, _feedback)
-      .then(feedback => res.status(201).json(feedback))
-      .catch(error => res.status(400).json(error));
+      FeedbackDAO
+        ['updateFeedback'](_id, _feedback)
+        .then(feedback => res.status(201).json(feedback))
+        .catch(error => res.status(400).json(error));
   } 
 
   static replyFeedback(req: express.Request, res: express.Response):void {
@@ -74,20 +74,20 @@ export class FeedbackController {
   } 
 
   static publishFeedback(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    FeedbackDAO
-      ['publishFeedback'](_id)
-      .then(feedback => res.status(201).json(feedback))
-      .catch(error => res.status(400).json(error));
+      FeedbackDAO
+        ['publishFeedback'](_id)
+        .then(feedback => res.status(201).json(feedback))
+        .catch(error => res.status(400).json(error));
   }
 
   static archieveFeedback(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    FeedbackDAO
-      ['archieveFeedback'](_id)
-      .then(feedback => res.status(201).json(feedback))
-      .catch(error => res.status(400).json(error));
+      FeedbackDAO
+        ['archieveFeedback'](_id)
+        .then(feedback => res.status(201).json(feedback))
+        .catch(error => res.status(400).json(error));
   }
 }

@@ -31,22 +31,22 @@ export class FacilityController {
   }
 
   static deleteFacility(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    FacilityDAO
-      ['deleteFacility'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      FacilityDAO
+        ['deleteFacility'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateFacility(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _facility = req.body;
+      let _id = req.params.id;
+      let _facility = req.body;
 
-    FacilityDAO
-      ['updateFacility'](_id, _facility)
-      .then(facility => res.status(201).json(facility))
-      .catch(error => res.status(400).json(error));
+      FacilityDAO
+        ['updateFacility'](_id, _facility)
+        .then(facility => res.status(201).json(facility))
+        .catch(error => res.status(400).json(error));
   }
   
 }

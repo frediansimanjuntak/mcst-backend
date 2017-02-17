@@ -32,23 +32,23 @@ export class PaymentBookingController {
   }
 
   static deletePaymentBooking(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    PaymentBookingDAO
-      ['deletePaymentBooking'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      PaymentBookingDAO
+        ['deletePaymentBooking'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updatePaymentBooking(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _userId = req["user"]._id;
-    let _paymentbooking = req.body;
-    let _attachment = req["files"].payment_proof;
+      let _id = req.params.id;
+      let _userId = req["user"]._id;
+      let _paymentbooking = req.body;
+      let _attachment = req["files"].payment_proof;
 
-    PaymentBookingDAO
-      ['updatePaymentBooking'](_id, _userId, _paymentbooking, _attachment)
-      .then(_paymentbooking => res.status(201).json(_paymentbooking))
-      .catch(error => res.status(400).json(error));
+      PaymentBookingDAO
+        ['updatePaymentBooking'](_id, _userId, _paymentbooking, _attachment)
+        .then(_paymentbooking => res.status(201).json(_paymentbooking))
+        .catch(error => res.status(400).json(error));
   }
 }

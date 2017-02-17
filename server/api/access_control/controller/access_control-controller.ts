@@ -11,6 +11,7 @@ export class AccessControlController {
 
   static getById(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
+      
       AccessControlDAO
         ['getById'](_id)
         .then(annoncements => res.status(200).json(annoncements))
@@ -27,21 +28,21 @@ export class AccessControlController {
   }
 
   static deleteAccessControl(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    AccessControlDAO
-      ['deleteAccessControl'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      AccessControlDAO
+        ['deleteAccessControl'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateAccessControl(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _accesscontrol = req.body;
+      let _id = req.params.id;
+      let _accesscontrol = req.body;
 
-    AccessControlDAO
-      ['updateAccessControl'](_id, _accesscontrol)
-      .then(_accesscontrol => res.status(201).json(_accesscontrol))
-      .catch(error => res.status(400).json(error));
+      AccessControlDAO
+        ['updateAccessControl'](_id, _accesscontrol)
+        .then(_accesscontrol => res.status(201).json(_accesscontrol))
+        .catch(error => res.status(400).json(error));
   }
 }

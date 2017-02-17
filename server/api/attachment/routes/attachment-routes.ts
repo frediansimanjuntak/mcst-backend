@@ -14,9 +14,6 @@ export class AttachmentRoutes {
       router
         .route('/api/attachments/:id')
         .delete(auth.isAuthenticated(), AttachmentController.deleteAttachment);
-
-      // router
-      //   .route('/api/attachments/update/:id')
-      //   .post(AttachmentController.updateAttachment);
+        
     }
 }

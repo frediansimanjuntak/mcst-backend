@@ -3,6 +3,8 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import pollSchema from '../model/poll-model';
 
+var DateOnly = require('mongoose-dateonly')(mongoose);
+
 pollSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
@@ -35,17 +37,17 @@ pollSchema.static('getById', (id:string):Promise<any> => {
 
 pollSchema.static('createPoll', (poll:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(poll)) {
-        return reject(new TypeError('Poll is not a valid object.'));
-      }
+        if (!_.isObject(poll)) {
+          return reject(new TypeError('Poll is not a valid object.'));
+        }
 
-      var _poll = new Poll(poll);
-          _poll.created_by = userId;
-          _poll.development = developmentId;
-          _poll.save((err, saved) => {
-            err ? reject(err)
-                : resolve(saved);
-          });
+        var _poll = new Poll(poll);
+        _poll.created_by = userId;
+        _poll.development = developmentId;
+        _poll.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
     });
 });
 
@@ -88,19 +90,19 @@ pollSchema.static('addVotePoll', (id:string, userId:string, poll:Object):Promise
         let voted_at = new Date();
 
         Poll
-        .findByIdAndUpdate(id, {
-          $push:{
-            votes:{
-              "property": body.property,
-              "answer": body.answer,
-              "voted_by": userId,
-              "voted_at": voted_at
+          .findByIdAndUpdate(id, {
+            $push:{
+              votes:{
+                "property": body.property,
+                "answer": body.answer,
+                "voted_by": userId,
+                "voted_at": voted_at
+              }
             }
-          }
-        })
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
+          })
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
           });
     });
 });
@@ -112,12 +114,15 @@ pollSchema.static('startPoll', (id:string):Promise<any> => {
         }
 
         Poll
-        .findByIdAndUpdate(id,{
-          $set:{"status": "active"}
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id,{
+            $set: {
+              "status": "active",
+              "start_time": new DateOnly()
+            }
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });

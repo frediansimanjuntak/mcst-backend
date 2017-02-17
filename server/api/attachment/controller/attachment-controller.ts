@@ -22,21 +22,21 @@ export class AttachmentController {
   }
 
   static deleteAttachment(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    AttachmentDAO
-      ['deleteAttachment'](_id)
-      .then((msg) => res.status(200).json(msg))
-      .catch(error => res.status(400).json(error));
+      AttachmentDAO
+        ['deleteAttachment'](_id)
+        .then((msg) => res.status(200).json(msg))
+        .catch(error => res.status(400).json(error));
   }
 
   static updateAttachment(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _attachment = req.body;
+      let _id = req.params.id;
+      let _attachment = req.body;
 
-    AttachmentDAO
-      ['updateAttachment'](_id, _attachment)
-      .then(attachment => res.status(201).json(attachment))
-      .catch(error => res.status(400).json(error));
+      AttachmentDAO
+        ['updateAttachment'](_id, _attachment)
+        .then(attachment => res.status(201).json(attachment))
+        .catch(error => res.status(400).json(error));
   }
 }

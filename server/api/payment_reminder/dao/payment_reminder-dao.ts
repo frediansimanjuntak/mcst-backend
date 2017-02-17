@@ -34,18 +34,17 @@ paymentreminderSchema.static('getById', (id:string):Promise<any> => {
 
 paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(paymentreminder)) {  
-        return reject(new TypeError('Payment Reminder is not a valid object.'));
-      }
-      console.log(paymentreminder);
-
-      var _paymentreminder = new Payment_reminder(paymentreminder);
-          _paymentreminder.created_by = userId;
-          _paymentreminder.development = developmentId;
-          _paymentreminder.save((err, saved) => {
-            err ? reject(err)
-                : resolve(saved);
-          });
+        if (!_.isObject(paymentreminder)) {  
+          return reject(new TypeError('Payment Reminder is not a valid object.'));
+        }
+        
+        var _paymentreminder = new Payment_reminder(paymentreminder);
+        _paymentreminder.created_by = userId;
+        _paymentreminder.development = developmentId;
+        _paymentreminder.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
     });
 });
 
@@ -59,7 +58,7 @@ paymentreminderSchema.static('deletePaymentReminder', (id:string):Promise<any> =
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "Delete Success"});
           });
     });
 });
@@ -71,10 +70,10 @@ paymentreminderSchema.static('updatePaymentReminder', (id:string, paymentreminde
         }
 
         Payment_reminder
-        .findByIdAndUpdate(id, paymentreminder)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, paymentreminder)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
@@ -86,36 +85,15 @@ paymentreminderSchema.static('publishPaymentReminder', (id:string):Promise<any> 
         }
 
         Payment_reminder
-        .findByIdAndUpdate(id,{
-          $set:{publish:"true"}
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id,{
+            $set: {publish: "true"}
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
-
-// paymentreminderSchema.static('publishAutoPaymentReminder', (id:string):Promise<any> => {
-//     return new Promise((resolve:Function, reject:Function) => {
-//         if (!_.isString(id)) {
-//           return reject(new TypeError('Id is not a valid string.'));
-//         }
-        // Payment_reminder
-        // .find()
-        
-
-        // Payment_reminder
-        // .findById(id,(err, reminder)=>{
-        //   var today = ne
-        // })
-        // .exec((err, updated) => {
-        //       err ? reject(err)
-        //           : resolve(updated);
-        //   });
-//     });
-// });
-
 
 let Payment_reminder = mongoose.model('Payment_reminder', paymentreminderSchema);
 
