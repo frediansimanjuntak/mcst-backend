@@ -20,7 +20,7 @@ import {DBConfig} from './config/db.conf';
 import {Routes} from './routes/index';
 import {Cron} from './cron/index';
 
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 5000;
 const app = express();
 
 if(config.seedDB) { require('./config/seed'); }
