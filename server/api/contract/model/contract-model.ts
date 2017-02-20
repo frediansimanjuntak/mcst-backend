@@ -56,6 +56,7 @@ var contractSchema = new mongoose.Schema({
 	tracking_document: [{type: String, trim: true}],
 	remark: [{type: String, trim: true}],
 	status: {type: String, trim: true, default: "open"},
+	updated_at: {type: Date},
 	created_by: {
 		type: Schema.Types.ObjectId,
     	ref: 'User'

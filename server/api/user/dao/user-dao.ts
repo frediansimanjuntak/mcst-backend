@@ -45,6 +45,9 @@ userSchema.static('me', (userId:string):Promise<any> => {
 
 userSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
 
         User
           .findById(id, '-salt -password')
@@ -58,6 +61,9 @@ userSchema.static('getById', (id:string):Promise<any> => {
 
 userSchema.static('getDetailUser', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
 
         User
           .findById(id)
@@ -74,16 +80,17 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
       if (!_.isObject(user)) {
         return reject(new TypeError('User is not a valid object.'));
       }
+
       var ObjectID = mongoose.Types.ObjectId;  
       let body:any = user;
       
       var _user = new User(user);
-          _user.default_development = developmentId;
-          _user.default_property.development = developmentId;
-          _user.save((err, saved)=>{
-            err ? reject(err)
-                : resolve(saved);
-          });
+      _user.default_development = developmentId;
+      _user.default_property.development = developmentId;
+      _user.save((err, saved)=>{
+        err ? reject(err)
+            : resolve(saved);
+      });
 
       var userId = _user._id; 
 
@@ -103,7 +110,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
             .exec((err, saved) => {
                   err ? reject(err)
                       : resolve(saved);
-              });
+            });
         }
         resolve({message: "Success"});
       }
@@ -125,7 +132,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
             .exec((err, saved) => {
                   err ? reject(err)
                       : resolve(saved);
-              });
+            });
         }     
     });
 });
@@ -215,15 +222,18 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
 
 userSchema.static('updateUser', (id:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
         }
 
         User
-        .findByIdAndUpdate(id, user)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, user)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
@@ -264,6 +274,9 @@ userSchema.static('unActiveUser', (id:string):Promise<any> => {
 
 userSchema.static('settingDetailUser', (id:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
         }
@@ -273,40 +286,46 @@ userSchema.static('settingDetailUser', (id:string, user:Object):Promise<any> => 
           userObj.$set['details.'+param] = user[param];
          }
         User
-        .findByIdAndUpdate(id, userObj)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, userObj)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
 
 userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
         }
 
         let body:any = user;
         User
-        .findByIdAndUpdate(id, {
-          $set:{
-             "name": body.name,
-             "email": body.email,
-             "phone": body.phone,
-             "emergancy_contact.name": body.contact_name,
-             "emergency_contact.contact_number": body.contact_number
-          }
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, {
+            $set:{
+               "name": body.name,
+               "email": body.email,
+               "phone": body.phone,
+               "emergancy_contact.name": body.contact_name,
+               "emergency_contact.contact_number": body.contact_number
+            }
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
 
 userSchema.static('settingsocialProfile', (id:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
         }

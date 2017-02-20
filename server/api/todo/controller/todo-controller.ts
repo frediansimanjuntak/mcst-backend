@@ -19,11 +19,11 @@ export class TodoController {
   }
 
   static deleteTodo(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    TodoDAO
-      ['deleteTodo'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      TodoDAO
+        ['deleteTodo'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 }

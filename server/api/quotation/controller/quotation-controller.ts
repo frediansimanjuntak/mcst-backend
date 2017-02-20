@@ -31,24 +31,24 @@ export class QuotationController {
   }
 
   static deleteQuotation(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    QuotationDAO
-      ['deleteQuotation'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      QuotationDAO
+        ['deleteQuotation'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateQuotation(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _quotation = req.body;
-    let _attachment = req["files"].attachment;
-    let _userId = req["user"]._id;
+      let _id = req.params.id;
+      let _quotation = req.body;
+      let _attachment = req["files"].attachment;
+      let _userId = req["user"]._id;
 
-    QuotationDAO
-      ['updateQuotation'](_id, _userId, _quotation, _attachment)
-      .then(quotation => res.status(201).json(quotation))
-      .catch(error => res.status(400).json(error));
+      QuotationDAO
+        ['updateQuotation'](_id, _userId, _quotation, _attachment)
+        .then(quotation => res.status(201).json(quotation))
+        .catch(error => res.status(400).json(error));
   }
 
 }
