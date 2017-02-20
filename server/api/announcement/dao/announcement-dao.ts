@@ -3,6 +3,8 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import announcementSchema from '../model/announcement-model';
 
+var DateOnly = require('mongoose-dateonly')(mongoose);
+
 announcementSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
@@ -38,10 +40,12 @@ announcementSchema.static('createAnnouncement', (announcement:Object, userId:str
         if (!_.isObject(announcement)) {
           return reject(new TypeError('Announcement is not a valid object.'));
         }
+        let body:any = announcement;
 
         var _announcement = new Announcement(announcement);
         _announcement.created_by = userId;
         _announcement.development = developmentId;
+        _announcement.auto_post_on = new DateOnly(body.auto_post_on) 
         _announcement.save((err, saved) => {
           err ? reject(err)
               : resolve(saved);

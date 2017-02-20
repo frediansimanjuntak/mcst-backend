@@ -54,40 +54,40 @@ export class UserController {
   }
 
   static deleteUser(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _development = req.body;
+      let _id = req.params.id;
+      let _development = req.body;
 
-    UserDAO
-      ['deleteUser'](_id, _development)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      UserDAO
+        ['deleteUser'](_id, _development)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateUser(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _user = req.body;
+      let _id = req.params.id;
+      let _user = req.body;
 
-    UserDAO
-      ['updateUser'](_id, _user)
-      .then(user => res.status(201).json(user))
-      .catch(error => res.status(400).json(error));
+      UserDAO
+        ['updateUser'](_id, _user)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
   }
 
   static activationUser(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    UserDAO
-      ['activationUser'](_id)
-      .then(user => res.status(201).json(user))
-      .catch(error => res.status(400).json(error));
+      UserDAO
+        ['activationUser'](_id)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
   }
 
   static unActiveUser(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    UserDAO
-      ['unActiveUser'](_id)
-      .then(user => res.status(201).json(user))
-      .catch(error => res.status(400).json(error));
+      UserDAO
+        ['unActiveUser'](_id)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
   }
 }

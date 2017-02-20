@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var lostfoundSchema = new mongoose.Schema({
+	serial_number: {type: String, trim: true},
 	development: {
 		type: Schema.Types.ObjectId,
     	ref: 'Development'

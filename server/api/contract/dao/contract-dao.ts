@@ -145,7 +145,7 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
         } 
         
         Contract
-          .update(_query, contractObj)
+          .update(_query, {contractObj, $set: {"updated_at": new Date()}})
           .exec((err, saved) => {
                 err ? reject(err)
                     : resolve(saved);
@@ -336,7 +336,8 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
                   }
                 },
                 $set:{
-                  "status" : body.status
+                  "status" : body.status,
+                  "updated_at": new Date()
                 }
               })
               .exec((err, saved)=>{
@@ -418,7 +419,7 @@ contractSchema.static('updateContractNote', (id:string, idcontractnote:string, u
               Contract
                 .update(_query,{
                   $set:{
-                    "contract_note.$.attachment": idAttachment
+                    "contract_note.$.attachment": idAttachment                    
                   }
                 })
                 .exec((err, saved) => {
@@ -432,7 +433,7 @@ contractSchema.static('updateContractNote', (id:string, idcontractnote:string, u
         } 
         
         Contract            
-          .update(_query, contractnoteObj)
+          .update(_query, {contractnoteObj, $set: {"updated_at": new Date()}})
           .exec((err, saved) => {
                 err ? reject(err)
                     : resolve(saved);
@@ -516,7 +517,8 @@ contractSchema.static('createContractNotice', (id:string, userId:string, contrac
                     "created_at": new Date(),
                     "publish": body.publish
                   }
-                }
+                },
+                $set: {"updated_at": new Date()}
               })
               .exec((err, saved)=>{
                   err ? reject(err)
@@ -602,7 +604,7 @@ contractSchema.static('updateContractNotice', (id:string, idcontractnotice:strin
         
         Contract
           .findById(id)
-          .update(_query, contractnoticeObj)
+          .update(_query, {contractnoticeObj, $set:{"updated_at": new Date()}})
           .exec((err, saved) => {
                 err ? reject(err)
                     : resolve(saved);

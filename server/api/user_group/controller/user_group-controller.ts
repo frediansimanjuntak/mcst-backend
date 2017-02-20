@@ -30,41 +30,41 @@ export class UserGroupController {
   }
 
   static deleteUserGroup(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    UserGroupDAO
-      ['deleteUserGroup'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      UserGroupDAO
+        ['deleteUserGroup'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateUserGroup(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _userGroup = req.body;
+      let _id = req.params.id;
+      let _userGroup = req.body;
 
-    UserGroupDAO
-      ['updateUserGroup'](_id, _userGroup)
-      .then(user_group => res.status(201).json(user_group))
-      .catch(error => res.status(400).json(error));
+      UserGroupDAO
+        ['updateUserGroup'](_id, _userGroup)
+        .then(user_group => res.status(201).json(user_group))
+        .catch(error => res.status(400).json(error));
   }
 
   static addUser(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _user = req.body.user;
+      let _id = req.params.id;
+      let _user = req.body.user;
 
-    UserGroupDAO
-      ['addUser'](_id, _user)
-      .then(user_group => res.status(201).json(user_group))
-      .catch(error => res.status(400).json(error));
+      UserGroupDAO
+        ['addUser'](_id, _user)
+        .then(user_group => res.status(201).json(user_group))
+        .catch(error => res.status(400).json(error));
   }
 
   static deleteUser(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _user = req.body;
+      let _id = req.params.id;
+      let _user = req.body;
 
-    UserGroupDAO
-      ['deleteUser'](_id, _user)
-      .then(user_group => res.status(201).json(user_group))
-      .catch(error => res.status(400).json(error));
+      UserGroupDAO
+        ['deleteUser'](_id, _user)
+        .then(user_group => res.status(201).json(user_group))
+        .catch(error => res.status(400).json(error));
   }
 }
