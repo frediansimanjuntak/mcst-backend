@@ -4,8 +4,7 @@ import * as _ from 'lodash';
 import developmentSchema from '../model/development-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
-
-var slug = require('slug')
+import {GlobalService} from '../../../global/global.service';
 
 developmentSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -45,7 +44,7 @@ developmentSchema.static('createDevelopment', (development:Object):Promise<any> 
         let body:any = development;
 
         var _development = new Development(development);
-        _development.name_url = slug(body.name);
+        _development.name_url = GlobalService.slugify(body.name);
         _development.save((err, saved) => {
           err ? reject(err)
               : resolve(saved);
@@ -76,10 +75,10 @@ developmentSchema.static('updateDevelopment', (id:string, development:Object):Pr
 
         let body:any = development;
 
-        Development
+        Development  
           .findByIdAndUpdate(id, {development, 
             $set: {
-              "name_url": slug(body.name)
+              "name_url": GlobalService.slugify(body.name)
             }
           })
           .exec((err, updated) => {
