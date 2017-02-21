@@ -7,16 +7,13 @@ import * as auth from '../../../auth/auth-service';
 export class AttachmentRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/attachments')
+        .route('/attachments')
         .get(AttachmentController.getAll)
         .post(auth.isAuthenticated(), AttachmentController.createAttachment);
 
       router
-        .route('/api/attachments/:id')
+        .route('/attachments/:id')
         .delete(auth.isAuthenticated(), AttachmentController.deleteAttachment);
-
-      // router
-      //   .route('/api/attachments/update/:id')
-      //   .post(AttachmentController.updateAttachment);
+        
     }
 }

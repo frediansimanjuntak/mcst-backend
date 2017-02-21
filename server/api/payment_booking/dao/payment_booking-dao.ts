@@ -83,29 +83,30 @@ paymentBookingSchema.static('updatePaymentBooking', (id:string, userId:string, p
         let paymentObj = {$set: {}};
         for(var param in paymentbooking) {
           paymentObj.$set[param] = paymentbooking[param];
-         }
+        }
 
         let ObjectID = mongoose.Types.ObjectId; 
         let _query = {"_id": id};
 
         if(attachment != null){
-          Attachment.createAttachment(attachment, userId).then(res => {
-            var idAttachment=res.idAtt;
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
+              var idAttachment=res.idAtt;
 
-            PaymentBooking
-              .update(_query,{
-                $set: {
-                  "payment_proof": idAttachment
-                }
-              })
-              .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-               });
-          })
-          .catch(err=>{
-            resolve({message: "attachment error"});
-          })                            
+              PaymentBooking
+                .update(_query,{
+                  $set: {
+                    "payment_proof": idAttachment
+                  }
+                })
+                .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                 });
+            })
+            .catch(err=>{
+              resolve({message: "attachment error"});
+            })                            
         } 
         
         PaymentBooking

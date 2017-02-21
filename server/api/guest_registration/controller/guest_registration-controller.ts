@@ -30,41 +30,41 @@ export class GuestController {
   }
 
   static deleteGuest(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    GuestDAO
-      ['deleteGuest'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      GuestDAO
+        ['deleteGuest'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateGuest(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _guest = req.body;
+      let _id = req.params.id;
+      let _guest = req.body;
 
-    GuestDAO
-      ['updateGuest'](_id, _guest)
-      .then(guest => res.status(201).json(guest))
-      .catch(error => res.status(400).json(error));
+      GuestDAO
+        ['updateGuest'](_id, _guest)
+        .then(guest => res.status(201).json(guest))
+        .catch(error => res.status(400).json(error));
   }
 
   static checkInGuest(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _userId = req["user"]._id;
+      let _id = req.params.id;
+      let _userId = req["user"]._id;
 
-    GuestDAO
-      ['checkInGuest'](_id, _userId)
-      .then(guest => res.status(201).json(guest))
-      .catch(error => res.status(400).json(error));
+      GuestDAO
+        ['checkInGuest'](_id, _userId)
+        .then(guest => res.status(201).json(guest))
+        .catch(error => res.status(400).json(error));
   }  
 
   static checkOutGuest(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _userId = req["user"]._id;
+      let _id = req.params.id;
+      let _userId = req["user"]._id;
 
-    GuestDAO
-      ['checkOutGuest'](_id, _userId)
-      .then(guest => res.status(201).json(guest))
-      .catch(error => res.status(400).json(error));
+      GuestDAO
+        ['checkOutGuest'](_id, _userId)
+        .then(guest => res.status(201).json(guest))
+        .catch(error => res.status(400).json(error));
   }
 }

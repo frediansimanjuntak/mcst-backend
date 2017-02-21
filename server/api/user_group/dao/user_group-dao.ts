@@ -106,32 +106,38 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
 
 userGroupSchema.static('updateUserGroup', (id:string, userGroup:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(userGroup)) {
           return reject(new TypeError('User Group is not a valid object.'));
         }
 
         UserGroup
-        .findByIdAndUpdate(id, userGroup)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, userGroup)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
 
 userGroupSchema.static('addUser', (id:string, users:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(users)) {
           return reject(new TypeError('User Group is not a valid object.'));
         }
 
         UserGroup
-        .findByIdAndUpdate(id, {
-            $push:{"users": users}
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, {
+              $push:{"users": users}
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
@@ -144,20 +150,20 @@ userGroupSchema.static('deleteUser', (id:string, users:Object):Promise<any> => {
         let body:any = users;
 
         UserGroup
-        .findByIdAndUpdate(id, {
-            $pull:{"users": body.user}
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, {
+              $pull:{"users": body.user}
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
 
         User
-        .findByIdAndUpdate(body.user, {
-          $pull: {
-            "user_group": id
-          }
-        })
+          .findByIdAndUpdate(body.user, {
+            $pull: {
+              "user_group": id
+            }
+          })
     });
 });
 

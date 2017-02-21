@@ -38,15 +38,16 @@ contractSchema.static('getById', (id:string):Promise<any> => {
 
 contractSchema.static('createContract', (contract:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(contract)) {
-        return reject(new TypeError('Contract is not a valid object.'));
-      }
-        let body:any = contract;
+        if (!_.isObject(contract)) {
+          return reject(new TypeError('Contract is not a valid object.'));
+        }
+          let body:any = contract;
 
-        Attachment.createAttachment(attachment, userId).then(res => {
-          var idAttachment=res.idAtt;
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
+              var idAttachment=res.idAtt;
 
-          var _contract = new Contract(contract);
+              var _contract = new Contract(contract);
               _contract.attachment = idAttachment;
               _contract.created_by = userId;
               _contract.development = developmentId;
@@ -55,35 +56,35 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                     : resolve(saved);
               });
 
-            if(_contract.reference_type == "incident"){
-               Incident
-               .findByIdAndUpdate(_contract.reference_id, {
-                 $set:{
-                   "status": "in progress",
-                   "contract":_contract._id
-                 }
-               })
-               .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                });
-            }
-            if(_contract.reference_type == "petition"){
-              Petition
-              .findByIdAndUpdate(_contract.reference_id, {
-                $set:{
-                  "status": "in progress"
-                }
-              })
-              .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-              });
-            }
-        })
-        .catch(err => {
-          resolve({message: "attachment error"});
-        })                  
+              if(_contract.reference_type == "incident"){
+                  Incident
+                    .findByIdAndUpdate(_contract.reference_id, {
+                      $set: {
+                        "status": "in progress",
+                        "contract": _contract._id
+                      }
+                    })
+                    .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                    });
+              }
+              if(_contract.reference_type == "petition"){
+                  Petition
+                    .findByIdAndUpdate(_contract.reference_id, {
+                      $set:{
+                        "status": "in progress"
+                      }
+                    })
+                    .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                    });
+              }
+            })
+            .catch(err => {
+              resolve({message: "attachment error"});
+            })                  
     });
 });
 
@@ -97,26 +98,34 @@ contractSchema.static('deleteContract', (id:string):Promise<any> => {
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "Delete Success"});
           });
     });
 });
 
 contractSchema.static('updateContract', (id:string, userId:string, contract:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(contract)) {
           return reject(new TypeError('Contract is not a valid object.'));
-        }   
-          let _query = {"_id": id};
+        } 
+        if (!_.isObject(attachment)) {
+          return reject(new TypeError('Attachment is not a valid.'));
+        }    
 
-          let contractObj = {$set: {}};
-          for (var param in contract) {
-            contractObj.$set[param] = contract[param];
-           }
-          let file:any = attachment;
+        let file:any = attachment;
+        let _query = {"_id": id};
 
-          if(file != null){
-            Attachment.createAttachment(attachment, userId).then(res => {
+        let contractObj = {$set: {}};
+        for (var param in contract) {
+          contractObj.$set[param] = contract[param];
+        }        
+
+        if(file != null){
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
               var idAttachment = res.idAtt;
 
               Contract
@@ -133,14 +142,14 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
             .catch(err=>{
               resolve({message: "attachment error"});
             })             
-          } 
-          
-          Contract
-            .update(_query, contractObj)
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-              });
+        } 
+        
+        Contract
+          .update(_query, {contractObj, $set: {"updated_at": new Date()}})
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });
     });
 });
 
@@ -163,6 +172,9 @@ contractSchema.static('getByIdContractSchedule', (id:string, idcontractschedule:
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        if (!_.isString(idcontractschedule)) {
+            return reject(new TypeError('Id Contract Schedule is not a valid string.'));
+        }
 
         let ObjectID = mongoose.Types.objectId;
 
@@ -184,16 +196,20 @@ contractSchema.static('getByIdContractSchedule', (id:string, idcontractschedule:
 
 contractSchema.static('createContractSchedule', (id:string, contractschedule:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(contractschedule)) {
-        return reject(new TypeError('Contract Schedule is not a valid object.'));
-      }
-          Contract
-            .findByIdAndUpdate(id, {
-              $push : {"schedule": contractschedule}
-            })
-            .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
+        if (!_.isString(id)) {
+              return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isObject(contractschedule)) {
+          return reject(new TypeError('Contract Schedule is not a valid object.'));
+        }
+
+        Contract
+          .findByIdAndUpdate(id, {
+            $push : {"schedule": contractschedule}
+          })
+          .exec((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
           });
     });
 });
@@ -202,6 +218,9 @@ contractSchema.static('deleteContractSchedule', (id:string, idcontractschedule:s
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isString(idcontractschedule)) {
+            return reject(new TypeError('Id Contract Schedule is not a valid string.'));
         }
 
         Contract
@@ -214,29 +233,33 @@ contractSchema.static('deleteContractSchedule', (id:string, idcontractschedule:s
           })
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "Delete Success"});
           });
     });
 });
 
 contractSchema.static('updateContractSchedule', (id:string, userId:string, contractschedule:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(contractschedule)) {
           return reject(new TypeError('Contract Schedule is not a valid object.'));
         }   
-          let _query = {"_id": id};
-          let contractscheduleObj = {$set: {}};
 
-          for(var param in contractschedule) {
-            contractscheduleObj.$set["schedule.$."+param] = contractschedule[param];
-           }          
-          
-          Contract
-            .update(_query, contractscheduleObj)
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-              });
+        let _query = {"_id": id};
+        let contractscheduleObj = {$set: {}};
+
+        for(var param in contractschedule) {
+          contractscheduleObj.$set["schedule.$."+param] = contractschedule[param];
+         }          
+        
+        Contract
+          .update(_query, contractscheduleObj)
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+          });
     });
 });
 
@@ -285,51 +308,57 @@ contractSchema.static('getByIdContractNote', (id:string, idcontractnote:string):
 
 contractSchema.static('createContractNote', (id:string, userId:string, contract_note:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(contract_note)) {
-        return reject(new TypeError('Contract Note is not a valid object.'));
-      } 
+        if (!_.isString(id)) {
+              return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isObject(contract_note)) {
+          return reject(new TypeError('Contract Note is not a valid object.'));
+        }
+        if (!_.isObject(attachment)) {
+          return reject(new TypeError('Attachment is not a valid.'));
+        }
 
         let body:any = contract_note; 
         var referenceId = body.reference_id;  
-        console.log(referenceId);
-        console.log(body.status);
 
-        Attachment.createAttachment(attachment, userId).then(res => {
-          var idAttachment = res.idAtt;
+        Attachment.createAttachment(attachment, userId)
+          .then(res => {
+            var idAttachment = res.idAtt;
 
-          Contract
-            .findByIdAndUpdate(id,{
-              $push:{
-                "contract_note": {
-                  "note_remark": body.note_remark,
-                  "attachment": idAttachment,
-                  "posted_by": userId,
-                  "posted_on": new Date()
+            Contract
+              .findByIdAndUpdate(id,{
+                $push:{
+                  "contract_note": {
+                    "note_remark": body.note_remark,
+                    "attachment": idAttachment,
+                    "posted_by": userId,
+                    "posted_on": new Date()
+                  }
+                },
+                $set:{
+                  "status" : body.status,
+                  "updated_at": new Date()
                 }
-              },
-              $set:{
-                "status" : body.status
-              }
-            })
-            .exec((err, saved)=>{
-                if(saved.status == "closed"){
-                  console.log(body.status)
-                  Incident
-                  .findByIdAndUpdate(referenceId, {
-                    $set: {
-                      "status": "resolved"
-                    }
-                  })
-                  .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                  });
-                }
-            });          
-        })
-        .catch(err=>{
-          resolve({message: "attachment error"});
-        })                
+              })
+              .exec((err, saved)=>{
+                  if(saved.status == "closed"){
+                    console.log(body.status)
+                    Incident
+                    .findByIdAndUpdate(referenceId, {
+                      $set: {
+                        "status": "resolved"
+                      }
+                    })
+                    .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                    });
+                  }
+              });          
+          })
+          .catch(err=>{
+            resolve({message: "attachment error"});
+          })                
     });
 });
 
@@ -337,6 +366,9 @@ contractSchema.static('deleteContractNote', (id:string, idcontractnote:string ):
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isString(idcontractnote)) {
+            return reject(new TypeError('Id Contract Note is not a valid string.'));
         }
 
         Contract
@@ -349,37 +381,45 @@ contractSchema.static('deleteContractNote', (id:string, idcontractnote:string ):
           })
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "Delete Success"});
           });
     });
 });
 
 contractSchema.static('updateContractNote', (id:string, idcontractnote:string, userId:string, contractnote:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(contractnote)) {
           return reject(new TypeError('Contract Note is not a valid object.'));
         } 
-          let body:any = contractnote  
-          let objectID = mongoose.Types.ObjectId;
-          let _query = {"_id": id, "contract_note": {$elemMatch:{"_id": new objectID (idcontractnote)}}};
+        if (!_.isObject(attachment)) {
+          return reject(new TypeError('Attachment is not a valid.'));
+        } 
 
-          let contractnoteObj = {$set: {}};          
-          for(var param in contractnote) {
-            contractnoteObj.$set["contract_note.$."+param] = contractnote[param];
-           }
+        let body:any = contractnote  
+        let objectID = mongoose.Types.ObjectId;
+        let _query = {"_id": id, "contract_note": {$elemMatch:{"_id": new objectID (idcontractnote)}}};
 
-          let file:any = attachment;
-          var files = [].concat(attachment);
-          var idAttachment = [];
+        let contractnoteObj = {$set: {}};          
+        for(var param in contractnote) {
+          contractnoteObj.$set["contract_note.$."+param] = contractnote[param];
+         }
 
-          if(file != null){
-            Attachment.createAttachment(attachment, userId).then(res => {
+        let file:any = attachment;
+        var files = [].concat(attachment);
+        var idAttachment = [];
+
+        if(file != null){
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
               var idAttachment = res.idAtt;
 
               Contract
                 .update(_query,{
                   $set:{
-                    "contract_note.$.attachment": idAttachment
+                    "contract_note.$.attachment": idAttachment                    
                   }
                 })
                 .exec((err, saved) => {
@@ -390,14 +430,14 @@ contractSchema.static('updateContractNote', (id:string, idcontractnote:string, u
             .catch(err=>{
               resolve({message: "attachment error"});
             })              
-          } 
-          
-          Contract            
-            .update(_query, contractnoteObj)
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-              });
+        } 
+        
+        Contract            
+          .update(_query, {contractnoteObj, $set: {"updated_at": new Date()}})
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });
 
     });
 });
@@ -425,7 +465,10 @@ contractSchema.static('getByIdContractNotice', (id:string, idcontractnotice:stri
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
+        if (!_.isString(idcontractnotice)) {
+            return reject(new TypeError('Id Contract Notice not a valid string.'));
+        }
+        
         let ObjectID = mongoose.Types.ObjectId;
 
         Contract
@@ -446,36 +489,45 @@ contractSchema.static('getByIdContractNotice', (id:string, idcontractnotice:stri
 
 contractSchema.static('createContractNotice', (id:string, userId:string, contractnotice:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(contractnotice)) {
-        return reject(new TypeError('Contract Notice is not a valid object.'));
-      }   
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }        
+        if (!_.isObject(contractnotice)) {
+            return reject(new TypeError('Contract Notice is not a valid object.'));
+        }  
+        if (!_.isObject(attachment)) {
+            return reject(new TypeError('Attachment is not a valid.'));
+        }
+
         let body:any = contractnotice;
 
-        Attachment.createAttachment(attachment, userId,).then(res => {
-          var idAttachment=res.idAtt;
+        Attachment.createAttachment(attachment, userId,)
+          .then(res => {
+            var idAttachment = res.idAtt;
 
-          Contract
-            .findByIdAndUpdate(id,{
-              $push:{
-                "contract_notice": {
-                  "title": body.title,
-                  "start_time": body.start_time,
-                  "end_time": body.end_time,
-                  "description": body.description,
-                  "attachment": idAttachment,
-                  "created_at": new Date(),
-                  "publish": body.publish
-                }
-              }
-            })
-            .exec((err, saved)=>{
-                err ? reject(err)
-                    : resolve(saved);
-            });
-        })
-        .catch(err=>{
-          resolve({message: "attachment error"});
-        })                   
+            Contract
+              .findByIdAndUpdate(id,{
+                $push: {
+                  "contract_notice": {
+                    "title": body.title,
+                    "start_time": body.start_time,
+                    "end_time": body.end_time,
+                    "description": body.description,
+                    "attachment": idAttachment,
+                    "created_at": new Date(),
+                    "publish": body.publish
+                  }
+                },
+                $set: {"updated_at": new Date()}
+              })
+              .exec((err, saved)=>{
+                  err ? reject(err)
+                      : resolve(saved);
+              });
+          })
+          .catch(err=>{
+            resolve({message: "attachment error"});
+          })                   
     });
 });
 
@@ -483,6 +535,9 @@ contractSchema.static('deleteContractNotice', (id:string, idcontractnotice:strin
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isString(idcontractnotice)) {
+            return reject(new TypeError('Id Contract Notice not a valid string.'));
         }
 
         Contract
@@ -502,21 +557,32 @@ contractSchema.static('deleteContractNotice', (id:string, idcontractnotice:strin
 
 contractSchema.static('updateContractNotice', (id:string, idcontractnotice:string, userId:string, contractnotice:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isString(idcontractnotice)) {
+            return reject(new TypeError('Id Contract Notice is not a valid string.'));
+        }
         if (!_.isObject(contractnotice)) {
           return reject(new TypeError('Contract Notice is not a valid object.'));
         } 
-          let objectID = mongoose.Types.ObjectId;  
-          let _query = {"contract_notice": {$elemMatch: {_id: new objectID(idcontractnotice)}}};
+        if (!_.isObject(attachment)) {
+          return reject(new TypeError('Attachment is not a valid.'));
+        } 
+        
+        let objectID = mongoose.Types.ObjectId;  
+        let _query = {"contract_notice": {$elemMatch: {_id: new objectID(idcontractnotice)}}};
 
-          let contractnoticeObj = {$set: {}};
-          for(var param in contractnotice) {
-            contractnoticeObj.$set["contract_notice.$."+param] = contractnotice[param];
-           }
+        let contractnoticeObj = {$set: {}};
+        for(var param in contractnotice) {
+          contractnoticeObj.$set["contract_notice.$."+param] = contractnotice[param];
+        }
 
-          let file:any = attachment;
+        let file:any = attachment;
 
-          if(file != null){
-            Attachment.createAttachment(attachment, userId).then(res => {
+        if(file != null){
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
               var idAttachment = res.idAtt;
 
                Contract
@@ -529,20 +595,20 @@ contractSchema.static('updateContractNotice', (id:string, idcontractnotice:strin
                 .exec((err, saved) => {
                       err ? reject(err)
                           : resolve(saved);
-                 });
+                });
             })
             .catch(err=>{
               resolve({message: "attachment error"});
             }) 
-          } 
-          
-          Contract
-            .findById(id)
-            .update(_query, contractnoticeObj)
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-              });
+        } 
+        
+        Contract
+          .findById(id)
+          .update(_query, {contractnoticeObj, $set:{"updated_at": new Date()}})
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });
     });
 });
 

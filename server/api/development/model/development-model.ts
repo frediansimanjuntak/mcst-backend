@@ -20,13 +20,13 @@ var developmentSchema = new mongoose.Schema({
     description: {type: String},
     properties: [{    	
     	address: {
-		    unit_no:{type: String},
-			unit_no_2:{type: String},
-			block_no:{type: String},
-			street_name:{type: String},
-			postal_code:{type: String},
-			country:{type: String},
-			full_address:{type: String}
+		    unit_no: {type: String},
+			unit_no_2: {type: String},
+			block_no: {type: String},
+			street_name: {type: String},
+			postal_code: {type: String},
+			country: {type: String},
+			full_address: {type: String}
 		},
 		landlord: {
 			type: Schema.Types.ObjectId,

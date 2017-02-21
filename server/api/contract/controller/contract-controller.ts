@@ -31,24 +31,24 @@ export class ContractController {
   }
 
   static deleteContract(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    ContractDAO
-      ['deleteContract'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      ContractDAO
+        ['deleteContract'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateContract(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _contract = req.body;
-    let _attachment = req["files"].attachment;
-    let _userId = req["user"]._id;
+      let _id = req.params.id;
+      let _contract = req.body;
+      let _attachment = req["files"].attachment;
+      let _userId = req["user"]._id;
 
-    ContractDAO
-      ['updateContract'](_id, _userId, _contract, _attachment)
-      .then(contract => res.status(201).json(contract))
-      .catch(error => res.status(400).json(error));
+      ContractDAO
+        ['updateContract'](_id, _userId, _contract, _attachment)
+        .then(contract => res.status(201).json(contract))
+        .catch(error => res.status(400).json(error));
   }
 
 }

@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
+var DateOnly = require('mongoose-dateonly')(mongoose);
 
 var announcementSchema = new mongoose.Schema({
 	title: {type: String, required: true, trim: true},
@@ -10,8 +11,9 @@ var announcementSchema = new mongoose.Schema({
 	property: {type: String, trim: true},
 	message: {type: String, trim: true},
 	sticky: {type: String, trim: true, default: "no"},		
-	auto_post_on: {type: String, trim: true},
-	valid_till: {type: Date, trim: true},
+	auto_post_on: {type: DateOnly},
+	valid_till: {type: DateOnly},
+	valid: {type: Boolean, default: true},
 	publish: {type: Boolean, trim: true, default: false},
 	publish_by: {
 		type: Schema.Types.ObjectId,

@@ -22,50 +22,52 @@ attachmentSchema.static('getAll', ():Promise<any> => {
 
 attachmentSchema.static('createAttachment', (attachment:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(attachment)) {
-        return reject(new TypeError('Attachment is not a valid object.'));
-      }
-          var files = [].concat(attachment);
-          var idAtt = [];
+        if (!_.isObject(attachment)) {
+          return reject(new TypeError('Attachment is not a valid object.'));
+        }
 
-          if(files.length > 0)
-          {
-              var i = 0;
-              var attachmentfile = function(){
+        var files = [].concat(attachment);
+        var idAtt = [];
+
+        if(files.length > 0)
+        {
+            var i = 0;
+            var attachmentfile = function(){
                 let file:any = files[i];
                 let key:string = 'MCST/attachment/'+file.name;
                 AWSService.upload(key, file).then(fileDetails => {
-                  var _attachment = new Attachment(attachment);
-                  _attachment.name = fileDetails.name;
-                  _attachment.type = fileDetails.type;
-                  _attachment.url = fileDetails.url;                  
-                  _attachment.created_by = userId;
-                  _attachment.save(); 
-                  let idattach = _attachment.id;  
-                  idAtt.push(idattach)
-                   
-                  if (i >= files.length - 1){
-                    resolve({idAtt});
-                  }
-                  else{
-                    i++;
-                    attachmentfile();
-                  }              
+                    var _attachment = new Attachment(attachment);
+                    _attachment.name = fileDetails.name;
+                    _attachment.type = fileDetails.type;
+                    _attachment.url = fileDetails.url;                  
+                    _attachment.created_by = userId;
+                    _attachment.save(); 
+                    let idattach = _attachment.id;  
+                    idAtt.push(idattach)
+                     
+                    if (i >= files.length - 1){
+                        resolve({idAtt});
+                    }
+                    else{
+                        i++;
+                        attachmentfile();
+                    }              
                 })
-              }
-              attachmentfile();
-          }
-          else{
-            resolve({message: "success"});
-          }                   
+            }
+            attachmentfile();
+        }
+        else{
+          resolve({message: "success"});
+        }                   
     });      
 });
 
-attachmentSchema.static('deleteAttachment', (id:string, ):Promise<any> => {
+attachmentSchema.static('deleteAttachment', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+
         Attachment
           .findById(id)
           .exec((err, attachment) => {
@@ -79,7 +81,7 @@ attachmentSchema.static('deleteAttachment', (id:string, ):Promise<any> => {
               });
             else
               reject(new Error("Attachment not found."));
-         });
+          });
     });
 });
 
@@ -90,10 +92,10 @@ attachmentSchema.static('updateAttachment', (id:string, attachment:Object):Promi
         }
 
         Attachment
-        .findByIdAndUpdate(id, attachment)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, attachment)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });

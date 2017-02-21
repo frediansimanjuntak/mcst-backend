@@ -33,16 +33,16 @@ accesscontrolSchema.static('getById', (id:string):Promise<any> => {
 
 accesscontrolSchema.static('createAccessControl', (accesscontrol:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(accesscontrol)) {
-        return reject(new TypeError('Access Control is not a valid object.'));
-      }
+        if (!_.isObject(accesscontrol)) {
+          return reject(new TypeError('Access Control is not a valid object.'));
+        }
 
-      var _accesscontrol = new AccessControl(accesscontrol);
+        var _accesscontrol = new AccessControl(accesscontrol);
 
-      _accesscontrol.save((err, saved) => {
-        err ? reject(err)
-            : resolve(saved);
-      });
+        _accesscontrol.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
     });
 });
 
@@ -63,15 +63,18 @@ accesscontrolSchema.static('deleteAccessControl', (id:string):Promise<any> => {
 
 accesscontrolSchema.static('updateAccessControl', (id:string, accesscontrol:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(accesscontrol)) {
           return reject(new TypeError('Access Control is not a valid object.'));
         }
 
         AccessControl
-        .findByIdAndUpdate(id, accesscontrol)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, accesscontrol)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });

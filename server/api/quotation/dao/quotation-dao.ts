@@ -35,10 +35,11 @@ quotationSchema.static('getById', (id:string):Promise<any> => {
 
 quotationSchema.static('createQuotation', (quotation:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(quotation)) {
-        return reject(new TypeError('Quotation is not a valid object.'));
-      }
-          Attachment.createAttachment(attachment, userId).then(res => {
+        if (!_.isObject(quotation)) {
+          return reject(new TypeError('Quotation is not a valid object.'));
+        }
+        Attachment.createAttachment(attachment, userId)
+          .then(res => {
           var idAttachment = res.idAtt;
 
           var _quotation = new Quotation(quotation);
@@ -66,7 +67,7 @@ quotationSchema.static('deleteQuotation', (id:string):Promise<any> => {
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "Delete Success"});
           });
     });
 });
@@ -77,29 +78,32 @@ quotationSchema.static('updateQuotation', (id:string, userId:string, quotation:O
           return reject(new TypeError('Quotation is not a valid object.'));
         }   
           let _query = {"_id": id};
+
           let quotationObj = {$set: {}};
           for(var param in quotation) {
             quotationObj.$set[param] = quotation[param];
-           }
+          }
           let file:any = attachment;
-          if(file!=null){
-            Attachment.createAttachment(attachment, userId).then(res => {
-              var idAttachment = res.idAtt;
 
-              Quotation
-              .update(_query,{
-                $set: {
-                  "quotation.$.attachment": idAttachment
-                }
+          if(file!=null){
+            Attachment.createAttachment(attachment, userId)
+              .then(res => {
+                var idAttachment = res.idAtt;
+
+                Quotation
+                  .update(_query,{
+                    $set: {
+                      "quotation.$.attachment": idAttachment
+                    }
+                  })
+                  .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                   });
               })
-              .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-               });
-            })
-            .catch(err=>{
-              resolve({message: "attachment error"});
-            }) 
+              .catch(err=>{
+                resolve({message: "attachment error"});
+              }) 
           } 
           
           Quotation
@@ -107,7 +111,7 @@ quotationSchema.static('updateQuotation', (id:string, userId:string, quotation:O
             .exec((err, saved) => {
                   err ? reject(err)
                       : resolve(saved);
-              });
+            });
     });
 });
 

@@ -30,40 +30,50 @@ export class PollController {
   }
 
   static deletePoll(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
+      let _id = req.params.id;
 
-    PollDAO
-      ['deletePoll'](_id)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      PollDAO
+        ['deletePoll'](_id)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updatePoll(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _poll = req.body;
+      let _id = req.params.id;
+      let _poll = req.body;
 
-    PollDAO
-      ['updatePoll'](_id, _poll)
-      .then(poll => res.status(201).json(poll))
-      .catch(error => res.status(400).json(error));
+      PollDAO
+        ['updatePoll'](_id, _poll)
+        .then(poll => res.status(201).json(poll))
+        .catch(error => res.status(400).json(error));
   }
 
   static addVotePoll(req: express.Request, res: express.Response):void {
-    let _id = req.params.id;
-    let _userId = req["user"]._id;
-    let _poll = req.body;
+      let _id = req.params.id;
+      let _userId = req["user"]._id;
+      let _poll = req.body;
 
-    PollDAO
-      ['addVotePoll'](_id, _userId, _poll)
-      .then(poll => res.status(201).json(poll))
-      .catch(error => res.status(400).json(error));
+      PollDAO
+        ['addVotePoll'](_id, _userId, _poll)
+        .then(poll => res.status(201).json(poll))
+        .catch(error => res.status(400).json(error));
   }
-  static startPoll(req: express.Request, res: express.Response):void {
-  let _id = req.params.id;
 
-  PollDAO
-    ['startPoll'](_id)
-    .then(poll => res.status(201).json(poll))
-    .catch(error => res.status(400).json(error));
+  static startPoll(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+
+      PollDAO
+        ['startPoll'](_id)
+        .then(poll => res.status(201).json(poll))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static outcomePoll(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+
+      PollDAO
+        ['outcomePoll'](_id)
+        .then(poll => res.status(201).json(poll))
+        .catch(error => res.status(400).json(error));
   }
 }

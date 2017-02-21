@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
+var DateOnly = require('mongoose-dateonly')(mongoose);
 
 var pollSchema = new mongoose.Schema({
 	title: {type: String, required: true, trim: true},
@@ -14,13 +15,12 @@ var pollSchema = new mongoose.Schema({
 		answer: {type: String, trim: true},
 		voted_by: {
 			type: Schema.Types.ObjectId,
-    		ref: 'User',
-    		required: true
+    		ref: 'User'
 		},
 		voted_at: {type: Date}			
 	}],
-	start_time: {type:Date},
-	end_time: {type:Date},
+	start_time: {type: DateOnly},
+	end_time: {type: DateOnly},
 	choices: [{type: String}],
 	outcome: {type: String},
 	status: {type: String, trim: true, default: "not active"},

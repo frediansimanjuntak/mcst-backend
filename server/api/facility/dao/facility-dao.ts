@@ -34,21 +34,21 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
 
 facilitySchema.static('createFacility', (facility:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(facility)) {
-        return reject(new TypeError('Facility is not a valid object.'));
-      }
+        if (!_.isObject(facility)) {
+            return reject(new TypeError('Facility is not a valid object.'));
+        }
 
-      var _facility = new Facility(facility);
-          _facility.development = developmentId;
-          _facility.created_by = userId;
-          _facility.save((err, saved) => {
-            err ? reject(err)
-                : resolve(saved);
-          });
+        var _facility = new Facility(facility);
+        _facility.development = developmentId;
+        _facility.created_by = userId;
+        _facility.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
     });
 });
 
-facilitySchema.static('deleteFacility', (id:string, ):Promise<any> => {
+facilitySchema.static('deleteFacility', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -58,7 +58,7 @@ facilitySchema.static('deleteFacility', (id:string, ):Promise<any> => {
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "Delete Success"});
           });
     });
 });
@@ -70,10 +70,10 @@ facilitySchema.static('updateFacility', (id:string, facility:Object):Promise<any
         }
 
         Facility
-        .findByIdAndUpdate(id, facility)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, facility)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
@@ -100,62 +100,74 @@ facilitySchema.static('getByIdSchedule', (id:string, idschedule:string):Promise<
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        if (!_.isString(idschedule)) {
+            return reject(new TypeError('Id Schedule is not a valid string.'));
+        }
 
         var ObjectID = mongoose.Types.ObjectId;
 
-         Facility 
-         .findById(id)
-         .select({
-           "schedule": {
-             $elemMatch: {
-               "_id": new ObjectID(idschedule)
-             }
-           }
-         })
+        Facility 
+          .findById(id)
+          .select({
+            "schedule": {
+              $elemMatch: {
+                "_id": new ObjectID(idschedule)
+              }
+            }
+          })
           .exec((err, schedules) => {
-              err ? reject(err)
-                  : resolve(schedules);
+            err ? reject(err)
+                : resolve(schedules);
           });
-
     });
 });
 
 facilitySchema.static('createSchedule', (id:string, schedule:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(schedule)) {
-        return reject(new TypeError('Schedule Facility is not a valid object.'));
-      }
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isObject(schedule)) {
+            return reject(new TypeError('Schedule Facility is not a valid object.'));
+        }
 
-      Facility
-      .findByIdAndUpdate(id,     
-        {
-          $push:{"schedule":schedule}
-        })
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-        });
+        Facility
+          .findByIdAndUpdate(id, {
+            $push: {
+              "schedule": schedule
+            }
+          })
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+          });
     });
 });
 
 facilitySchema.static('updateSchedule', (id:string, idschedule:string, schedule:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        if (!_.isString(idschedule)) {
+            return reject(new TypeError('Id Schedule is not a valid string.'));
+        }
         if (!_.isObject(schedule)) {
-          return reject(new TypeError('Schedule Facility is not a valid object.'));
+            return reject(new TypeError('Schedule Facility is not a valid object.'));
         }        
 
         let scheduleObj = {$set: {}};
         for(var param in schedule) {
           scheduleObj.$set['schedule.$.'+param] = schedule[param];
-         }
+        }
 
         let ObjectID = mongoose.Types.ObjectId;
 
         Facility
-        .update({"_id":id, "schedule": {$elemMatch: {"_id": new ObjectID(idschedule)}}}, scheduleObj)
-        .exec((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
+          .update({"_id":id, "schedule": {$elemMatch: {"_id": new ObjectID(idschedule)}}}, scheduleObj)
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
           });
     });
 });
@@ -165,10 +177,12 @@ facilitySchema.static('deleteSchedule', (id:string, idschedule:string ):Promise<
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        if (!_.isString(idschedule)) {
+            return reject(new TypeError('Id Schedule is not a valid string.'));
+        }
 
         Facility
-          .findByIdAndUpdate(id,
-          {
+          .findByIdAndUpdate(id, {
             $pull: {
               "schedule": {
                 "_id": idschedule
@@ -185,17 +199,20 @@ facilitySchema.static('deleteSchedule', (id:string, idschedule:string ):Promise<
 //maintenance
 facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(facility)) {
-          return reject(new TypeError('Facility is not a valid object.'));
+            return reject(new TypeError('Facility is not a valid object.'));
         }
 
         Facility
-        .findByIdAndUpdate(id, {
-          $push: {"maintenance": facility}
-        })
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, {
+            $push: {"maintenance": facility}
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });

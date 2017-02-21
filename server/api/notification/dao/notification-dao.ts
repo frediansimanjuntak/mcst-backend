@@ -83,7 +83,7 @@ notificationSchema.static('deleteNotification', (id:string, ):Promise<any> => {
               });
             else
               reject(new Error("Notification not found."));
-         });
+          });
     });
 });
 

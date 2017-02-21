@@ -7,25 +7,29 @@ import * as auth from '../../../auth/auth-service';
 export class PollRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/polls')
+        .route('/polls')
         .get(auth.isAuthenticated(), PollController.getAll)
         .post(auth.isAuthenticated(), PollController.createPoll);
 
       router
-        .route('/api/polls/:id')
+        .route('/polls/:id')
         .get(auth.isAuthenticated(), PollController.getById)
         .delete(auth.isAuthenticated(), PollController.deletePoll);
 
       router
-        .route('/api/polls/update/:id')
+        .route('/polls/update/:id')
         .post(auth.isAuthenticated(), PollController.updatePoll);
 
       router
-        .route('/api/polls/vote/:id')
+        .route('/polls/vote/:id')
         .post(auth.isAuthenticated(), PollController.addVotePoll);
 
       router
-        .route('/api/polls/start_poll/:id')
+        .route('/polls/start_poll/:id')
         .post(auth.isAuthenticated(), PollController.startPoll);
+
+      router
+        .route('/polls/outcome_poll/:id')
+        .get(auth.isAuthenticated(), PollController.outcomePoll);
     }
 }

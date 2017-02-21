@@ -7,17 +7,17 @@ import * as auth from '../../../auth/auth-service';
 export class FacilityRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/facilities')
+        .route('/facilities')
         .get(auth.isAuthenticated(), FacilityController.getAll)
         .post(auth.isAuthenticated(), FacilityController.createFacility);
 
       router
-        .route('/api/facilities/:id')
+        .route('/facilities/:id')
         .get(auth.isAuthenticated(), FacilityController.getById)
         .delete(auth.isAuthenticated(), FacilityController.deleteFacility);
 
       router
-        .route('/api/facilities/update/:id')
+        .route('/facilities/update/:id')
         .post(auth.isAuthenticated(), FacilityController.updateFacility);
     }
 }

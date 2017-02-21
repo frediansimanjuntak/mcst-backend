@@ -38,14 +38,18 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
 
 bookingSchema.static('createBooking', (booking:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(booking)) {
-        return reject(new TypeError('Booking is not a valid object.'));
-      }
+        if (!_.isObject(booking)) {
+          return reject(new TypeError('Booking is not a valid object.'));
+        }
+        if (!_.isObject(attachment)) {
+          return reject(new TypeError('Attachment is not a valid.'));
+        }
 
-      Attachment.createAttachment(attachment, userId,).then(res => {
-          var idAttachment=res.idAtt;
+        Attachment.createAttachment(attachment, userId,)
+          .then(res => {
+              var idAttachment=res.idAtt;
 
-          var _paymentbooking = new Payment(booking);
+              var _paymentbooking = new Payment(booking);
               _paymentbooking.created_by = userId;
               _paymentbooking.payment_proof = idAttachment
               _paymentbooking.development = developmentId;
@@ -53,23 +57,25 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
                 err ? reject(err)
                     : resolve(saved);
               });
-          var paymentID = _paymentbooking._id;
-          var _booking = new Booking(booking);
+
+              var paymentID = _paymentbooking._id;
+
+              var _booking = new Booking(booking);
               _booking.created_by = userId;
               _booking.development = developmentId;
               _booking.payment = paymentID;
               _booking.save((err, saved) => {
                 err ? reject(err)
                     : resolve(saved);
-          });
-        })
-        .catch(err=>{
-          resolve({message: "attachment error"});
-        })      
+              });
+          })
+          .catch(err=>{
+              resolve({message: "attachment error"});
+          })      
     });
 });
 
-bookingSchema.static('deleteBooking', (id:string, ):Promise<any> => {
+bookingSchema.static('deleteBooking', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -86,15 +92,18 @@ bookingSchema.static('deleteBooking', (id:string, ):Promise<any> => {
 
 bookingSchema.static('updateBooking', (id:string, booking:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
         if (!_.isObject(booking)) {
           return reject(new TypeError('Booking is not a valid object.'));
         }
 
         Booking
-        .findByIdAndUpdate(id, booking)
-        .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
+          .findByIdAndUpdate(id, booking)
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
           });
     });
 });
