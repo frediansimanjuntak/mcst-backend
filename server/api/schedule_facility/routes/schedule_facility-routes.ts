@@ -7,17 +7,17 @@ import * as auth from '../../../auth/auth-service';
 export class ScheduleRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/schedule_facilities/:idfacility')
+        .route('/schedule_facilities/:idfacility')
         .get(auth.isAuthenticated(), ScheduleController.getSchedule)
         .post(auth.isAuthenticated(), ScheduleController.createSchedule);
 
       router
-        .route('/api/schedule_facilities/:idfacility/:idschedule')
+        .route('/schedule_facilities/:idfacility/:idschedule')
         .get(auth.isAuthenticated(), ScheduleController.getByIdSchedule)
         .delete(auth.isAuthenticated(), ScheduleController.deleteSchedule);
 
       router
-        .route('/api/schedule_facilities/:idfacility/update/:idschedule')
+        .route('/schedule_facilities/:idfacility/update/:idschedule')
         .post(auth.isAuthenticated(), ScheduleController.updateSchedule);
     }
 }

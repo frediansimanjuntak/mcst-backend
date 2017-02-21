@@ -127,6 +127,38 @@ pollSchema.static('startPoll', (id:string):Promise<any> => {
     });
 });
 
+pollSchema.static('outcomePoll', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Poll
+          .findById(id,(err, poll)=> {
+            let votes = [].concat(poll.votes);
+            let choices = [].concat(poll.choices);
+            console.log (votes);
+            console.log (choices);
+            
+
+              for (var i = 0; i < choices.length; i++) {
+                let choice = choices[i]
+                Poll
+                .aggregate(
+                  [{ 
+                    $match : { "votes.answer" : choice } 
+                  }]
+              );
+              }          
+            resolve({message: "Success"});
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+          });
+    });
+});
+
 let Poll = mongoose.model('Poll', pollSchema);
 
 export default Poll;

@@ -7,21 +7,21 @@ import * as auth from '../../../auth/auth-service';
 export class ContratorRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/contractor')
+        .route('/contractor')
         .get(auth.isAuthenticated(), ContractorController.getAll)
         .post(auth.isAuthenticated(), ContractorController.createContractor);
 
       router
-        .route('/api/contractor/:id')
+        .route('/contractor/:id')
         .get(auth.isAuthenticated(), ContractorController.getById)
         .delete(auth.isAuthenticated(), ContractorController.deleteContractor);
 
       router
-        .route('/api/contractor/update/:id')
+        .route('/contractor/update/:id')
         .post(auth.isAuthenticated(), ContractorController.updateContractor);
 
       router
-        .route('/api/contractor/activation/:id')
+        .route('/contractor/activation/:id')
         .post(auth.isAuthenticated(), ContractorController.activationContractor);
     }
 }

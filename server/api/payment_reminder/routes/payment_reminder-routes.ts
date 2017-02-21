@@ -7,21 +7,21 @@ import * as auth from '../../../auth/auth-service';
 export class PaymentReminderRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/payment_reminder')
+        .route('/payment_reminder')
         .get(auth.isAuthenticated(), PaymentReminderController.getAll)
         .post(auth.isAuthenticated(), PaymentReminderController.createPaymentReminder);
 
       router
-        .route('/api/payment_reminder/:id')
+        .route('/payment_reminder/:id')
         .get(auth.isAuthenticated(), PaymentReminderController.getById)
         .delete(auth.isAuthenticated(), PaymentReminderController.deletePaymentReminder);
 
       router
-        .route('/api/payment_reminder/update/:id')
+        .route('/payment_reminder/update/:id')
         .post(auth.isAuthenticated(), PaymentReminderController.updatePaymentReminder);
 
       router
-        .route('/api/payment_reminder/publish/:id')
+        .route('/payment_reminder/publish/:id')
         .post(auth.isAuthenticated(), PaymentReminderController.publishPaymentReminder);
 
     }

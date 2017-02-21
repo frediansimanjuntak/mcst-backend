@@ -7,25 +7,25 @@ import * as auth from '../../../auth/auth-service';
 export class UserRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/users')
+        .route('/users')
         .get(auth.isAuthenticated(), UserController.getAll)
         .post(auth.isAuthenticated(), UserController.createUser);
 
       router
-        .route('/api/users/:id')
+        .route('/users/:id')
         .get(auth.isAuthenticated(), UserController.getById)
         .put(auth.isAuthenticated(), UserController.deleteUser);
 
       router
-        .route('/api/users/update/:id')
+        .route('/users/update/:id')
         .post(auth.isAuthenticated(), UserController.updateUser);
 
       router
-        .route('/api/users/active/:id')
+        .route('/users/active/:id')
         .post(auth.isAuthenticated(), UserController.activationUser);
 
       router
-        .route('/api/users/unactive/:id')
+        .route('/users/unactive/:id')
         .post(auth.isAuthenticated(), UserController.unActiveUser);
 
       router
@@ -37,7 +37,7 @@ export class UserRoutes {
         .get(auth.isAuthenticated(), UserController.me);
 
       router
-        .route('/api/users/super_admin')
+        .route('/users/super_admin')
         .post(auth.isAuthenticated(), auth.hasRole('master'), UserController.createUserSuperAdmin);
     }
 }

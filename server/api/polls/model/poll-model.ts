@@ -15,8 +15,7 @@ var pollSchema = new mongoose.Schema({
 		answer: {type: String, trim: true},
 		voted_by: {
 			type: Schema.Types.ObjectId,
-    		ref: 'User',
-    		required: true
+    		ref: 'User'
 		},
 		voted_at: {type: Date}			
 	}],

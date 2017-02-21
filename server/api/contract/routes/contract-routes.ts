@@ -7,17 +7,17 @@ import * as auth from '../../../auth/auth-service';
 export class ContractRoutes {
     static init(router: express.Router) {
       router
-        .route('/api/contracts')
+        .route('/contracts')
         .get(auth.isAuthenticated(), ContractController.getAll)
         .post(auth.isAuthenticated(), ContractController.createContract);
 
       router
-        .route('/api/contracts/:id')
+        .route('/contracts/:id')
         .get(auth.isAuthenticated(), ContractController.getById)
         .delete(auth.isAuthenticated(), ContractController.deleteContract);
 
       router
-        .route('/api/contracts/update/:id')
+        .route('/contracts/update/:id')
         .post(auth.isAuthenticated(), ContractController.updateContract);      
     }
 }
