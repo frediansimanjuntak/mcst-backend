@@ -68,11 +68,11 @@ export class PollController {
         .catch(error => res.status(400).json(error));
   }
 
-  static outcomePoll(req: express.Request, res: express.Response):void {
+  static stopPoll(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
 
       PollDAO
-        ['outcomePoll'](_id)
+        ['stopPoll'](_id)
         .then(poll => res.status(201).json(poll))
         .catch(error => res.status(400).json(error));
   }
