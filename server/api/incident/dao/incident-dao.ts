@@ -185,18 +185,20 @@ incidentSchema.static('unstarred', (id:string, starred_by:string):Promise<any> =
     });
 });
 
-incidentSchema.static('resolve', (id:string, userId:string):Promise<any> => {
+incidentSchema.static('resolve', (id:string, userId:string, incident:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
       }
+      let body:any = incident;
 
       Incident
         .findByIdAndUpdate(id,     
           {
             $set: {
-              "resolved_by": userId,
+              "resolved_by": body.resolved_by,
               "resolved_at": new Date(),
+              "remark": body.remark,
               "status": "resolve"
             }
           })
