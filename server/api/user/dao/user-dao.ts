@@ -121,6 +121,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
                 "properties.$.tenant": {
                   "resident": userId,
                   "type": "tenant",
+                  "remarks": body.remarks_tenant,
                   "created_at": new Date()
                 }
                },
