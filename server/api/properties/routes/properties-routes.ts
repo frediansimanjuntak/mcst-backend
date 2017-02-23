@@ -15,7 +15,8 @@ export class PropertiesRoutes {
       router
         .route('/properties/:name_url/:idproperties')
         .get(auth.isAuthenticated(), PropertiesController.getByIdProperties)
-        .delete(auth.isAuthenticated(), PropertiesController.deleteProperties);
+        .delete(auth.isAuthenticated(), PropertiesController.deleteProperties)
+        .put(auth.isAuthenticated(), PropertiesController.deleteLandlord);
 
       router
         .route('/properties/:name_url/update/:idproperties')
@@ -32,7 +33,7 @@ export class PropertiesRoutes {
         .route('/properties/:name_url/:idproperties/tenant/:idtenant')
         .get(auth.isAuthenticated(), PropertiesController.getByIdTenantProperties)
         .post(auth.isAuthenticated(), PropertiesController.updateTenantProperties)
-        .delete(auth.isAuthenticated(), PropertiesController.deleteTenantProperties);
+        .put(auth.isAuthenticated(), PropertiesController.deleteTenantProperties);
 
 
       //Route Register Vehicle

@@ -30,7 +30,7 @@ export class UserRoutes {
 
       router
         .route('/')
-        .get(auth.hasRole('admin'), UserController.index);
+        .get(UserController.index);
 
       router
         .route('/me')
@@ -39,5 +39,9 @@ export class UserRoutes {
       router
         .route('/users/super_admin')
         .post(auth.isAuthenticated(), auth.hasRole('master'), UserController.createUserSuperAdmin);
+
+      router
+        .route('/users/user_tenant_landlord')
+        .post(auth.isAuthenticated(), UserController.InputUserInLandlordOrTenant);
     }
 }

@@ -83,9 +83,10 @@ export class IncidentController {
   static resolve(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _userId = req["user"]._id;
+      let _incident = req.body;
 
       IncidentDAO
-        ['resolve'](_id, _userId)
+        ['resolve'](_id, _userId, _incident)
         .then(incident => res.status(201).json(incident))
         .catch(error => res.status(400).json(error));
   }

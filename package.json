@@ -44,8 +44,7 @@
     "newrelic": "^1.18.2",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
-    "serve-favicon": "^2.3.2",
-    "slug": "^0.9.1"
+    "serve-favicon": "^2.3.2"
   },
   "devDependencies": {
     "@types/node": "^7.0.0",

@@ -140,6 +140,45 @@ export class AutoPost {
           else
           {
             console.log(res);
+            Poll
+              .aggregate({
+                $unwind: "$votes"
+              },
+              { 
+                $group: { 
+                  _id: '$votes.answer', total_vote: { $sum: 1 } 
+                } 
+              },
+              {
+                $sort : {
+                  total_vote : -1
+                }
+              }, 
+              {
+                $limit : 1 
+              },          
+              function (err, res) {
+                let result = [].concat(res);
+                for (var i = 0; i < result.length; i++) {
+                    let voteresult = result[i];
+                    let vote = voteresult._id;
+                    Poll
+                      .findOneAndUpdate({"end_time": today}, {
+                        $set: {
+                          "outcome": vote
+                        }
+                      })
+                      .exec((err, updated) => {
+                          if(err){
+                            console.log('error')
+                          }    
+                          else
+                          {
+                            console.log(updated);
+                          }
+                      });
+                }                      
+              });
           }      
         })
       }, function () {

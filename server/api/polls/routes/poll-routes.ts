@@ -29,7 +29,7 @@ export class PollRoutes {
         .post(auth.isAuthenticated(), PollController.startPoll);
 
       router
-        .route('/polls/outcome_poll/:id')
-        .get(auth.isAuthenticated(), PollController.outcomePoll);
+        .route('/polls/stop_poll/:id')
+        .get(auth.isAuthenticated(), PollController.stopPoll);
     }
 }
