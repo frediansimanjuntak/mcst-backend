@@ -4,15 +4,11 @@ import * as _ from 'lodash';
 import userSchema from '../model/user-model';
 import Development from '../../development/dao/development-dao'
 import UserGroup from '../../user_group/dao/user_group-dao'
+import * as auth from '../../../auth/auth-service';
 
 userSchema.static('index', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        User
-          .find({}, '-salt -password')
-          .exec((err, users) => {
-              err ? reject(err)
-                  : resolve(users);
-          });
+        auth.isAuthenticated();
     });
 });
 
@@ -127,6 +123,9 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
                   "type": "tenant",
                   "created_at": new Date()
                 }
+               },
+               $set:{
+                 "properties.$.status": "tenanted"
                }
             })
             .exec((err, saved) => {
@@ -137,6 +136,80 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
     });
 });
 
+userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(user)) {
+        return reject(new TypeError('User is not a valid object.'));
+      }
+      console.log(user);
+      let body:any = user;
+      var ObjectID = mongoose.Types.ObjectId;
+
+      if(body.type == "landlord"){
+        User
+          .findByIdAndUpdate(body.id_user, {
+            $push:{
+              "owned_property":{
+                "development": body.id_development,
+                "property": body.id_property
+              }
+            }
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+          });
+
+        Development
+          .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},
+              {
+                $set: {  
+                  "properties.$.landlord": body.id_user
+                }
+              }, {upsert: true})
+          .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+          });
+      }
+
+      if(body.type == "tenant") {
+          User
+            .findByIdAndUpdate(body.id_user, {
+              $push:{
+                "rented_property":{
+                  "development": body.id_development,
+                  "property": body.id_property
+                }
+              }
+            })
+            .exec((err, updated) => {
+                  err ? reject(err)
+                      : resolve(updated);
+            });
+
+
+          Development
+            .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},{
+              $push:{
+                "properties.$.tenant": {
+                  "resident": body.id_user,
+                  "type": "tenant",
+                  "created_at": new Date()
+                }
+               },
+               $set:{
+                 "properties.$.status": "tenanted"
+               }
+            })
+            .exec((err, saved) => {
+                  err ? reject(err)
+                      : resolve(saved);
+            });
+      }      
+    });
+});
+
 userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
@@ -144,6 +217,7 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
       }
       var _user = new User(user);
       _user.role = "super admin"
+      _user.active = true
       _user.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
@@ -171,7 +245,7 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
                 Development
                   .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
                       {
-                        $pull: {  
+                        $unset: {  
                           "properties.$.landlord": id
                         }
                       }, {upsert: true})

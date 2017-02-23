@@ -46,6 +46,18 @@ export class PropertiesController {
         .catch(error => res.status(400).json(error));
   }
 
+  static deleteLandlord(req: express.Request, res: express.Response):void {
+      let _name_url = req.params.name_url;
+      let _idproperties = req.params.idproperties;
+      let _landlord = req.body;
+      let _development = req["user"].default_development;
+
+      DevelopmentDAO
+        ['deleteLandlord'](_name_url,_idproperties, _landlord, _development)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
+  }
+
   static updateProperties(req: express.Request, res: express.Response):void {
       let _name_url = req.params.name_url;
       let _idproperties = req.params.idproperties;
@@ -93,9 +105,12 @@ export class PropertiesController {
   static deleteTenantProperties(req: express.Request, res: express.Response):void {
       let _name_url = req.params.name_url;
       let _idtenant = req.params.idtenant;
+      let _idproperties = req.params.idproperties;
+      let _tenant = req.body;
+      let _development = req["user"].default_development
 
       DevelopmentDAO
-        ['deleteTenantProperties'](_name_url, _idtenant)
+        ['deleteTenantProperties'](_name_url, _idtenant, _idproperties, _tenant, _development)
         .then(properties => res.status(201).json(properties))
         .catch(error => res.status(400).json(error));
   }
@@ -149,9 +164,10 @@ export class PropertiesController {
   static deleteRegisterVehicleProperties(req: express.Request, res: express.Response):void {
       let _name_url = req.params.name_url;
       let _idregistervehicle = req.params.idregistervehicle;
+      let _idproperties = req.params.idproperties;
 
       DevelopmentDAO
-        ['deleteRegisterVehicleProperties'](_name_url, _idregistervehicle)
+        ['deleteRegisterVehicleProperties'](_name_url, _idregistervehicle, _idproperties)
         .then(properties => res.status(201).json(properties))
         .catch(error => res.status(400).json(error));
   }

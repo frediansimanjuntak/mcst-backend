@@ -13,7 +13,7 @@ var UserSchema = new mongoose.Schema({
     email: {type: String, lowercase: true, unique: true, required: true},
     password: {type: String, required: true},  
     salt: {type: String}, 
-    role: {type: String, default: 'user'}, // 'admin' and 'user'
+    role: {type: String, default: "user"}, // 'admin' and 'user'
     phone:{type: String},
     provider: {type: String},
     emergency_contact:{
@@ -49,12 +49,14 @@ var UserSchema = new mongoose.Schema({
   rented_property:
   [{
     development: {type: String},
-    property: {type: String}
+    property: {type: String},
+    active: {type: Boolean, default: true}
   }],
   owned_property:
   [{
     development: {type: String},
-    property: {type: String}  
+    property: {type: String}, 
+    active: {type: Boolean, default: true} 
   }],
   authorized_property:
   [{
