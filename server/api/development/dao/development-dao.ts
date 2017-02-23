@@ -1,8 +1,9 @@
-import * as mongoose from 'mongoose';
+  import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import developmentSchema from '../model/development-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import User from '../../user/dao/user-dao';
 import {AWSService} from '../../../global/aws.service';
 import {GlobalService} from '../../../global/global.service';
 
@@ -99,6 +100,7 @@ developmentSchema.static('getNewsletter', (name_url:string):Promise<any> => {
         Development
           .findOne({"name_url": name_url})
           .select("newsletter")
+          .populate("newsletter.attachment  newsletter.release_by newsletter.created_by")
           .exec((err, newsletters) => {
               err ? reject(err)
                   : resolve(newsletters);
@@ -365,6 +367,49 @@ developmentSchema.static('deleteProperties', (name_url:string, idproperties:stri
     });
 });
 
+//delete Landlord
+developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string, landlord:Object, development:string ):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(name_url)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }
+        if (!_.isString(idproperties)) {
+            return reject(new TypeError('Id Unit is not a valid string.'));
+        }
+
+        let body:any = landlord
+        let ObjectID = mongoose.Types.ObjectId; 
+
+        console.log(body._id);
+        console.log(idproperties);
+        console.log(name_url);
+
+         Development
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}},
+              {
+                $unset: {  
+                  "properties.$.landlord": body._id
+                }
+              }, {upsert: true})
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+            });
+
+        User
+          .update({"_id": body._id, "owned_property.property": idproperties, "owned_property.development": development},{
+                    $set: {
+                     "owned_property.$.active": false
+                   }
+                 })
+          .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+                  console.log("user landlord "+updated)
+          });
+    });
+});
+
 developmentSchema.static('updateProperties', (name_url:string, idproperties:string, properties:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
@@ -532,7 +577,7 @@ developmentSchema.static('createTenantProperties', (name_url:string, idpropertie
     });
 });
 
-developmentSchema.static('deleteTenantProperties', (name_url:string, idtenant:string):Promise<any> => {
+developmentSchema.static('deleteTenantProperties', (name_url:string, idtenant:string, idproperties:string, tenant:Object, development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
@@ -540,21 +585,32 @@ developmentSchema.static('deleteTenantProperties', (name_url:string, idtenant:st
         if (!_.isString(idtenant)) {
             return reject(new TypeError('Id Tenant is not a valid string.'));
         }
-
+        let body:any = tenant;
         let ObjectID = mongoose.Types.ObjectId; 
 
         Development
-          .findOneAndUpdate({"name_url": name_url}, {
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
             $pull: {
-              "properties.0.tenant": {
-                "_id": new ObjectID(idtenant)
+              "properties.$.tenant": {
+                  "_id": mongoose.Types.ObjectId(idtenant)
+                }
               }
-            }
-          }, {multi: true})
+          })
           .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);
           });
+
+        User
+          .update({"_id": body._id, "rented_property.property": idproperties, "rented_property.development": development},{
+                    $set: {
+                     "rented_property.$.active": false
+                   }
+                 })
+          .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });        
     });
 });
 
@@ -705,7 +761,7 @@ developmentSchema.static('createRegisterVehicleProperties', (name_url:string, id
     });
 });
 
-developmentSchema.static('deleteRegisterVehicleProperties', (name_url:string, idregistervehicle:string):Promise<any> => {
+developmentSchema.static('deleteRegisterVehicleProperties', (name_url:string, idregistervehicle:string, idproperties: string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
@@ -716,14 +772,14 @@ developmentSchema.static('deleteRegisterVehicleProperties', (name_url:string, id
         let ObjectID = mongoose.Types.ObjectId; 
 
         Development
-          .findOneAndUpdate({"name_url": name_url},     
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}},     
           {
             $pull:{
-              "properties.0.registered_vehicle": {
+              "properties.$.registered_vehicle": {
                 "_id": new ObjectID(idregistervehicle)
               }
             }
-          }, {multi: true})
+          })
           .exec((err, saved) => {
                 err ? reject(err)
                     : resolve(saved);
