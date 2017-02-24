@@ -719,16 +719,7 @@ developmentSchema.static('createRegisterVehicleProperties', (name_url:string, id
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
-        }
-        if (!_.isString(idproperties)) {
-            return reject(new TypeError('Id Unit is not a valid string.'));
-        }
-        if (!_.isObject(registervehicle)) {
-          return reject(new TypeError('Properties is not a valid object.'));
         }  
-        if (!_.isObject(attachment)) {
-          return reject(new TypeError('Attachment is not a valid.'));
-        }      
         
         let ObjectID = mongoose.Types.ObjectId; 
         let body:any = registervehicle;
