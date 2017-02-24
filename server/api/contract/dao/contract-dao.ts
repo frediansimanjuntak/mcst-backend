@@ -580,7 +580,7 @@ contractSchema.static('publishContractNotice', (id:string, idcontractnotice:stri
           .findById(id)
           .update(_query,{
               $set: {
-                "contract_notice.$.publish": body.status
+                "contract_notice.$.publish": true
               }
           })
           .exec((err, updated) => {
