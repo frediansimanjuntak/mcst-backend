@@ -348,13 +348,13 @@ contractSchema.static('deleteContractNote', (id:string, idcontractnote:string ):
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        console.log("ni id contracts"+ id);
+        console.log("ni id contracts note"+ idcontractnote);
 
         Contract
-          .findByIdAndUpdate(id,{
-            $pull:{
-              "contract_note": {
-                "_id": idcontractnote
-              }
+          .update({"_id": id}, {
+            $pull: {
+              "contract_note" :{ "_id": idcontractnote}
             }
           })
           .exec((err, deleted) => {

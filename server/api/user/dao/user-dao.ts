@@ -217,7 +217,6 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
         return reject(new TypeError('User is not a valid object.'));
       }
       var _user = new User(user);
-      _user.role = "super admin"
       _user.active = true
       _user.save((err, saved) => {
         err ? reject(err)
