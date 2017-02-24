@@ -87,6 +87,9 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
           return reject(new TypeError('Attachment is not a valid'));
         }
 
+        let file:any = attachment
+        let attachmentfile = file.attachment;
+
         let incidentObj = {$set: {}};
         for(var param in incident) {
           incidentObj.$set[param] = incident[param];
@@ -95,11 +98,11 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
         let ObjectID = mongoose.Types.ObjectId; 
         let _query = {"_id": id};
 
-        var files = [].concat(attachment);
+        var files = [].concat(attachmentfile);
         var idAttachment = [];
 
-        if(attachment!=null){
-          Attachment.createAttachment(attachment, userId)
+        if(attachmentfile != null){
+          Attachment.createAttachment(attachmentfile, userId)
             .then(res => {
               var idAttachment = res.idAtt;
 
