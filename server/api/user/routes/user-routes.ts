@@ -38,7 +38,7 @@ export class UserRoutes {
 
       router
         .route('/users/super_admin')
-        .post(auth.isAuthenticated(), auth.hasRole('master'), UserController.createUserSuperAdmin);
+        .post(auth.isAuthenticated(), UserController.createUserSuperAdmin);
 
       router
         .route('/users/user_tenant_landlord')
