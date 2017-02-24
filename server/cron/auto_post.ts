@@ -20,7 +20,7 @@ export class AutoPost {
             "publish": true,
             "publish_at": new Date()
           }
-        },(err, res)=>{
+        }, {multi: true}, (err, res)=>{
           if(err){
             console.log('error');
           } 
@@ -49,7 +49,7 @@ export class AutoPost {
             "publish": false,
             "valid": false
           }
-        },(err, res)=>{
+        }, {multi: true}, (err, res)=>{
           if(err){
             console.log('error');
           } 
@@ -73,11 +73,11 @@ export class AutoPost {
       let today = new DateOnly();
 
       PaymentReminder
-        .findOneAndUpdate({"auto_issue_on": today},{
+        .update({"auto_issue_on": today},{
           $set: {
             "publish": true
           }
-        },(err, res)=>{
+        }, {multi: true}, (err, res)=>{
           if(err){
             console.log('error')
           }    
@@ -96,16 +96,17 @@ export class AutoPost {
   }
 
   static autoStartPoll():void{
-    new CronJob('00 00 1-31 * *', function() {
+    new CronJob('01-10 01 1-31 * *', function() {
       /* runs once at the specified date. */
       let today = new DateOnly();
 
       Poll
-        .findOneAndUpdate({"start_time": today},{
-          $set: {
-            "status": "active"
-          }
-        },(err, res)=>{
+        .update({"start_time": today},
+            {
+              $set: {  
+                "status": "active"
+              }
+            }, {multi: true}, (err, res)=>{
           if(err){
             console.log('error')
           }    
@@ -124,16 +125,16 @@ export class AutoPost {
   }
 
   static autoEndPoll():void{
-    new CronJob('00 00 1-31 * *', function() {
+    new CronJob('50-59 23 1-31 * *', function() {
       /* runs once at the specified date. */
       let today = new DateOnly();
 
       Poll
-        .findOneAndUpdate({"end_time": today},{
+        .Update({"end_time": today},{
           $set: {
             "status": "not active"
           }
-        },(err, res)=>{
+        }, {multi: true}, (err, res)=>{
           if(err){
             console.log('error')
           }    
@@ -190,89 +191,3 @@ export class AutoPost {
     );
   }
 }
-
-// export function autoPostPublishAnnouncement(){
-//     new CronJob('1 12 1-31 * *', function() {
-//       /* runs once at the specified date. */
-
-//       let today = new DateOnly();
-//       Announcement
-//         .update({"auto_post_on": today},{
-//           $set: {
-//             "publish": true,
-//             "publish_at": new Date()
-//           }
-//         },(err, res)=>{
-//           if(err){
-//             console.log('error');
-//           } 
-//           else
-//           {
-//             console.log(res);
-//           }
-//         })
-//       }, function () {
-//         /* This function is executed when the job stops */
-//         console.log('success!')
-//       },
-//       true,
-//       'Asia/Jakarta'
-//     );
-// }
-
-// export function autoPostValidAnnouncement(){
-//     new CronJob('1 12 1-31 * *', function() {
-//       /* runs once at the specified date. */
-
-//       let today = new DateOnly();
-//       Announcement
-//         .update({"valid_till": today},{
-//           $set: {
-//             "publish": false,
-//             "valid": false
-//           }
-//         },(err, res)=>{
-//           if(err){
-//             console.log('error');
-//           } 
-//           else
-//           {
-//             console.log(res);
-//           }
-//         })
-//       }, function () {
-//         /* This function is executed when the job stops */
-//         console.log('success!')
-//       },
-//       true,
-//       'Asia/Jakarta'
-//     );
-// }
-
-// export function autoPostPaymentReminder(){
-//     new CronJob('1 12 1-31 * *', function() {
-//       /* runs once at the specified date. */
-//       let today = new DateOnly();
-
-//       PaymentReminder
-//         .findOneAndUpdate({"auto_issue_on": today},{
-//           $set: {
-//             "publish": true
-//           }
-//         },(err, res)=>{
-//           if(err){
-//             console.log('error')
-//           }    
-//           else
-//           {
-//             console.log(res);
-//           }      
-//         })
-//       }, function () {
-//         /* This function is executed when the job stops */
-//         console.log('success!')
-//       },
-//       true,
-//       'Asia/Jakarta'
-//     );
-// }

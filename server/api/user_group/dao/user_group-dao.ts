@@ -71,17 +71,11 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-
-        UserGroup
-          .findByIdAndRemove(id)
-          .exec((err, deleted) => {
-              err ? reject(err)
-                  : resolve();
-          });
+        }        
 
         UserGroup
           .findById(id, (err, usergroup) => {
+            console.log(usergroup.users);
             if (usergroup.users != null){
               var users = [].concat(usergroup.users)
               for (var i = 0; i < users.length; i++) {
@@ -89,7 +83,7 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
 
                 User
                   .findByIdAndUpdate(iduser, {
-                    $pull: {
+                    $unset: {
                       "user_group": id
                     }
                   }, {upsert: true})
@@ -101,6 +95,13 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
               resolve({message: "Success"})
             }            
           })
+
+        UserGroup
+          .findByIdAndRemove(id)
+          .exec((err, deleted) => {
+              err ? reject(err)
+                  : resolve();
+          });
     });
 });
 
@@ -160,7 +161,7 @@ userGroupSchema.static('deleteUser', (id:string, users:Object):Promise<any> => {
 
         User
           .findByIdAndUpdate(body.user, {
-            $pull: {
+            $unset: {
               "user_group": id
             }
           })
