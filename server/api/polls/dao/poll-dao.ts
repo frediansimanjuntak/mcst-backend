@@ -159,6 +159,7 @@ pollSchema.static('stopPoll', (id:string):Promise<any> => {
                   .findByIdAndUpdate(id, {
                     $set: {
                       "outcome": vote,
+                      "end_time": new DateOnly(),
                       "status": "not active"
                     }
                   })

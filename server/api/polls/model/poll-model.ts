@@ -23,7 +23,7 @@ var pollSchema = new mongoose.Schema({
 	end_time: {type: DateOnly},
 	choices: [{type: String}],
 	outcome: {type: String},
-	status: {type: String, trim: true, default: "not active"},
+	status: {type: String, trim: true},
 	created_by: {
 		type: Schema.Types.ObjectId,
     	ref: 'User'
