@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "main": "src/mcst-backend.js",
   "scripts": {
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
     "preinstall": "typings install",
     "postinstall": "tsc",
     "start": "node index",
