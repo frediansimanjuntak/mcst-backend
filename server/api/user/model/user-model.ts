@@ -73,8 +73,8 @@ var UserSchema = new mongoose.Schema({
   user_group: {
     type: Schema.Types.ObjectId,
     ref: 'UserGroup'
-  },
-  created_at: {type: String}
+  },  
+  created_at: {type: Date, default: Date.now}
 });
 
 // Public profile information

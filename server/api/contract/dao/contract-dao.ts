@@ -119,8 +119,8 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
             .then(res => {
               var idAttachment = res.idAtt;
               Contract
-                .update(_query,{
-                    $set : {
+                .update(_query, {
+                    $set: {
                       "attachment": idAttachment
                     }
                   })

@@ -142,14 +142,15 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
         }
-        let body:any = user;
-        var ObjectID = mongoose.Types.ObjectId;
 
-        if(body.type == "landlord"){
+        let body:any = user;
+        let ObjectID = mongoose.Types.ObjectId;
+
+        if(body.type == 'landlord'){
           User
             .findByIdAndUpdate(body.id_user, {
               $push:{
-                "owned_property":{
+                "owned_property": {
                   "development": body.id_development,
                   "property": body.id_property
                 }
@@ -173,7 +174,7 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
             });
         }
 
-        if(body.type == "tenant") {
+        if(body.type == 'tenant') {
           User
             .findByIdAndUpdate(body.id_user, {
               $push:{
