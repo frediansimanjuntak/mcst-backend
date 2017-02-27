@@ -34,7 +34,11 @@ export class UserRoutes {
 
       router
         .route('/me')
-        .get(auth.isAuthenticated(), UserController.me);      
+        .get(auth.isAuthenticated(), UserController.me);
+
+      router
+        .route('/create_user')
+        .post(auth.isAuthenticated(), UserController.createUsers)      
 
       router
         .route('/users/user_tenant_landlord')

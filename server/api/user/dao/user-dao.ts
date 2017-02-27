@@ -210,6 +210,20 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
     });
 });
 
+userSchema.static('createUsers', (user:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(user)) {
+        return reject(new TypeError('User is not a valid object.'));
+      }
+      var _user = new User(user);
+      _user.active = true
+      _user.save((err, saved) => {
+        err ? reject(err)
+            : resolve(saved);
+        });
+    });
+});
+
 userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
