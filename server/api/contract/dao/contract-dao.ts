@@ -109,10 +109,11 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
             return reject(new TypeError('Id is not a valid string.'));
         }
 
-        let file:any = attachment;
         let body:any = contract;
+        let file:any = attachment;        
         let attachmentfile = file.attachment;
         let _query = {"_id": id};
+
         if(attachmentfile){
           Attachment.createAttachment(attachmentfile, userId)
             .then(res => {
@@ -145,15 +146,19 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
               }
           })
           .exec((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-            });
+            err ? reject(err)
+                : resolve(saved);             
+          });
     });
 });
 
 //contract schedule
 contractSchema.static('getAllContractSchedule', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        
         let _query = {"_id": id};
 
         Contract

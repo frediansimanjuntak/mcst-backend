@@ -15,7 +15,7 @@ var UserSchema = new mongoose.Schema({
     salt: {type: String}, 
     role: {type: String, default: "user"}, // 'admin' and 'user'
     phone:{type: String},
-    provider: {type: String},
+    provider: {type: String, default: "local"},
     emergency_contact:{
       name: {type: String},
       contact_number: {type: String}

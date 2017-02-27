@@ -34,14 +34,14 @@ export class UserRoutes {
 
       router
         .route('/me')
-        .get(auth.isAuthenticated(), UserController.me);
-
-      router
-        .route('/users/super_admin')
-        .post(auth.isAuthenticated(), UserController.createUserSuperAdmin);
+        .get(auth.isAuthenticated(), UserController.me);      
 
       router
         .route('/users/user_tenant_landlord')
         .post(auth.isAuthenticated(), UserController.InputUserInLandlordOrTenant);
+
+      router
+        .route('/users/super_admin')
+        .post(auth.isAuthenticated(), UserController.createUserSuperAdmin);
     }
 }
