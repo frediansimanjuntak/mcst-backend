@@ -4,6 +4,7 @@
  */
 
 'use strict';
+import * as Promise from 'bluebird';
 import User from '../api/user/dao/user-dao';
 
 User

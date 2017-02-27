@@ -1,4 +1,5 @@
 'use strict';
+import * as Promise from 'bluebird';
 /*eslint no-process-env:0*/
 
 // Development specific configuration
@@ -7,7 +8,10 @@ export default {
 
   // MongoDB connection options
   mongo: {
-    uri: 'mongodb://localhost/mcst-backend'
+    uri: 'mongodb://localhost/mcst-backend',
+    options: {
+      promiseLibrary: Promise
+    }
   },
   awsBucket: 'mcst-app',
   // Mailgun api key and domain

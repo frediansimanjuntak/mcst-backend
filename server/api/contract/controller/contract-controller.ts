@@ -39,10 +39,10 @@ export class ContractController {
         .catch(error => res.status(400).json(error));
   }
 
-  static updateContract(req: express.Request, res: express.Response):void {
+  static updateContract(req: express.Request, res: express.Response):void {    
       let _id = req.params.id;
       let _contract = req.body;
-      let _attachment = req["files"].attachment;
+      let _attachment = req["files"];
       let _userId = req["user"]._id;
 
       ContractDAO

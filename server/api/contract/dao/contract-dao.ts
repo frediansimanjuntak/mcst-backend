@@ -119,8 +119,8 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
             .then(res => {
               var idAttachment = res.idAtt;
               Contract
-                .update(_query,{
-                    $set : {
+                .update(_query, {
+                    $set: {
                       "attachment": idAttachment
                     }
                   })
@@ -457,6 +457,7 @@ contractSchema.static('getByIdContractNotice', (id:string, idcontractnotice:stri
               }
             }
           })
+          .populate("contract_notice.attachment")
           .exec((err, contractnotices) => {
               err ? reject(err)
                   : resolve(contractnotices);
