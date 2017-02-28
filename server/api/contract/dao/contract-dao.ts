@@ -244,7 +244,7 @@ contractSchema.static('updateContractSchedule', (id:string, userId:string, contr
         for(var param in contractschedule) {
           contractscheduleObj.$set["schedule.$."+param] = contractschedule[param];
          }          
-        
+          
         Contract
           .update(_query, contractscheduleObj)
           .exec((err, saved) => {
