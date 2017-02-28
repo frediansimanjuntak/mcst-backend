@@ -45,33 +45,45 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
           return reject(new TypeError('Attachment is not a valid.'));
         }
 
-        Attachment.createAttachment(attachment, userId,)
+        let idAttachment = [];
+        let file:any = attachment;
+        let attachmentFile = file.payment_proof
+
+        if(attachmentFile){
+          Attachment.createAttachment(attachmentFile, userId)
           .then(res => {
-              var idAttachment=res.idAtt;
-
-              var _paymentbooking = new Payment(booking);
-              _paymentbooking.created_by = userId;
-              _paymentbooking.payment_proof = idAttachment
-              _paymentbooking.development = developmentId;
-              _paymentbooking.save((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-              });
-
-              var paymentID = _paymentbooking._id;
-
-              var _booking = new Booking(booking);
-              _booking.created_by = userId;
-              _booking.development = developmentId;
-              _booking.payment = paymentID;
-              _booking.save((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-              });
+              res.idAtt.push(idAttachment);              
           })
           .catch(err=>{
               resolve({message: "attachment error"});
-          })      
+          }) 
+        }             
+
+        var _paymentbooking = new Payment(booking);
+            _paymentbooking.created_by = userId;
+            _paymentbooking.payment_proof = idAttachment;
+            if(idAttachment != []){
+              _paymentbooking.status = "paid";
+            }
+            _paymentbooking.development = developmentId;
+            _paymentbooking.save((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+            });
+
+            var paymentID = _paymentbooking._id;
+
+            var _booking = new Booking(booking);
+            _booking.created_by = userId;
+            _booking.development = developmentId;
+            if(idAttachment != []){
+              _booking.status = "paid";
+            }
+            _booking.payment = paymentID;
+            _booking.save((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+            });
     });
 });
 

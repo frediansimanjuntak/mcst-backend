@@ -23,7 +23,7 @@ var paymentBookingSchema = new mongoose.Schema({
 	}],
 	total_amount: {type: String, trim: true},
 	remark: {type: String, trim: true},
-	status: {type: String, trim: true, default: "unpaid"},
+	status: {type: String, trim: true, default: "not paid"},
 	created_by: {
 		type: Schema.Types.ObjectId,
     	ref: 'User'
