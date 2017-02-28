@@ -20,7 +20,7 @@ export class BookingController {
 
   static createBooking(req: express.Request, res: express.Response):void {
       let _booking = req.body;
-      let _attachment = req["files"].payment_proof;
+      let _attachment = req["files"];
       let _userId= req["user"]._id;      
       let _developmentId= req["user"].default_development;
 
