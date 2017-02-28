@@ -313,12 +313,19 @@ userSchema.static('updateUser', (id:string, user:Object):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
 
+        let body:any = user;
+
         User
-          .findByIdAndUpdate(id, user)
-          .exec((err, updated) => {
-                err ? reject(err)
-                    : resolve(updated);
-          });
+          .findById(id, (err, user)=>{
+            user.username = body.username;
+            user.email = body.email;
+            user.phone = body.phone;
+            user.password = body.password;
+            user.save((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+              });
+          })
     });
 });
 
