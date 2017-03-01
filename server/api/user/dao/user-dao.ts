@@ -329,6 +329,41 @@ userSchema.static('updateUser', (id:string, user:Object):Promise<any> => {
     });
 });
 
+userSchema.static('updateUsers', (id:string, user:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        let body:any = user;
+        let userObj = {$set: {}};
+        for(var param in body) {
+          userObj.$set[param] = body[param];
+        }
+
+        User
+          .findByIdAndUpdate(id, userObj)
+          .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+
+        if(body.password){
+          User
+            .findById(id, (err, user)=>{
+              user.password = body.password;
+              user.save((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+                });
+            })
+        }
+
+
+        
+    });
+});
+
 userSchema.static('activationUser', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {

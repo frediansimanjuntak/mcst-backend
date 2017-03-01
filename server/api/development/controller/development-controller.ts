@@ -45,7 +45,7 @@ export class DevelopmentController {
         ['updateDevelopment'](_id, _development)
         .then(development => res.status(201).json(development))
         .catch(error => res.status(400).json(error));
-  }
+  }  
 
   static createStaffDevelopment(req: express.Request, res: express.Response):void {
       let _staff = req.body.staff;

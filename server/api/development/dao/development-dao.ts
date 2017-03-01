@@ -347,9 +347,6 @@ developmentSchema.static('deleteProperties', (name_url:string, idproperties:stri
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
         }
-        if (!_.isString(idproperties)) {
-            return reject(new TypeError('Id Unit is not a valid string.'));
-        }
 
         Development
           .findOneAndUpdate({"name_url": name_url},
@@ -414,13 +411,7 @@ developmentSchema.static('updateProperties', (name_url:string, idproperties:stri
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
-        }
-        if (!_.isString(idproperties)) {
-            return reject(new TypeError('Id Unit is not a valid string.'));
-        }
-        if (!_.isObject(properties)) {
-            return reject(new TypeError('Properties is not a valid object.'));
-        }        
+        }    
 
         let propertiesObj = {$set: {}};
         for(var param in properties) {
@@ -431,6 +422,30 @@ developmentSchema.static('updateProperties', (name_url:string, idproperties:stri
 
         Development
           .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, propertiesObj)
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
+developmentSchema.static('generateCodeProperties', (name_url:string, idproperties:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(name_url)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }    
+
+        let ObjectID = mongoose.Types.ObjectId;  
+        let landlordCode = Math.random().toString(36).substr(2, 5);  
+        let tenantCode = Math.random().toString(36).substr(2, 5); 
+
+        Development
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+            $set: {
+              "properties.$.code.landlord": landlordCode,
+              "properties.$.code.tenant": tenantCode
+            }
+          })
           .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
