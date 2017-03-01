@@ -17,7 +17,7 @@ var developmentSchema = new mongoose.Schema({
     	type: Schema.Types.ObjectId,
     	ref: 'User'
     }],
-    description: {type: String},
+    description: {type: String},    
     properties: [{    	
     	address: {
 		    unit_no: {type: String},
@@ -56,6 +56,10 @@ var developmentSchema = new mongoose.Schema({
 			registered_on: {type: Date},
 			remarks: {type: String}
 		}],
+		code: {
+	    	landlord: {type: String},
+	    	tenant: {type: String}
+    	},	
 		status: {type: String},
 		max_tenant: {type: Number, default: 20},
 		created_by: {

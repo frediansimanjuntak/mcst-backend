@@ -83,7 +83,7 @@ lostfoundSchema.static('updateLostfound', (id:string, userId:string, lostfound:O
         let lostFoundObj = {$set: {}};
         for(var param in lostfound) {
           lostFoundObj.$set[param] = lostfound[param];
-         }
+        }
 
         let ObjectID = mongoose.Types.ObjectId; 
         let _query={"_id": id};

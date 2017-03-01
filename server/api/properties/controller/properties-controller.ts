@@ -69,6 +69,16 @@ export class PropertiesController {
         .catch(error => res.status(400).json(error));
   }
 
+  static generateCodeProperties(req: express.Request, res: express.Response):void {
+      let _name_url = req.params.name_url;
+      let _idproperties = req.params.idproperties;
+
+      DevelopmentDAO
+        ['generateCodeProperties'](_name_url, _idproperties)
+        .then(properties => res.status(201).json(properties))
+        .catch(error => res.status(400).json(error));
+  }
+
 //Tenant
   static getTenantProperties(req: express.Request, res: express.Response):void {
       let _name_url = req.params.name_url;

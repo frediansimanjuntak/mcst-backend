@@ -91,6 +91,16 @@ export class UserController {
         .catch(error => res.status(400).json(error));
   }
 
+  static updateUsers(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+      let _user = req.body;
+
+      UserDAO
+        ['updateUser'](_id, _user)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
+
   static activationUser(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
 

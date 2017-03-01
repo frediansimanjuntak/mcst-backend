@@ -34,11 +34,7 @@ export class UserRoutes {
 
       router
         .route('/me')
-        .get(auth.isAuthenticated(), UserController.me);
-
-      router
-        .route('/create_user')
-        .post(auth.isAuthenticated(), UserController.createUsers)      
+        .get(auth.isAuthenticated(), UserController.me);           
 
       router
         .route('/users/user_tenant_landlord')
@@ -47,5 +43,14 @@ export class UserRoutes {
       router
         .route('/users/super_admin')
         .post(auth.isAuthenticated(), UserController.createUserSuperAdmin);
+
+      //for global user without certain rules
+      router
+        .route('/create_user')
+        .post(auth.isAuthenticated(), UserController.createUsers)
+
+      router
+        .route('/update_user/:id')
+        .post(auth.isAuthenticated(), UserController.updateUsers) 
     }
 }
