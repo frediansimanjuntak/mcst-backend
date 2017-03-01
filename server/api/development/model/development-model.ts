@@ -57,6 +57,7 @@ var developmentSchema = new mongoose.Schema({
 			remarks: {type: String}
 		}],
 		status: {type: String},
+		max_tenant: {type: Number, default: 20},
 		created_by: {
 			type: Schema.Types.ObjectId,
     		ref: 'User'

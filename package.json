@@ -5,7 +5,6 @@
   "scripts": {
     "tsc": "tsc",
     "tsc:w": "tsc -w",
-    "preinstall": "typings install",
     "postinstall": "tsc",
     "start": "node index",
     "watch": "gulp",
