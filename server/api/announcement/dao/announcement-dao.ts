@@ -5,9 +5,9 @@ import announcementSchema from '../model/announcement-model';
 
 var DateOnly = require('mongoose-dateonly')(mongoose);
 
-announcementSchema.static('getAll', ():Promise<any> => {
+announcementSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Announcement
           .find(_query)

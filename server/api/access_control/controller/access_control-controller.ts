@@ -3,8 +3,10 @@ import AccessControlDAO from '../dao/access_control-dao';
 
 export class AccessControlController {
   static getAll(req: express.Request, res: express.Response):void {
-      AccessControlDAO
-        ['getAll']()
+      let _development = req["user"].default_development;
+
+      AccessControlDAO   
+        ['getAll'](_development)
         .then(annoncements => res.status(200).json(annoncements))
         .catch(error => res.status(400).json(error));
   }

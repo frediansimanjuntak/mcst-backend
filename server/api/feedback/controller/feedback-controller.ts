@@ -3,8 +3,10 @@ import FeedbackDAO from '../dao/feedback-dao';
 
 export class FeedbackController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       FeedbackDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(feedbacks => res.status(200).json(feedbacks))
         .catch(error => res.status(400).json(error));
   }

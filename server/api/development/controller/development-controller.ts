@@ -3,8 +3,10 @@ import DevelopmentDAO from '../dao/development-dao';
 
 export class DevelopmentController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       DevelopmentDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(developments => res.status(200).json(developments))
         .catch(error => res.status(400).json(error));
   }

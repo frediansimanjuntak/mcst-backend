@@ -3,8 +3,10 @@ import FacilityDAO from '../dao/facility-dao';
 
 export class FacilityController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       FacilityDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(facilities => res.status(200).json(facilities))
         .catch(error => res.status(400).json(error));
   }

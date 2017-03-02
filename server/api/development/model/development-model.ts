@@ -58,7 +58,9 @@ var developmentSchema = new mongoose.Schema({
 		}],
 		code: {
 	    	landlord: {type: String},
-	    	tenant: {type: String}
+	    	create_at_landlord: {type: Date},
+	    	tenant: {type: String},
+	    	create_at_tenant: {type: Date}
     	},	
 		status: {type: String},
 		max_tenant: {type: Number, default: 20},
@@ -66,7 +68,7 @@ var developmentSchema = new mongoose.Schema({
 			type: Schema.Types.ObjectId,
     		ref: 'User'
 		},
-		created_at: {type: Date, default: Date.now}
+		created_at: {type: Date}
     }],
     newsletter: [{
 		title: {type: String},

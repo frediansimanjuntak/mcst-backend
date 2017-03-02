@@ -3,8 +3,10 @@ import PaymentBookingDAO from '../dao/payment_booking-dao';
 
 export class PaymentBookingController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       PaymentBookingDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(paymentbookings => res.status(200).json(paymentbookings))
         .catch(error => res.status(400).json(error));
   }

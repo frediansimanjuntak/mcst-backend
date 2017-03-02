@@ -3,9 +3,9 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import accesscontrolSchema from '../model/access_control-model';
 
-accesscontrolSchema.static('getAll', ():Promise<any> => {
+accesscontrolSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         AccessControl
           .find(_query)

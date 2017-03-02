@@ -3,8 +3,10 @@ import PollDAO from '../dao/poll-dao';
 
 export class PollController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       PollDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(polls => res.status(200).json(polls))
         .catch(error => res.status(400).json(error));
   }

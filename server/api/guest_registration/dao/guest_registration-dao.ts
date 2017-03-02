@@ -3,9 +3,9 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import guestSchema from '../model/guest_registration-model';
 
-guestSchema.static('getAll', ():Promise<any> => {
+guestSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Guest
           .find(_query)

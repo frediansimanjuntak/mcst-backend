@@ -5,9 +5,9 @@ import paymentBookingSchema from '../model/payment_booking-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
-paymentBookingSchema.static('getAll', ():Promise<any> => {
+paymentBookingSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         PaymentBooking
           .find(_query)

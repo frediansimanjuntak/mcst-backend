@@ -6,9 +6,9 @@ import {GlobalService} from '../../../global/global.service';
 
 var fs = require('fs-extra');
 
-notificationSchema.static('getAll', ():Promise<any> => {
+notificationSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      let _query = {};
+      let _query = {"development": development};
       Notification
         .find(_query)
         .exec((err, notifications) => {

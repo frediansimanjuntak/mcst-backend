@@ -3,8 +3,10 @@ import IncidentDAO from '../dao/incident-dao';
 
 export class IncidentController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       IncidentDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(incidents => res.status(200).json(incidents))
         .catch(error => res.status(400).json(error));
   }

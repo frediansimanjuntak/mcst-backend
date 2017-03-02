@@ -7,9 +7,9 @@ import {AWSService} from '../../../global/aws.service';
 
 var fs = require('fs-extra');
 
-attachmentSchema.static('getAll', ():Promise<any> => {
+attachmentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Attachment
           .find(_query)

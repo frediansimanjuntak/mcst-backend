@@ -3,9 +3,9 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import feedbackSchema from '../model/feedback-model';
 
-feedbackSchema.static('getAll', ():Promise<any> => {
+feedbackSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Feedback
           .find(_query)
