@@ -8,11 +8,12 @@ export class AttachmentRoutes {
     static init(router: express.Router) {
       router
         .route('/attachments')
-        .get(AttachmentController.getAll)
+        .get(auth.isAuthenticated(), AttachmentController.getAll)
         .post(auth.isAuthenticated(), AttachmentController.createAttachment);
 
       router
         .route('/attachments/:id')
+        .get(auth.isAuthenticated(), AttachmentController.getById)
         .delete(auth.isAuthenticated(), AttachmentController.deleteAttachment);
         
     }

@@ -11,6 +11,15 @@ export class AttachmentController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getById(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+
+      AttachmentDAO
+        ['getById'](_id)
+        .then(attachments => res.status(200).json(attachments))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createAttachment(req: express.Request, res: express.Response):void {
       
       let _attachment = req["files"].attachment;

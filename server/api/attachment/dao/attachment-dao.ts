@@ -9,7 +9,7 @@ var fs = require('fs-extra');
 
 attachmentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"development": development};
+        let _query = {};
 
         Attachment
           .find(_query)
@@ -19,6 +19,19 @@ attachmentSchema.static('getAll', (development:string):Promise<any> => {
           });
     });
 });
+
+attachmentSchema.static('getById', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+        Attachment
+          .findById(id)
+          .exec((err, attachments) => {
+              err ? reject(err)
+                  : resolve(attachments);
+          });
+    });
+});
+
 
 attachmentSchema.static('createAttachment', (attachment:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
