@@ -131,13 +131,10 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
     });
 });
 
-feedbackSchema.static('publishFeedback', (id:string, feedback:Object):Promise<any> => {
+feedbackSchema.static('publishFeedback', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        if (!_.isObject(feedback)) {
-          return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
@@ -145,19 +142,16 @@ feedbackSchema.static('publishFeedback', (id:string, feedback:Object):Promise<an
             $set: {"status": "publish"}
           })
           .exec((err, updated) => {
-                err ? reject(err)
-                    : resolve(updated);
-                  });
+            err ? reject(err)
+                : resolve(updated);
+          });
     });
 });
 
-feedbackSchema.static('archieveFeedback', (id:string, feedback:Object):Promise<any> => {
+feedbackSchema.static('archieveFeedback', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        if (!_.isObject(feedback)) {
-          return reject(new TypeError('Feedback is not a valid object.'));
         }
 
         Feedback
