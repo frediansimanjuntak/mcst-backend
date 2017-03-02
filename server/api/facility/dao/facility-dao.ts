@@ -3,9 +3,9 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import facilitySchema from '../model/facility-model';
 
-facilitySchema.static('getAll', ():Promise<any> => {
+facilitySchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Facility
           .find(_query)

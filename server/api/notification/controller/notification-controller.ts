@@ -3,8 +3,10 @@ import NotificationDAO from '../dao/notification-dao';
 
 export class NotificationController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       NotificationDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(notifications => res.status(200).json(notifications))
         .catch(error => res.status(400).json(error));
   }

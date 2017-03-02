@@ -3,8 +3,10 @@ import GuestDAO from '../dao/guest_registration-dao';
 
 export class GuestController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       GuestDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(guests => res.status(200).json(guests))
         .catch(error => res.status(400).json(error));
   }

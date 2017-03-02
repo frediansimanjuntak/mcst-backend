@@ -3,8 +3,10 @@ import AttachmentDAO from '../dao/attachment-dao';
 
 export class AttachmentController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       AttachmentDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(attachments => res.status(200).json(attachments))
         .catch(error => res.status(400).json(error));
   }

@@ -3,8 +3,10 @@ import PetitionDAO from '../dao/petition-dao';
 
 export class PetitionController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       PetitionDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(petitions => res.status(200).json(petitions))
         .catch(error => res.status(400).json(error));
   }

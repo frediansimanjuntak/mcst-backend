@@ -33,6 +33,10 @@ export class UserRoutes {
         .get(UserController.index);
 
       router
+        .route('/user_all')
+        .get(auth.isAuthenticated(), UserController.getAll);
+
+      router
         .route('/me')
         .get(auth.isAuthenticated(), UserController.me);           
 

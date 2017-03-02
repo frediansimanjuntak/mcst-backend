@@ -7,9 +7,9 @@ import User from '../../user/dao/user-dao';
 import {AWSService} from '../../../global/aws.service';
 import {GlobalService} from '../../../global/global.service';
 
-developmentSchema.static('getAll', ():Promise<any> => {
+developmentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Development
           .find(_query)
@@ -429,27 +429,61 @@ developmentSchema.static('updateProperties', (name_url:string, idproperties:stri
     });
 });
 
-developmentSchema.static('generateCodeProperties', (name_url:string, idproperties:string):Promise<any> => {
+developmentSchema.static('generateCodeProperties', (name_url:string, idproperties:string, properties:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
         }    
 
+        let body:any = properties;
         let ObjectID = mongoose.Types.ObjectId;  
         let landlordCode = Math.random().toString(36).substr(2, 5);  
         let tenantCode = Math.random().toString(36).substr(2, 5); 
 
-        Development
+        if (body.type == "landlord"){
+          Development
           .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-            $set: {
+            $set: {              
               "properties.$.code.landlord": landlordCode,
-              "properties.$.code.tenant": tenantCode
+              "properties.$.code.create_at_landlord": new Date()
             }
           })
           .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
           });
+        }
+
+        if (body.type == "tenant"){
+          Development
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+            $set: {              
+              "properties.$.code.tenant": tenantCode,
+              "properties.$.code.create_at_tenant": new Date()
+            }
+          })
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+        }
+
+        if (body.type == "all"){
+          Development
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+            $set: {              
+              "properties.$.code.landlord": landlordCode,
+              "properties.$.code.create_at_landlord": new Date(),
+              "properties.$.code.tenant": tenantCode,
+              "properties.$.code.create_at_tenant": new Date()
+            }
+          })
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+        }
+
     });
 });
 

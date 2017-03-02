@@ -5,9 +5,9 @@ import quotationSchema from '../model/quotation-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
-quotationSchema.static('getAll', ():Promise<any> => {
+quotationSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Quotation
           .find(_query)

@@ -5,9 +5,9 @@ import petitionSchema from '../model/petition-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
-petitionSchema.static('getAll', ():Promise<any> => {
+petitionSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Petition
           .find(_query)

@@ -3,8 +3,10 @@ import BookingDAO from '../dao/booking-dao';
 
 export class BookingController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       BookingDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(bookings => res.status(200).json(bookings))
         .catch(error => res.status(400).json(error));
   }

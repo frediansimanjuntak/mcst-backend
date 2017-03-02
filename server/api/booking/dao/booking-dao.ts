@@ -6,9 +6,9 @@ import Payment from '../../payment_booking/dao/payment_booking-dao';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
-bookingSchema.static('getAll', ():Promise<any> => {
+bookingSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Booking
           .find(_query)

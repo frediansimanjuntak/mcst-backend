@@ -12,9 +12,22 @@ userSchema.static('index', ():Promise<any> => {
     });
 });
 
-userSchema.static('getAll', ():Promise<any> => {
+userSchema.static('userAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
+
+        User
+          .find(_query)
+          .exec((err, users) => {
+              err ? reject(err)
+                  : resolve(users);
+          });
+    });
+});
+
+userSchema.static('getAll', (development:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"development": development};
 
         User
           .find(_query)

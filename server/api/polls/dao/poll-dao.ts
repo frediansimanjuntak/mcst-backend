@@ -5,9 +5,9 @@ import pollSchema from '../model/poll-model';
 
 var DateOnly = require('mongoose-dateonly')(mongoose);
 
-pollSchema.static('getAll', ():Promise<any> => {
+pollSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Poll
           .find(_query)

@@ -3,8 +3,10 @@ import ContractDAO from '../dao/contract-dao';
 
 export class ContractController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       ContractDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(contracts => res.status(200).json(contracts))
         .catch(error => res.status(400).json(error));
   }

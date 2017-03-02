@@ -3,8 +3,10 @@ import LostfoundDAO from '../dao/lost_found-dao';
 
 export class LostfoundController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       LostfoundDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(lostfounds => res.status(200).json(lostfounds))
         .catch(error => res.status(400).json(error));
   }

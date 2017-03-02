@@ -3,8 +3,10 @@ import QuotationDAO from '../dao/quotation-dao';
 
 export class QuotationController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       QuotationDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(quotations => res.status(200).json(quotations))
         .catch(error => res.status(400).json(error));
   }

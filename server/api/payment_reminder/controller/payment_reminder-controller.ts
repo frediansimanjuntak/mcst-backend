@@ -3,8 +3,10 @@ import PaymentreminderDAO from '../dao/payment_reminder-dao';
 
 export class PaymentReminderController {
   static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
       PaymentreminderDAO
-        ['getAll']()
+        ['getAll'](_developmentId)
         .then(paymentreminders => res.status(200).json(paymentreminders))
         .catch(error => res.status(400).json(error));
   }

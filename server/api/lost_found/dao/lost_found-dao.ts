@@ -5,9 +5,9 @@ import lostfoundSchema from '../model/lost_found-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
-lostfoundSchema.static('getAll', ():Promise<any> => {
+lostfoundSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Lost_found
           .find(_query)

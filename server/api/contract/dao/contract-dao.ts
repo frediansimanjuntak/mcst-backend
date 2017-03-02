@@ -7,9 +7,9 @@ import Incident from '../../incident/dao/incident-dao';
 import Petition from '../../petition/dao/petition-dao';
 import {AWSService} from '../../../global/aws.service';
 
-contractSchema.static('getAll', ():Promise<any> => {
+contractSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": development};
 
         Contract
           .find(_query)

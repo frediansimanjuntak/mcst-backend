@@ -11,9 +11,19 @@ export class UserController {
         .catch(error => res.status(400).json(error));
   }
 
-  static getAll(req: express.Request, res: express.Response):void {
+  static userAll(req: express.Request, res: express.Response):void {
+
       UserDAO
-        ['getAll']()
+        ['userAll']()
+        .then(users => res.status(200).json(users))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static getAll(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+
+      UserDAO
+        ['getAll'](_developmentId)
         .then(users => res.status(200).json(users))
         .catch(error => res.status(400).json(error));
   }
