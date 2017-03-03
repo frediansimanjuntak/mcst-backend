@@ -113,9 +113,10 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
               .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
                   {
                     $set: {  
-                      "properties.$.landlord": userId
+                      "properties.$.landlord": userId,
+                      "properties.$.status": "own stay"
                     }
-                  }, {upsert: true})
+                  })
               .exec((err, saved) => {
                     err ? reject(err)
                         : resolve(saved);
@@ -178,7 +179,8 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
             .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},
                 {
                   $set: {  
-                    "properties.$.landlord": body.id_user
+                    "properties.$.landlord": body.id_user,
+                    "properties.$.status": "own stay"
                   }
                 }, {upsert: true})
             .exec((err, saved) => {

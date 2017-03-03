@@ -62,7 +62,7 @@ var developmentSchema = new mongoose.Schema({
 	    	tenant: {type: String},
 	    	create_at_tenant: {type: Date}
     	},	
-		status: {type: String},
+		status: {type: String, default: "no landlord"},
 		max_tenant: {type: Number, default: 20},
 		created_by: {
 			type: Schema.Types.ObjectId,

@@ -487,6 +487,64 @@ developmentSchema.static('generateCodeProperties', (name_url:string, idpropertie
     });
 });
 
+developmentSchema.static('deleteCodeProperties', (name_url:string, idproperties:string, properties:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(name_url)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }    
+
+        let body:any = properties;
+        let ObjectID = mongoose.Types.ObjectId;  
+        let landlordCode = Math.random().toString(36).substr(2, 5);  
+        let tenantCode = Math.random().toString(36).substr(2, 5); 
+
+        if (body.type == "landlord"){
+          Development
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+            $unset: {              
+              "properties.$.code.landlord": landlordCode,
+              "properties.$.code.create_at_landlord": new Date()
+            }
+          })
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+        }
+
+        if (body.type == "tenant"){
+          Development
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+            $unset: {              
+              "properties.$.code.tenant": tenantCode,
+              "properties.$.code.create_at_tenant": new Date()
+            }
+          })
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+        }
+
+        if (body.type == "all"){
+          Development
+          .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+            $unset: {              
+              "properties.$.code.landlord": landlordCode,
+              "properties.$.code.create_at_landlord": new Date(),
+              "properties.$.code.tenant": tenantCode,
+              "properties.$.code.create_at_tenant": new Date()
+            }
+          })
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+        }
+
+    });
+});
+
 
 //Staff Development
 developmentSchema.static('createStaffDevelopment', (name_url:string, staff:Object):Promise<any> => {
