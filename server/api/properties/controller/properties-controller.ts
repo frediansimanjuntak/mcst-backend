@@ -80,6 +80,17 @@ export class PropertiesController {
         .catch(error => res.status(400).json(error));
   }
 
+  static deleteCodeProperties(req: express.Request, res: express.Response):void {
+      let _name_url = req.params.name_url;
+      let _idproperties = req.params.idproperties;
+      let _properties = req.body;
+
+      DevelopmentDAO
+        ['deleteCodeProperties'](_name_url, _idproperties, _properties)
+        .then(properties => res.status(201).json(properties))
+        .catch(error => res.status(400).json(error));
+  }
+
 //Tenant
   static getTenantProperties(req: express.Request, res: express.Response):void {
       let _name_url = req.params.name_url;

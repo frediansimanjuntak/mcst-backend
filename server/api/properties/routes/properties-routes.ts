@@ -24,7 +24,8 @@ export class PropertiesRoutes {
 
       router
         .route('/properties/:name_url/generate_code/:idproperties')
-        .post(auth.isAuthenticated(), PropertiesController.generateCodeProperties);
+        .post(auth.isAuthenticated(), PropertiesController.generateCodeProperties)
+        .put(auth.isAuthenticated(), PropertiesController.deleteCodeProperties);
         
 
       //Route Tenant
