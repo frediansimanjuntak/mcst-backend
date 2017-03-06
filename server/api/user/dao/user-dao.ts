@@ -51,7 +51,6 @@ userSchema.static('me', (userId:string):Promise<any> => {
     });
 });
 
-
 userSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
@@ -92,7 +91,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
 
         var ObjectID = mongoose.Types.ObjectId;  
         let body:any = user;
-        
+
         var _user = new User(user);
         _user.default_development = developmentId;
         _user.default_property.development = developmentId;
@@ -113,7 +112,12 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
               .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
                   {
                     $set: {  
-                      "properties.$.landlord": userId,
+                      "properties.$.landlord": {
+                        "resident": userId,
+                        "social_page": body.social_page,
+                        "remarks": body.remarks,
+                        "created_at": new Date()
+                      },
                       "properties.$.status": "own stay"
                     }
                   })
@@ -135,7 +139,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
                 "properties.$.tenant": {
                   "resident": userId,
                   "type": "tenant",
-                  "remarks": body.remarks_tenant,
+                  "remarks": body.remarks,
                   "created_at": new Date()
                 }
                },
@@ -159,7 +163,7 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
 
         let body:any = user;
         let ObjectID = mongoose.Types.ObjectId;
-
+        console.log(body);
         if(body.type == 'landlord'){
           User
             .findByIdAndUpdate(body.id_user, {
@@ -179,7 +183,12 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
             .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},
                 {
                   $set: {  
-                    "properties.$.landlord": body.id_user,
+                    "properties.$.landlord": {
+                      "resident": body.id_user,
+                      "social_page": body.social_page,
+                      "remarks": body.remarks,
+                      "created_at": new Date()
+                    },
                     "properties.$.status": "own stay"
                   }
                 }, {upsert: true})
@@ -210,6 +219,7 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
                 "properties.$.tenant": {
                   "resident": body.id_user,
                   "type": "tenant",
+                  "remarks": body.remarks,
                   "created_at": new Date()
                 }
                },
