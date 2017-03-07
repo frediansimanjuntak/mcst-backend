@@ -680,7 +680,7 @@ developmentSchema.static('createTenantProperties', (name_url:string, idpropertie
           .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);
-          });
+          }); 
     });
 });
 

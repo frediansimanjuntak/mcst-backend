@@ -107,7 +107,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
           for (var i = 0; i < ownedProperty_landlord.length; i++) {
             var ownedProperty = ownedProperty_landlord[i];
             let developmentId = ownedProperty.development;
-            let propertyId= ownedProperty.property;
+            let propertyId = ownedProperty.property;
             Development
               .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
                   {
@@ -339,13 +339,14 @@ userSchema.static('updateUser', (id:string, user:Object):Promise<any> => {
         }
 
         let body:any = user;
-
         User
           .findById(id, (err, user)=>{
             user.username = body.username;
             user.email = body.email;
             user.phone = body.phone;
-            user.password = body.password;
+            if(body.password){
+              user.password = body.password;
+            }            
             user.save((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
