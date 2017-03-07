@@ -9,6 +9,7 @@ feedbackSchema.static('getAll', (development:string):Promise<any> => {
 
         Feedback
           .find(_query)
+          .populate("development reply_by created_by")
           .exec((err, guests) => {
               err ? reject(err)
                   : resolve(guests);
@@ -22,6 +23,7 @@ feedbackSchema.static('getAllPublish', ():Promise<any> => {
 
         Feedback
           .find(_query)
+          .populate("development reply_by created_by")
           .exec((err, guests) => {
               err ? reject(err)
                   : resolve(guests);
@@ -35,6 +37,7 @@ feedbackSchema.static('getAllUnPublish', ():Promise<any> => {
 
         Feedback
           .find(_query)
+          .populate("development reply_by created_by")
           .exec((err, guests) => {
               err ? reject(err)
                   : resolve(guests);
@@ -94,9 +97,6 @@ feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isObject(feedback)) {
-            return reject(new TypeError('Feedback is not a valid object.'));
-        }
 
         Feedback
           .findByIdAndUpdate(id, feedback)
@@ -112,14 +112,12 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isObject(reply)) {
-          return reject(new TypeError('Feedback is not a valid object.'));
-        }
-
+        console.log(reply);
+        let body:any = reply;
         Feedback
           .findByIdAndUpdate(id, {
             $set: {
-              "feedback_reply": reply,
+              "feedback_reply": body.feedback_reply,
               "reply_by": userId,
               "reply_at": new Date()
             }
