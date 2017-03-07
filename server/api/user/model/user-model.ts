@@ -11,7 +11,7 @@ var UserSchema = new mongoose.Schema({
     username: {type: String, lowercase: true, unique: true, required: true},
     name: {type: String},
     email: {type: String, lowercase: true, unique: true, required: true},
-    password: {type: String, required: true},  
+    password: {type: String},  
     salt: {type: String}, 
     role: {type: String, default: "user"}, // 'admin' and 'user'
     phone:{type: String},
@@ -67,7 +67,7 @@ var UserSchema = new mongoose.Schema({
   active: {type: Boolean, default: false},
   default_development: {
     type: Schema.Types.ObjectId,
-    ref: 'Development'
+    ref: 'Development' 
   },
   autorized_development: {type: String},
   user_group: {
