@@ -285,7 +285,7 @@ developmentSchema.static('getProperties', (name_url:string):Promise<any> => {
         Development
           .findOne({"name_url": name_url})
           .select("properties")
-          .populate ("properties.landlord properties.created_by properties.tenant.resident") 
+          .populate ("properties.landlord.resident properties.created_by properties.tenant.resident") 
           .exec((err, properties) => {
               err ? reject(err)
                   : resolve(properties);
@@ -306,7 +306,7 @@ developmentSchema.static('getByIdProperties', (name_url:string, idproperties:str
 
         Development 
           .findOne({"name_url": name_url})
-          .populate ("properties.landlord properties.created_by properties.tenant.resident") 
+          .populate ("properties.landlord.resident properties.created_by properties.tenant.resident") 
           .select({
            "properties": {
              $elemMatch: {
@@ -680,7 +680,7 @@ developmentSchema.static('createTenantProperties', (name_url:string, idpropertie
           .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);
-          });
+          }); 
     });
 });
 

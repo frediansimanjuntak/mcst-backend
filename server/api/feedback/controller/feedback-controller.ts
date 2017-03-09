@@ -65,7 +65,7 @@ export class FeedbackController {
   } 
 
   static replyFeedback(req: express.Request, res: express.Response):void {
-      let _reply = req.body.reply;
+      let _reply = req.body;
       let _userId = req["user"]._id;
       let _id = req.params.id;
 

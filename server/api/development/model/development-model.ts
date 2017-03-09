@@ -29,13 +29,18 @@ var developmentSchema = new mongoose.Schema({
 			full_address: {type: String}
 		},
 		landlord: {
-			type: Schema.Types.ObjectId,
-    		ref: 'User'
+			resident: {
+				type: Schema.Types.ObjectId,
+    			ref: 'User'
+			},
+			social_page: {type: String},
+			remarks: {type: String},
+			created_at: {type: Date}
 		},
 		tenant: [{
 			resident: {
 				type: Schema.Types.ObjectId,
-    			ref: 'User'
+    			ref: 'User' 
 			},
 			type: {type: String},
 			social_page: {type: String},
@@ -62,7 +67,7 @@ var developmentSchema = new mongoose.Schema({
 	    	tenant: {type: String},
 	    	create_at_tenant: {type: Date}
     	},	
-		status: {type: String, default: "no landlord"},
+		status: {type: String, default:"no landlord"},
 		max_tenant: {type: Number, default: 20},
 		created_by: {
 			type: Schema.Types.ObjectId,
