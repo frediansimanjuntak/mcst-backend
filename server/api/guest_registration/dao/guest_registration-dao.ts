@@ -9,7 +9,7 @@ guestSchema.static('getAll', (development:string):Promise<any> => {
 
         Guest
           .find(_query)
-          .populate("development created_by checkin_by checkout_by")
+          .populate("development created_by checkin_by checkout_by contract")
           .exec((err, guests) => {
               err ? reject(err)
                   : resolve(guests);
@@ -25,7 +25,7 @@ guestSchema.static('getById', (id:string):Promise<any> => {
 
         Guest
           .findById(id)
-          .populate("development created_by checkin_by checkout_by")
+          .populate("development created_by checkin_by checkout_by contract")
           .exec((err, guests) => {
               err ? reject(err)
                   : resolve(guests);
@@ -39,7 +39,6 @@ guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:st
       if (!_.isObject(guest)) {  
         return reject(new TypeError('Guest is not a valid object.'));
       }
-
       var _guest = new Guest(guest);
           _guest.created_by = userId;
           _guest.development = developmentId;
