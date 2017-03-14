@@ -306,6 +306,7 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
 
         let body:any = contract_note; 
         var referenceId = body.reference_id;  
+        console.log(body);
 
         Attachment.createAttachment(attachment, userId)
           .then(res => {
@@ -327,9 +328,12 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
                 }
               })
               .exec((err, saved)=>{
-                  if(saved.status == "closed"){
-                    console.log(body.status)
-                    Incident
+                  err ? reject(err)
+                      : resolve(saved);
+              }); 
+              if(body.status == "closed" && !referenceId){
+                  console.log(body.status)
+                  Incident
                     .findByIdAndUpdate(referenceId, {
                       $set: {
                         "status": "resolved"
@@ -339,8 +343,7 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
                         err ? reject(err)
                             : resolve(saved);
                     });
-                  }
-              });          
+              }         
           })
           .catch(err=>{
             resolve({message: "attachment error"});
