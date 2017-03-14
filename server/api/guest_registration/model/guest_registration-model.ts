@@ -20,6 +20,10 @@ var guestSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'User'
 	},
+	contract: {
+		type: Schema.Types.ObjectId,
+    	ref: 'Contract'
+	},
 	check_in: {type: Date, trim: true},
 	check_out: {type: Date, trim: true},
 	checkin_by: {
