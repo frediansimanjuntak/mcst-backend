@@ -331,7 +331,7 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
                   err ? reject(err)
                       : resolve(saved);
               }); 
-              if(body.status == "closed" && !referenceId){
+              if(body.status == "closed" && referenceId){
                   console.log(body.status)
                   Incident
                     .findByIdAndUpdate(referenceId, {
