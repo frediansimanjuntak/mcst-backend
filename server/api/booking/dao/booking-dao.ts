@@ -38,52 +38,63 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
 
 bookingSchema.static('createBooking', (booking:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(booking)) {
-          return reject(new TypeError('Booking is not a valid object.'));
-        }
-        if (!_.isObject(attachment)) {
-          return reject(new TypeError('Attachment is not a valid.'));
-        }
 
-        let idAttachment = [];
+        let idAttachment;
         let file:any = attachment;
-        let attachmentFile = file.payment_proof
+        let attachmentFile = file.payment_proof;
+
+        var _paymentbooking = new Payment(booking);
+        _paymentbooking.created_by = userId;
+        _paymentbooking.payment_proof = idAttachment;
+        _paymentbooking.development = developmentId;
+        _paymentbooking.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
+
+        var paymentID = _paymentbooking._id;
+
+        var _booking = new Booking(booking);
+        _booking.created_by = userId;
+        _booking.development = developmentId;
+        _booking.payment = paymentID;
+        _booking.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
+        var bookingID = _booking._id;
 
         if(attachmentFile){
           Attachment.createAttachment(attachmentFile, userId)
           .then(res => {
-              res.idAtt.push(idAttachment);              
+              idAttachment = res.idAtt;  
+              Payment
+                .findByIdAndUpdate(paymentID,{
+                  $set: {
+                    "payment_proof": idAttachment,
+                    "status": "paid"
+                  }
+                })  
+                .exec((err, updated) => {
+                    err ? reject(err)
+                        : resolve(updated);
+                });
+
+              Booking
+                .findByIdAndUpdate(bookingID, {
+                  $set: {
+                    "status": "paid"
+                  }
+                }) 
+                .exec((err, updated) => {
+                    err ? reject(err)
+                        : resolve(updated);
+                });         
           })
           .catch(err=>{
               resolve({message: "attachment error"});
           }) 
-        }             
-
-        var _paymentbooking = new Payment(booking);
-            _paymentbooking.created_by = userId;
-            _paymentbooking.payment_proof = idAttachment;
-            if(idAttachment != []){
-              _paymentbooking.status = "paid";
-            }
-            _paymentbooking.development = developmentId;
-            _paymentbooking.save((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-            });
-
-            var paymentID = _paymentbooking._id;
-
-            var _booking = new Booking(booking);
-            _booking.created_by = userId;
-            _booking.development = developmentId;
-            if(idAttachment != []){
-              _booking.status = "paid";
-            }
-            _booking.payment = paymentID;
-            _booking.save((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-            });
+        }                    
     });
 });
 
