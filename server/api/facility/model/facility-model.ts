@@ -10,9 +10,11 @@ var facilitySchema = new mongoose.Schema({
 	description: {type: String, trim: true},	
 	payment_type: {type: String, trim: true},
 	booking_type: {type: String, trim: true},
-	booking_fee: {type: String},
-	deposit_fee: {type: String},
-	admin_fee: {type: String},
+	fee: {
+		booking: {type: Number},
+		deposit: {type: Number},
+		admin: {type: Number}
+	},
 	schedule: [{
 		day: {type: String, trim: true},
 		start_time: {type: String, trim: true},

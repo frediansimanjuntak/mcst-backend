@@ -17,6 +17,12 @@ var developmentSchema = new mongoose.Schema({
     	type: Schema.Types.ObjectId,
     	ref: 'User'
     }],
+    address: {
+    	street_name: {type: String},
+		postal_code: {type: String},
+		country: {type: String},
+		full_address: {type: String}
+    },
     description: {type: String},    
     properties: [{    	
     	address: {

@@ -47,12 +47,12 @@ attachmentSchema.static('createAttachment', (attachment:Object, userId:string):P
             var i = 0;
             var attachmentfile = function(){
                 let file:any = files[i];
-                let key:string = 'MCST/attachment/'+file.name;
+                let key:string = 'attachment/'+file.name;
                 AWSService.upload(key, file).then(fileDetails => {
                     var _attachment = new Attachment(attachment);
                     _attachment.name = fileDetails.name;
                     _attachment.type = fileDetails.type;
-                    _attachment.url = fileDetails.url;                  
+                    _attachment.key = key;                  
                     _attachment.created_by = userId;
                     _attachment.save(); 
                     let idattach = _attachment.id;  
