@@ -10,15 +10,15 @@ var DateOnly = require('mongoose-dateonly')(mongoose);
 
 export class AutoPost {
   static autoPostPublishAnnouncement():void{
-    new CronJob('1 12 1-31 * *', function() {
+    new CronJob('01-10 08 1-31 * *', function() {
       /* runs once at the specified date. */
 
-      let today = new DateOnly();
+      let today = new Date();
       Announcement
-        .update({"auto_post_on": today},{
+        .update({"auto_post_on": {$lte: today}},{
           $set: {
             "publish": true,
-            "publish_at": new Date()
+            "publish_at": today
           }
         }, {multi: true}, (err, res)=>{
           if(err){
@@ -39,12 +39,12 @@ export class AutoPost {
   }
 
   static autoPostValidAnnouncement():void{
-     new CronJob('1 12 1-31 * *', function() {
+     new CronJob('01-10 08 1-31 * *', function() {
       /* runs once at the specified date. */
 
-      let today = new DateOnly();
+      let today = new Date();
       Announcement
-        .update({"valid_till": today},{
+        .update({"valid_till": {$lte: today}},{
           $set: {
             "publish": false,
             "valid": false
@@ -68,12 +68,12 @@ export class AutoPost {
   }
 
   static autoPostPaymentReminder():void{
-    new CronJob('1 12 1-31 * *', function() {
+    new CronJob('01-10 08 1-31 * *', function() {
       /* runs once at the specified date. */
-      let today = new DateOnly();
+      let today = new Date();
 
       PaymentReminder
-        .update({"auto_issue_on": today},{
+        .update({"auto_issue_on": {$lte: today}},{
           $set: {
             "publish": true
           }
@@ -96,12 +96,12 @@ export class AutoPost {
   }
 
   static autoStartPoll():void{
-    new CronJob('01-10 01 1-31 * *', function() {
+    new CronJob('01-10 00 1-31 * *', function() {
       /* runs once at the specified date. */
-      let today = new Date().getDate();
+      let today = new Date();
 
       Poll
-        .update({"start_time": today},
+        .update({"start_time": {$lte: today}},
             {
               $set: {  
                 "status": "active"
@@ -125,26 +125,25 @@ export class AutoPost {
   }
 
   static autoEndPoll():void{
-    new CronJob('50-59 23 1-31 * *', function() {
+    new CronJob('01-10 00 1-31 * *', function() {
       /* runs once at the specified date. */
-      let today = new Date().getDate();
-      // let today = new DateOnly();
+      let today = new Date();
+
       Poll
-        .find({})
-        .where("end_time").lte(today)
-        .exec((err, polls) => {
-          for(var i = 0; i < polls.length; i++){
-            polls[i].status = "end poll";
-            polls[i].save((err, saved) => {
-              if(err){
-                console.log(err);
-              }
-              if(saved){
-                console.log({message: "end polling success"});
-              }
-            });
-          }         
-        }) 
+        .update({"end_time": {$lte: today}}, {
+          $set: {
+            "status": "end poll"
+          }
+        }, {multi: true})
+        .exec((err, updated) => {
+          if(err){
+            console.log('error')
+          }    
+          else
+          {
+            console.log(updated);
+          } 
+        })
 
       Poll
         .aggregate({
@@ -169,11 +168,11 @@ export class AutoPost {
               let voteresult = result[j];
               let vote = voteresult._id;
               Poll
-                .findOneAndUpdate({"end_time": today}, {
+                .update({"end_time": {$lte: today}}, {
                   $set: {
                     "outcome": vote
                   }
-                })
+                }, {multi: true})
                 .exec((err, updated) => {
                     if(err){
                       console.log('error')

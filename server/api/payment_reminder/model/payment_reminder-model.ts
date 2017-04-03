@@ -9,7 +9,7 @@ var paymentreminderSchema = new mongoose.Schema({
 	},
 	reference_no: {type: String, required: true, trim: true},
 	title: {type: String, trim: true},
-	auto_issue_on: {type: DateOnly, trim: true},
+	auto_issue_on: {type: Date, trim: true},
 	due_on: {type: Date, trim: true},
 	message_to_receiver: {type: String, trim: true},
 	notification_list: [{
