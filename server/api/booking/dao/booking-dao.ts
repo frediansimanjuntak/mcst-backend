@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import bookingSchema from '../model/booking-model';
-import Payment from '../../payment_booking/dao/payment_booking-dao';
+import Payments from '../../payment/dao/payments-dao';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
@@ -43,7 +43,7 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
         let file:any = attachment;
         let attachmentFile = file.payment_proof;
 
-        var _paymentbooking = new Payment(booking);
+        var _paymentbooking = new Payments(booking);
         _paymentbooking.created_by = userId;
         _paymentbooking.payment_proof = idAttachment;
         _paymentbooking.development = developmentId;
@@ -68,7 +68,7 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
           Attachment.createAttachment(attachmentFile, userId)
           .then(res => {
               idAttachment = res.idAtt;  
-              Payment
+              Payments
                 .findByIdAndUpdate(paymentID,{
                   $set: {
                     "payment_proof": idAttachment,

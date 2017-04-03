@@ -38,7 +38,7 @@ var contractSchema = new mongoose.Schema({
 				type: Schema.Types.ObjectId,
     			ref: 'User'
 			},
-			posted_on : {type: String, trim: true}
+			posted_on : {type: Date, trim: true}
 	}],
 	contract_notice : [{
 			title : {type: String, trim: true},
