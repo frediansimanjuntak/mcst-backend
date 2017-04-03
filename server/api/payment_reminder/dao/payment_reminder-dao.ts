@@ -51,6 +51,7 @@ paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
             let developmentId = saved.development;
             let notifList = saved.notification_list;
             let referenceNo = saved.reference_no;
+            let referenceId = saved._id;
             for(var i = 0; i < notifList.length; i++){
               let appliesTo = notifList[i].applies_to;
               let charge = notifList[i].charge;
@@ -68,13 +69,14 @@ paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
                       let paymentData = {
                         "development": developmentId,
                         "property": propertyId,
-                        "payment_type": charge,
+                        "payment_type": "payment-reminder",
                         "sender": userId,
                         "receiver": landlordId,
                         "total_amount": amount,
                         "remark": remarks,
                         "created_by": userId,
-                        "serial_no": referenceNo
+                        "serial_no": referenceNo,
+                        "reference_id": referenceId
                       }
                       payments.push(paymentData);
                     } 
@@ -104,13 +106,14 @@ paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
                         let paymentData = {
                           "development": developmentId,
                           "property": propertyId,
-                          "payment_type": charge,
+                          "payment_type": "payment-reminder",
                           "sender": userId,
                           "receiver": owner,
                           "total_amount": amount,
                           "remark": remarks,
                           "created_by": userId,
-                          "serial_no": referenceNo
+                          "serial_no": referenceNo,
+                          "reference_id": referenceId
                         }
                         payments.push(paymentData);                         
                       }                      

@@ -8,9 +8,9 @@ var crypto = require('crypto')
 var Schema = mongoose.Schema;
 
 var UserSchema = new mongoose.Schema({
-    username: {type: String, lowercase: true, unique: true, required: true},
+    username: {type: String, lowercase: true, unique: true, required: true, trim: true},
     name: {type: String},
-    email: {type: String, lowercase: true, unique: true, required: true},
+    email: {type: String, lowercase: true, unique: true, required: true, trim: true},
     password: {type: String},  
     salt: {type: String}, 
     role: {type: String, default: "user"}, // 'admin' and 'user'
