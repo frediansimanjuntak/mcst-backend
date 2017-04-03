@@ -43,59 +43,80 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
         let file:any = attachment;
         let attachmentFile = file.payment_proof;
 
-        var _paymentbooking = new Payments(booking);
-        _paymentbooking.created_by = userId;
-        _paymentbooking.payment_proof = idAttachment;
-        _paymentbooking.development = developmentId;
-        _paymentbooking.save((err, saved) => {
-          err ? reject(err)
-              : resolve(saved);
-        });
+        var _payments = new Payments(booking);
+        _payments.created_by = userId;
+        _payments.payment_proof = idAttachment;
+        _payments.development = developmentId;
+        _payments.save((err, payment) => {
+          if(err){
+            reject(err);
+          }
+          if(payment){
+            var paymentID = payment._id;
+            var _booking = new Booking(booking);
+            _booking.created_by = userId;
+            _booking.development = developmentId;
+            _booking.payment = paymentID;
+            _booking.save((err, booking) => {
+              if(err){
+                reject(err);
+              }
+              if(booking){
+                var bookingID = _booking._id;
 
-        var paymentID = _paymentbooking._id;
+                Payments
+                  .findById(paymentID)
+                  .exec((err, payment) => {
+                    if(err){
+                      reject(err);
+                    }
+                    if(payment){
+                      payment.reference_id = bookingID;
+                      payment.save((err, saved) => {
+                        if(err){
+                          reject(err);
+                        }
+                        if(saved){
+                          if(attachmentFile){
+                            Attachment.createAttachment(attachmentFile, userId)
+                            .then(res => {
+                                idAttachment = res.idAtt;  
+                                Payments
+                                  .findByIdAndUpdate(paymentID,{
+                                    $set: {
+                                      "payment_proof": idAttachment,
+                                      "status": "paid"
+                                    }
+                                  })  
+                                  .exec((err, updated) => {
+                                      err ? reject(err)
+                                          : resolve(updated);
+                                  });
 
-        var _booking = new Booking(booking);
-        _booking.created_by = userId;
-        _booking.development = developmentId;
-        _booking.payment = paymentID;
-        _booking.save((err, saved) => {
-          err ? reject(err)
-              : resolve(saved);
-        });
-        var bookingID = _booking._id;
-
-        if(attachmentFile){
-          Attachment.createAttachment(attachmentFile, userId)
-          .then(res => {
-              idAttachment = res.idAtt;  
-              Payments
-                .findByIdAndUpdate(paymentID,{
-                  $set: {
-                    "payment_proof": idAttachment,
-                    "status": "paid"
-                  }
-                })  
-                .exec((err, updated) => {
-                    err ? reject(err)
-                        : resolve(updated);
-                });
-
-              Booking
-                .findByIdAndUpdate(bookingID, {
-                  $set: {
-                    "status": "paid"
-                  }
-                }) 
-                .exec((err, updated) => {
-                    err ? reject(err)
-                        : resolve(updated);
-                });         
-          })
-          .catch(err=>{
-              resolve({message: "attachment error"});
-          }) 
-        }                    
-    });
+                                Booking
+                                  .findByIdAndUpdate(bookingID, {
+                                    $set: {
+                                      "status": "paid"
+                                    }
+                                  }) 
+                                  .exec((err, updated) => {
+                                      err ? reject(err)
+                                          : resolve(updated);
+                                  });         
+                            })
+                            .catch(err=>{
+                                resolve({message: "attachment error"});
+                            }) 
+                          }
+                        }
+                      })
+                    }
+                  })
+              }
+            });
+          }
+        }); 
+      });
 });
 
 bookingSchema.static('deleteBooking', (id:string):Promise<any> => {
