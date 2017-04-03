@@ -12,6 +12,7 @@ import {PetitionRoutes} from '../petition/routes/petition-routes';
 import {FacilityRoutes} from '../facility/routes/facility-routes';
 import {ScheduleRoutes} from '../schedule_facility/routes/schedule_facility-routes';
 import {ContractRoutes} from '../contract/routes/contract-routes';
+import {PaymentsRoutes} from '../payment/routes/payments-routes';
 import {ContratorRoutes} from '../contractor/routes/contractor-routes';
 import {LostfoundRoutes} from '../lost_found/routes/lost_found-routes';
 import {UserGroupRoutes} from '../user_group/routes/user_group-routes';
@@ -22,10 +23,10 @@ import {DevelopmentRoutes} from '../development/routes/development-routes';
 import {AnnouncementRoutes} from '../announcement/routes/announcement-routes';
 import {NotificationRoutes} from '../notification/routes/notification-routes';
 import {ContractNoteRoutes} from '../contract_note/routes/contract_note-routes';
-import {PaymentReminderRoutes} from '../payment_reminder/routes/payment_reminder-routes';
 import {AccessControlRoutes} from '../access_control/routes/access_control-routes';
 import {PaymentBookingRoutes} from '../payment_booking/routes/payment_booking-routes';
 import {ContractNoticeRoutes} from '../contract_notice/routes/contract_notice-routes';
+import {PaymentReminderRoutes} from '../payment_reminder/routes/payment_reminder-routes';
 
 var router = express.Router();
 
@@ -36,6 +37,7 @@ GuestRoutes.init(router);
 SettingRoutes.init(router);
 CompanyRoutes.init(router);
 BookingRoutes.init(router);
+PaymentsRoutes.init(router);  
 ContractRoutes.init(router);     
 IncidentRoutes.init(router);
 PetitionRoutes.init(router);

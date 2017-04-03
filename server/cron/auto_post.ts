@@ -98,7 +98,7 @@ export class AutoPost {
   static autoStartPoll():void{
     new CronJob('01-10 01 1-31 * *', function() {
       /* runs once at the specified date. */
-      let today = new DateOnly();
+      let today = new Date().getDate();
 
       Poll
         .update({"start_time": today},
@@ -127,61 +127,64 @@ export class AutoPost {
   static autoEndPoll():void{
     new CronJob('50-59 23 1-31 * *', function() {
       /* runs once at the specified date. */
-      let today = new DateOnly();
+      let today = new Date().getDate();
+      // let today = new DateOnly();
+      Poll
+        .find({})
+        .where("end_time").lte(today)
+        .exec((err, polls) => {
+          for(var i = 0; i < polls.length; i++){
+            polls[i].status = "end poll";
+            polls[i].save((err, saved) => {
+              if(err){
+                console.log(err);
+              }
+              if(saved){
+                console.log({message: "end polling success"});
+              }
+            });
+          }         
+        }) 
 
       Poll
-        .Update({"end_time": today},{
-          $set: {
-            "status": "not active"
+        .aggregate({
+          $unwind: "$votes"
+        },
+        { 
+          $group: { 
+            _id: '$votes.answer', total_vote: { $sum: 1 } 
+          } 
+        },
+        {
+          $sort : {
+            total_vote : -1
           }
-        }, {multi: true}, (err, res)=>{
-          if(err){
-            console.log('error')
-          }    
-          else
-          {
-            console.log(res);
-            Poll
-              .aggregate({
-                $unwind: "$votes"
-              },
-              { 
-                $group: { 
-                  _id: '$votes.answer', total_vote: { $sum: 1 } 
-                } 
-              },
-              {
-                $sort : {
-                  total_vote : -1
-                }
-              }, 
-              {
-                $limit : 1 
-              },          
-              function (err, res) {
-                let result = [].concat(res);
-                for (var i = 0; i < result.length; i++) {
-                    let voteresult = result[i];
-                    let vote = voteresult._id;
-                    Poll
-                      .findOneAndUpdate({"end_time": today}, {
-                        $set: {
-                          "outcome": vote
-                        }
-                      })
-                      .exec((err, updated) => {
-                          if(err){
-                            console.log('error')
-                          }    
-                          else
-                          {
-                            console.log(updated);
-                          }
-                      });
-                }                      
-              });
-          }      
-        })
+        }, 
+        {
+          $limit : 1 
+        },          
+        function (err, res) {
+          let result = [].concat(res);
+          for (var j = 0; j < result.length; j++) {
+              let voteresult = result[j];
+              let vote = voteresult._id;
+              Poll
+                .findOneAndUpdate({"end_time": today}, {
+                  $set: {
+                    "outcome": vote
+                  }
+                })
+                .exec((err, updated) => {
+                    if(err){
+                      console.log('error')
+                    }    
+                    else
+                    {
+                      console.log(updated);
+                    }
+                });
+          }                      
+        });    
       }, function () {
         /* This function is executed when the job stops */
         console.log('success!')
