@@ -2,13 +2,14 @@
 
 import * as mongoose from 'mongoose';
 import {AWSService} from '../../../global/aws.service';
+import config from '../../../config/environment/index';
 
 var Schema = mongoose.Schema;
 
 var attachmentSchema = new mongoose.Schema({
   name: {type: String, required: true, trim: true},
   type: {type: String, trim: true},
-  url: {type: String, trim: true},
+  key: {type: String, trim: true},
   created_by: {type: String},
   created_at: {type: Date, default: Date.now},
   description: {type: String}
@@ -23,5 +24,11 @@ attachmentSchema.post('remove', function(removed){
     console.log('error when removing ' + removed.name + ' from AWS');
   })
 });
+
+attachmentSchema
+  .virtual('url')
+  .get(function () {
+    return 'https://'+ config.awsBucket + config.awsUrl + this.key;
+  });
 
 export default attachmentSchema;
