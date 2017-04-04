@@ -5,3 +5,10 @@ unit_coverage
 bower_components
 typings
 dist
+*.cfg
+
+*.state
+
+*.do
+
+*.zip
