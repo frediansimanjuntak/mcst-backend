@@ -96,7 +96,7 @@ export class AutoPost {
   }
 
   static autoStartPoll():void{
-    new CronJob('01-10 00 1-31 * *', function() {
+    new CronJob('01-10 08 1-31 * *', function() {
       /* runs once at the specified date. */
       let today = new Date();
 
@@ -125,7 +125,7 @@ export class AutoPost {
   }
 
   static autoEndPoll():void{
-    new CronJob('01-10 00 1-31 * *', function() {
+    new CronJob('01-10 08 1-31 * *', function() {
       /* runs once at the specified date. */
       let today = new Date();
 

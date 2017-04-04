@@ -73,7 +73,7 @@ var developmentSchema = new mongoose.Schema({
 	    	tenant: {type: String},
 	    	create_at_tenant: {type: Date}
     	},	
-		status: {type: String, default: "no landlord"},
+		status: {type: String, enum:['empty', 'tenanted', 'own stay'], default: "empty"},
 		max_tenant: {type: Number, default: 20},
 		created_by: {
 			type: Schema.Types.ObjectId,

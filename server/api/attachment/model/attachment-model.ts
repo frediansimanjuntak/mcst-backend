@@ -12,8 +12,17 @@ var attachmentSchema = new mongoose.Schema({
   key: {type: String, trim: true},
   created_by: {type: String},
   created_at: {type: Date, default: Date.now},
-  description: {type: String}
+  description: {type: String},
+},
+{
+  toObject: {
+    virtuals: true
+  },
+  toJSON: {
+    virtuals: true
+  }
 });
+
 
 attachmentSchema.post('remove', function(removed){
   AWSService.delete(removed).then(res => {
@@ -28,7 +37,7 @@ attachmentSchema.post('remove', function(removed){
 attachmentSchema
   .virtual('url')
   .get(function () {
-    return 'https://'+ config.awsBucket + config.awsUrl + this.key;
+    return 'https://'+ config.awsBucket + '.' + config.awsUrl + '/'+ this.key;
   });
 
 export default attachmentSchema;
