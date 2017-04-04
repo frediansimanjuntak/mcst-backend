@@ -163,7 +163,6 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
 
         let body:any = user;
         let ObjectID = mongoose.Types.ObjectId;
-        console.log(body);
         if(body.type == 'landlord'){
           User
             .findByIdAndUpdate(body.id_user, {
@@ -383,10 +382,7 @@ userSchema.static('updateUsers', (id:string, user:Object):Promise<any> => {
                     : resolve(saved);
                 });
             })
-        }
-
-
-        
+        }       
     });
 });
 
