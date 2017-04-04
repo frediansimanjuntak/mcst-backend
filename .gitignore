@@ -12,3 +12,5 @@ dist
 *.do
 
 *.zip
+
+*.log

@@ -8,11 +8,11 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name : [process.env.NEW_RELIC_APP_NAME],
+  app_name : ['MCST'],
   /**
    * Your New Relic license key.
    */
-  license_key : process.env.NEW_RELIC_LICENSE_KEY,
+  license_key : 'ea6865292f748b2e482aa16dcd1b1381af13b636',
   logging : {
     /**
      * Level at which to log. 'trace' is most useful to New Relic when diagnosing
