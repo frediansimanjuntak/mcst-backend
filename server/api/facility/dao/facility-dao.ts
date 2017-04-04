@@ -100,9 +100,6 @@ facilitySchema.static('getByIdSchedule', (id:string, idschedule:string):Promise<
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isString(idschedule)) {
-            return reject(new TypeError('Id Schedule is not a valid string.'));
-        }
 
         var ObjectID = mongoose.Types.ObjectId;
 
@@ -127,9 +124,6 @@ facilitySchema.static('createSchedule', (id:string, schedule:Object):Promise<any
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isObject(schedule)) {
-            return reject(new TypeError('Schedule Facility is not a valid object.'));
-        }
 
         Facility
           .findByIdAndUpdate(id, {
@@ -148,13 +142,7 @@ facilitySchema.static('updateSchedule', (id:string, idschedule:string, schedule:
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        if (!_.isString(idschedule)) {
-            return reject(new TypeError('Id Schedule is not a valid string.'));
-        }
-        if (!_.isObject(schedule)) {
-            return reject(new TypeError('Schedule Facility is not a valid object.'));
-        }        
+        }     
 
         let scheduleObj = {$set: {}};
         for(var param in schedule) {
@@ -177,9 +165,6 @@ facilitySchema.static('deleteSchedule', (id:string, idschedule:string ):Promise<
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isString(idschedule)) {
-            return reject(new TypeError('Id Schedule is not a valid string.'));
-        }
 
         Facility
           .findByIdAndUpdate(id, {
@@ -201,9 +186,6 @@ facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        if (!_.isObject(facility)) {
-            return reject(new TypeError('Facility is not a valid object.'));
         }
 
         Facility
