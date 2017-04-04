@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import incidentSchema from '../model/incident-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import Notification from '../../notification/dao/notification-dao';
 import {AWSService} from '../../../global/aws.service';
 
 incidentSchema.static('getAll', (development:string):Promise<any> => {
@@ -39,9 +40,6 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(incident)) {
           return reject(new TypeError('Incident is not a valid object.'));
-        }
-        if (!_.isObject(attachment)) {
-          return reject(new TypeError('Attachment is not a valid'));
         }
 
         Attachment.createAttachment(attachment, userId)
@@ -82,9 +80,6 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(incident)) {
           return reject(new TypeError('Incident is not a valid object.'));
-        }
-        if (!_.isObject(attachment)) {
-          return reject(new TypeError('Attachment is not a valid'));
         }
 
         let file:any = attachment

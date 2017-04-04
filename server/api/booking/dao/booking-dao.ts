@@ -139,9 +139,6 @@ bookingSchema.static('updateBooking', (id:string, booking:Object):Promise<any> =
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isObject(booking)) {
-          return reject(new TypeError('Booking is not a valid object.'));
-        }
 
         Booking
           .findByIdAndUpdate(id, booking)
