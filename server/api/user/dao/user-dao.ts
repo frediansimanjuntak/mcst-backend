@@ -112,7 +112,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
               .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
                   {
                     $set: {  
-                      "properties.$.landlord": {
+                      "properties.$.landlord.data": {
                         "resident": userId,
                         "social_page": body.social_page,
                         "remarks": body.remarks,
@@ -136,7 +136,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
           Development
             .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},{
               $push:{
-                "properties.$.tenant": {
+                "properties.$.tenant.data": {
                   "resident": userId,
                   "type": "tenant",
                   "remarks": body.remarks,
@@ -182,9 +182,8 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
             .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},
                 {
                   $set: {  
-                    "properties.$.landlord": {
+                    "properties.$.landlord.data": {
                       "resident": body.id_user,
-                      "social_page": body.social_page,
                       "remarks": body.remarks,
                       "created_at": new Date()
                     },
@@ -215,10 +214,10 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
           Development
             .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},{
               $push:{
-                "properties.$.tenant": {
+                "properties.$.tenant.data": {
                   "resident": body.id_user,
-                  "type": "tenant",
                   "remarks": body.remarks,
+                  "type": "tenant",
                   "created_at": new Date()
                 }
                },

@@ -285,7 +285,7 @@ developmentSchema.static('getByIdProperties', (name_url:string, idproperties:str
 
         Development 
             .findOne({"name_url": name_url})
-            .populate ("properties.landlord.resident properties.created_by properties.tenant.resident") 
+            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident") 
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})                
             .exec((err, properties) => {
                 err ? reject(err)
@@ -473,7 +473,70 @@ developmentSchema.static('deleteCodeProperties', (name_url:string, idproperties:
 });
 
 //delete Landlord
-developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string, landlord:Object, development:string ):Promise<any> => {
+developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(name_url)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }
+
+        let ObjectID = mongoose.Types.ObjectId; 
+        
+        Development
+            .findOne({"name_url": name_url})
+            .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})  
+            .exec((err, developments) => {
+                if(err){
+                    reject(err);
+                }
+                if(developments){
+                    resolve(developments);
+                    console.log(developments);
+                    let developmentId = developments._id;
+                    let properties = developments.properties;
+                    for(var i = 0; i < properties.length; i++){
+                        let landlordData = properties[i].landlord.data;
+                        let landlordId = landlordData.resident;
+                         User
+                            .update({"_id": landlordId, "owned_property.property": idproperties, "owned_property.development": developmentId},{
+                                $set: {
+                                    "owned_property.$.active": false
+                                }
+                            })
+                            .exec((err, updated) => {
+                                if(err){
+                                    reject(err);
+                                }
+                                if(updated){
+                                    Development
+                                        .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+                                            $push: {
+                                                "properties.$.landlord.history":{
+                                                    "date": new Date(),
+                                                    "data": landlordData
+                                                }
+                                            },
+                                            $unset: {  
+                                                "properties.$.landlord.data": ""
+                                            }
+                                        }, {upsert: true})
+                                        .exec((err, updated) => {
+                                            if(err){
+                                                reject(err);
+                                            }
+                                            if(updated){
+                                                resolve(updated);
+                                            }
+                                        })
+                                }
+                            });
+                    }                    
+                }
+            })
+    });
+});
+
+//change Landlord
+developmentSchema.static('changeLandlord', (name_url:string, idproperties:string, landlord:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
@@ -481,35 +544,76 @@ developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string
 
         let body:any = landlord
         let ObjectID = mongoose.Types.ObjectId; 
-
+        
         Development
-            .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                $unset: {  
-                    "properties.$.landlord": body._id
-                }
-            }, {upsert: true})
-            .exec((err, updated) => {
+            .findOne({"name_url": name_url})
+            .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})  
+            .exec((err, developments) => {
                 if(err){
                     reject(err);
                 }
-                if(updated){
-                    User
-                        .update({"_id": body._id, "owned_property.property": idproperties, "owned_property.development": development},{
-                            $set: {
-                                "owned_property.$.active": false
-                            }
-                        })
-                        .exec((err, updated) => {
-                            err ? reject(err)
-                                : resolve(updated);
-                        });
+                if(developments){
+                    resolve(developments);
+                    let developmentId = developments._id;
+                    let properties = developments.properties;
+                    for(var i = 0; i < properties.length; i++){
+                        let landlordData = properties[i].landlord.data;
+                        let landlordId = landlordData.resident;
+                         User
+                            .update({"_id": landlordId, "owned_property.property": idproperties, "owned_property.development": developmentId},{
+                                $set: {
+                                    "owned_property.$.active": false
+                                }
+                            })
+                            .exec((err, updated) => {
+                                if(err){
+                                    reject(err);
+                                }
+                                if(updated){
+                                    Development
+                                        .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+                                            $push: {
+                                                "properties.$.landlord.history":{
+                                                    "date": new Date(),
+                                                    "data": landlordData
+                                                }
+                                            },
+                                            $set: {  
+                                                "properties.$.landlord.data": {
+                                                    "resident": body.resident,
+                                                    "remarks": body.remarks,
+                                                    "created_at": new Date()
+                                                }
+                                            }
+                                        }, {upsert: true})
+                                        .exec((err, updated) => {
+                                            if(err){
+                                                reject(err);
+                                            }
+                                            if(updated){
+                                                 User
+                                                    .update({"_id": body.resident, "owned_property.property": idproperties, "owned_property.development": developmentId},{
+                                                        $set: {
+                                                            "owned_property.$.active": false
+                                                        }
+                                                    })
+                                                    .exec((err, updated) => {
+                                                        if(err){
+                                                            reject(err);
+                                                        }
+                                                        if(updated){
+                                                            resolve(updated);
+                                                        }
+                                                    })
+                                            }
+                                        })
+                                }
+                            });
+                    }                    
                 }
-            });
-
-        
+            })
     });
 });
-
 
 //Staff Development
 developmentSchema.static('createStaffDevelopment', (name_url:string, staff:Object):Promise<any> => {
@@ -574,7 +678,8 @@ developmentSchema.static('getByIdTenantProperties', (name_url:string, idproperti
 
         var pipeline = [{
             $match: {
-                "name_url": name_url
+                "name_url": name_url,
+                "properties.tenant.data._id": mongoose.Types.ObjectId(idtenant)
                 }
             },
             {
@@ -586,17 +691,17 @@ developmentSchema.static('getByIdTenantProperties', (name_url:string, idproperti
                 }
             },
             {
-                $unwind: "$properties.tenant"
+                $unwind: "$properties.tenant.data"
             },
             {
                 $match: {
-                    "properties.tenant._id": mongoose.Types.ObjectId(idtenant)
+                    "properties.tenant.data._id": mongoose.Types.ObjectId(idtenant)
                 }
             },
             {
                 $project: {
                     "_id": 0,
-                    "tenant": "$properties.tenant"
+                    "tenant": "$properties.tenant.data"
             }
         }];      
 
@@ -633,33 +738,56 @@ developmentSchema.static('deleteTenantProperties', (name_url:string, idtenant:st
         if (!_.isString(name_url)) {
             return reject(new TypeError('Development Name is not a valid string.'));
         }
+        let ObjectID = mongoose.Types.ObjectId;
         
-        let body:any = tenant;
-        let ObjectID = mongoose.Types.ObjectId; 
-
-        Development
-            .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                $pull: {
-                    "properties.$.tenant": {
-                        "_id": mongoose.Types.ObjectId(idtenant)
-                    }
-                }
-            })
-            .exec((err, updated) => {
-                err ? reject(err)
-                    : resolve(updated);
-            });
-
-        User
-            .update({"_id": body._id, "rented_property.property": idproperties, "rented_property.development": development},{
-                $set: {
-                    "rented_property.$.active": false
-                }
-            })
-            .exec((err, updated) => {
-                err ? reject(err)
-                    : resolve(updated);
-            });        
+        Development.getByIdTenantProperties(name_url, idproperties, idtenant)
+        .then(res => {            
+            for(var i = 0; i < res.length; i++){
+                let tenant = res[i].tenant;
+                let resident = tenant.resident;
+                Development
+                    .findOne({"name_url": name_url})
+                    .exec((err, developments) => {
+                        if(err){
+                            reject(err);
+                        }
+                        if(developments){
+                            let developmentId = developments._id;
+                            User
+                                .update({"_id": resident, "rented_property.property": idproperties, "rented_property.development": developmentId},{
+                                    $set: {
+                                        "rented_property.$.active": false
+                                    }
+                                })
+                                .exec((err, updated) => {
+                                    if(err){
+                                        reject(err);
+                                    }
+                                    if(updated){
+                                        Development
+                                            .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
+                                                $push: {
+                                                    "properties.$.tenant.history": {
+                                                        "date": new Date(),
+                                                        "data": tenant
+                                                    }
+                                                },
+                                                $pull: {
+                                                    "properties.$.tenant.data": {
+                                                        "_id": mongoose.Types.ObjectId(idtenant)
+                                                    }
+                                                }
+                                            })
+                                            .exec((err, updated) => {
+                                                err ? reject(err)
+                                                    : resolve(updated);
+                                            });
+                                    }
+                                });
+                        }
+                    }) 
+            }
+        })     
     });
 });
 
