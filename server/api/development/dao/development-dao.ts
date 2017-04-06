@@ -489,8 +489,6 @@ developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string
                     reject(err);
                 }
                 if(developments){
-                    resolve(developments);
-                    console.log(developments);
                     let developmentId = developments._id;
                     let properties = developments.properties;
                     for(var i = 0; i < properties.length; i++){
