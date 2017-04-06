@@ -110,11 +110,11 @@ UserSchema
   }, 'Email cannot be blank');
 
 // Validate empty password
-UserSchema
-  .path('password')
-  .validate(function(password) {
-    return password.length;
-  }, 'Password cannot be blank');
+// UserSchema
+//   .path('password')
+//   .validate(function(password) {
+//     return password.length;
+//   }, 'Password cannot be blank');
 
 // Validate email is not taken
 UserSchema

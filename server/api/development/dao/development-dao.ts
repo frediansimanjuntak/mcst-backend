@@ -267,7 +267,7 @@ developmentSchema.static('getProperties', (name_url:string):Promise<any> => {
         Development
             .findOne({"name_url": name_url})
             .select("properties")
-            .populate ("properties.landlord.resident properties.created_by properties.tenant.resident") 
+            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident") 
             .exec((err, properties) => {
                 err ? reject(err)
                     : resolve(properties);
@@ -803,7 +803,7 @@ developmentSchema.static('updateTenantProperties', (name_url:string, idtenant:st
         let ObjectID = mongoose.Types.ObjectId;
 
         Development
-            .update({"name_url": name_url, "properties.tenant._id": new ObjectID(idtenant)}, tenantObj)
+            .update({"name_url": name_url, "properties.tenant.data._id": new ObjectID(idtenant)}, tenantObj)
             .exec((err, saved) => {
                 err ? reject(err)
                     : resolve(saved);
