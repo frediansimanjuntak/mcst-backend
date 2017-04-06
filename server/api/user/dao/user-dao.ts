@@ -91,67 +91,75 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
 
         var ObjectID = mongoose.Types.ObjectId;  
         let body:any = user;
+        let IDdevelopment;
 
+        console.log(body);
         var _user = new User(user);
         _user.default_development = developmentId;
         _user.default_property.development = developmentId;
         _user.save((err, saved)=>{
-          err ? reject(err)
-              : resolve(saved);
+          if(err){
+            reject(err);
+            console.log(err);
+          }
+          if(saved){
+            console.log(saved);
+            var userId = saved._id; 
+
+            if (body.owned_property != null){
+              var ownedProperty_landlord = [].concat(saved.owned_property)
+              for (var i = 0; i < ownedProperty_landlord.length; i++) {
+                var ownedProperty = ownedProperty_landlord[i];
+                IDdevelopment = ownedProperty.development;
+                let propertyId = ownedProperty.property;
+                Development
+                  .update({"_id": IDdevelopment, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
+                      {
+                        $set: {  
+                          "properties.$.landlord.data": {
+                            "resident": userId,
+                            "remarks": body.remarks,
+                            "created_at": new Date()
+                          },
+                          "properties.$.status": "own stay"
+                        }
+                      })
+                  .exec((err, saved) => {
+                        err ? reject(err)
+                            : resolve(saved);
+                  });
+              }
+              resolve({message: "Success"});
+            }
+            
+            if(body.rented_property != null){
+              // for(var i = 0; i < saved.rented_property.)
+              IDdevelopment = body.rented_property.development;
+              let propertyId = body.rented_property.property;
+
+              Development
+                .update({"_id": IDdevelopment, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},{
+                  $push:{
+                    "properties.$.tenant.data": {
+                      "resident": userId,
+                      "type": "tenant",
+                      "remarks": body.remarks,
+                      "created_at": new Date()
+                    }
+                   },
+                   $set:{
+                     "properties.$.status": "tenanted"
+                   }
+                })
+                .exec((err, saved) => {
+                      err ? reject(err)
+                          : resolve(saved);
+                });
+            }
+          }
         });
 
-        var userId = _user._id; 
-
-        if (_user.owned_property != null){
-          var ownedProperty_landlord = [].concat(_user.owned_property)
-          for (var i = 0; i < ownedProperty_landlord.length; i++) {
-            var ownedProperty = ownedProperty_landlord[i];
-            let developmentId = ownedProperty.development;
-            let propertyId = ownedProperty.property;
-            Development
-              .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
-                  {
-                    $set: {  
-                      "properties.$.landlord.data": {
-                        "resident": userId,
-                        "social_page": body.social_page,
-                        "remarks": body.remarks,
-                        "created_at": new Date()
-                      },
-                      "properties.$.status": "own stay"
-                    }
-                  })
-              .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-              });
-          }
-          resolve({message: "Success"});
-        }
-        
-        if(_user.rented_property != null){
-          let developmentId = body.rented_property.development;
-          let propertyId = body.rented_property.property;
-
-          Development
-            .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},{
-              $push:{
-                "properties.$.tenant.data": {
-                  "resident": userId,
-                  "type": "tenant",
-                  "remarks": body.remarks,
-                  "created_at": new Date()
-                }
-               },
-               $set:{
-                 "properties.$.status": "tenanted"
-               }
-            })
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-            });
-        }     
+             
     });
 });
 
