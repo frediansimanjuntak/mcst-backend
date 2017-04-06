@@ -78,4 +78,12 @@ export class PollController {
         .then(poll => res.status(201).json(poll))
         .catch(error => res.status(400).json(error));
   }
+
+  static stopAllPollToday(req: express.Request, res: express.Response):void {
+
+      PollDAO
+        ['stopAllPollToday']()
+        .then(poll => res.status(201).json(poll))
+        .catch(error => res.status(400).json(error));
+  }
 }

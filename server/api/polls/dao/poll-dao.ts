@@ -117,7 +117,7 @@ pollSchema.static('startPoll', (id:string):Promise<any> => {
           .findByIdAndUpdate(id,{
             $set: {
               "status": "active",
-              "start_time": new DateOnly()
+              "start_time": new Date()
             }
           })
           .exec((err, updated) => {
@@ -134,41 +134,151 @@ pollSchema.static('stopPoll', (id:string):Promise<any> => {
         }
 
         Poll
-          .aggregate({
-            $unwind: "$votes"
-          },
-          { 
-            $group: { 
-              _id: '$votes.answer', total_vote: { $sum: 1 } 
-            } 
-          },
-          {
+          .findById(id)
+          .exec((err, polls) => {
+            if(err){
+              reject(err);
+            }
+            if(polls){
+              if(polls.status == "active"){
+                Poll.outcomePoll(id).then(res => {
+                  Poll
+                    .update({"_id": id},{
+                      $set: {
+                        "status": "end poll",
+                        "outcome": res
+                      }
+                    })
+                  .exec((err, updated) => {
+                    if(err){
+                      reject(err);
+                    }    
+                    else
+                    {
+                      resolve(updated);
+                    } 
+                  });
+                })
+              }
+              else{
+                resolve("forbidden");
+              }
+            }
+          })
+    });
+});
+
+pollSchema.static('outcomePoll', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+        var pipeline = [{
+            $match: {
+                "_id": mongoose.Types.ObjectId(id)
+                }
+            },
+            {
+              $unwind: "$votes"
+            },
+            { 
+              $group: { 
+                _id: "$votes.answer",
+                total_vote: { $sum: 1 }
+              } 
+            },
+            {
             $sort : {
               total_vote : -1
             }
           }, 
           {
             $limit : 1 
-          },          
-          function (err, res) {
-            let result = [].concat(res);
-            for (var i = 0; i < result.length; i++) {
-                let voteresult = result[i];
-                let vote = voteresult._id;
-                Poll
-                  .findByIdAndUpdate(id, {
-                    $set: {
-                      "outcome": vote,
-                      "end_time": new DateOnly(),
-                      "status": "not active"
+          }];      
+
+        Poll
+        .aggregate(pipeline, (err, res)=>{
+            if(err){
+              reject(err);
+            }
+            if(res){
+              if(res != null){
+                let result = [].concat(res);
+                for (var j = 0; j < result.length; j++) {
+                    let voteresult = result[j];
+                    let vote = voteresult._id;
+                    if(vote != ""){
+                      resolve(vote);
                     }
+                    else{
+                      resolve("empty vote");
+                    }  
+                }
+              }
+              if(res == null){
+                resolve("empty vote");
+              }              
+            }
+        })
+    });
+});
+
+pollSchema.static('stopAllPollToday', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+        let today = new Date();
+
+        Poll
+        .find({"end_time": {$lte: today}})
+        .exec((err, polls) => {
+          if(err){
+            reject(err);
+          }
+          if(polls){
+            for(var i = 0; i < polls.length; i++){
+              let status = polls[i].status;
+              let pollId = polls[i]._id;
+              let vote = polls[i].votes;
+
+              if (status == "active"){
+                if(vote.length == 0){
+                  polls[i].status = "end poll";
+                  polls[i].outcome = "empty vote";
+                  polls[i].save((err, updated) => {
+                      if(err){
+                        reject(err);
+                      }    
+                      else
+                      {
+                        resolve(updated);
+                      } 
+                    });
+                }
+                else if(vote.length != 0){
+                  Poll.outcomePoll(pollId).then(res => {
+                    Poll
+                      .update({"_id": pollId},{
+                        $set: {
+                          "status": "end poll",
+                          "outcome": res
+                        }
+                      })
+                    .exec((err, updated) => {
+                      if(err){
+                        reject(err);
+                      }    
+                      else
+                      {
+                        resolve(updated);
+                      } 
+                    });
                   })
-                  .exec((err, updated) => {
-                      err ? reject(err)
-                          : resolve(updated);
-                  });
-            }                      
-          });
+                }                               
+              }
+              else{
+                resolve("uptodate");
+              }
+            }            
+          }
+        })
     });
 });
 

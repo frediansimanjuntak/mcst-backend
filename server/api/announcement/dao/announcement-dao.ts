@@ -46,7 +46,7 @@ announcementSchema.static('createAnnouncement', (announcement:Object, userId:str
         _announcement.created_by = userId;
         _announcement.development = developmentId;
         if(body.auto_post_on != null){
-          _announcement.auto_post_on = new DateOnly(body.auto_post_on)
+          _announcement.auto_post_on = body.auto_post_on;
         }         
         _announcement.save((err, saved) => {
           err ? reject(err)

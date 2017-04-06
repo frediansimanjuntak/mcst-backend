@@ -127,63 +127,9 @@ export class AutoPost {
   static autoEndPoll():void{
     new CronJob('01-10 08 1-31 * *', function() {
       /* runs once at the specified date. */
-      let today = new Date();
-
-      Poll
-        .update({"end_time": {$lte: today}}, {
-          $set: {
-            "status": "end poll"
-          }
-        }, {multi: true})
-        .exec((err, updated) => {
-          if(err){
-            console.log('error')
-          }    
-          else
-          {
-            console.log(updated);
-          } 
-        })
-
-      Poll
-        .aggregate({
-          $unwind: "$votes"
-        },
-        { 
-          $group: { 
-            _id: '$votes.answer', total_vote: { $sum: 1 } 
-          } 
-        },
-        {
-          $sort : {
-            total_vote : -1
-          }
-        }, 
-        {
-          $limit : 1 
-        },          
-        function (err, res) {
-          let result = [].concat(res);
-          for (var j = 0; j < result.length; j++) {
-              let voteresult = result[j];
-              let vote = voteresult._id;
-              Poll
-                .update({"end_time": {$lte: today}}, {
-                  $set: {
-                    "outcome": vote
-                  }
-                }, {multi: true})
-                .exec((err, updated) => {
-                    if(err){
-                      console.log('error')
-                    }    
-                    else
-                    {
-                      console.log(updated);
-                    }
-                });
-          }                      
-        });    
+      Poll.stopAllPollToday().then(res => {
+        console.log(res);
+      });    
       }, function () {
         /* This function is executed when the job stops */
         console.log('success!')

@@ -31,5 +31,9 @@ export class PollRoutes {
       router
         .route('/polls/stop_poll/:id')
         .get(auth.isAuthenticated(), PollController.stopPoll);
+
+      router
+        .route('/polls/stop_poll')
+        .post(auth.isAuthenticated(), PollController.stopAllPollToday);
     }
 }
