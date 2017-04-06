@@ -35,24 +35,34 @@ var developmentSchema = new mongoose.Schema({
 			full_address: {type: String}
 		},
 		landlord: {
-			resident: {
-				type: Schema.Types.ObjectId,
-    			ref: 'User'
+			data: {
+				resident: {
+					type: Schema.Types.ObjectId,
+	    			ref: 'User'
+				},
+				remarks: {type: String},
+				created_at: {type: Date}
 			},
-			social_page: {type: String},
-			remarks: {type: String},
-			created_at: {type: Date}
+			history: [{		
+				date: {type: Date},
+				data: {}		
+			}]
 		},
-		tenant: [{
-			resident: {
-				type: Schema.Types.ObjectId,
-    			ref: 'User' 
-			},
-			type: {type: String},
-			social_page: {type: String},
-			remarks: {type: String},
-			created_at: {type: Date}
-		}],
+		tenant: {
+			data: [{
+				resident: {
+					type: Schema.Types.ObjectId,
+	    			ref: 'User' 
+				},
+				remarks: {type: String},
+				type: {type: String},
+				created_at: {type: Date}
+			}],
+			history: [{		
+				date: {type: Date},
+				data: {}		
+			}]
+		},
 		registered_vehicle: [{
 			license_plate: {type:String},
 			owner: {

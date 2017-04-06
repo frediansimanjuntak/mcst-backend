@@ -10,7 +10,6 @@ var attachmentSchema = new mongoose.Schema({
   name: {type: String, required: true, trim: true},
   type: {type: String, trim: true},
   key: {type: String, trim: true},
-  created_by: {type: String},
   created_at: {type: Date, default: Date.now},
   description: {type: String},
 },
