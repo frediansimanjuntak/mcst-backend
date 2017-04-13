@@ -16,7 +16,10 @@ var bookingSchema = new mongoose.Schema({
 	booking_date: {type: Date, trim: true},
 	start_time: {type: String, trim: true},
 	end_time: {type: String, trim: true},
-	payment: {type: String, trim: true},
+	payment: {
+		type: Schema.Types.ObjectId,
+    	ref: 'Payments'
+	},
 	remark: {type: String, trim: true},
 	status: {type: String, trim: true, default: "unpaid"},
 	created_by: {

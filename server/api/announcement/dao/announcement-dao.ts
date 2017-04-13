@@ -37,17 +37,12 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
 
 announcementSchema.static('createAnnouncement', (announcement:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(announcement)) {
-          return reject(new TypeError('Announcement is not a valid object.'));
-        }
-        let body:any = announcement;
+        
+        let body:any = announcement;        
 
         var _announcement = new Announcement(announcement);
         _announcement.created_by = userId;
         _announcement.development = developmentId;
-        if(body.auto_post_on != null){
-          _announcement.auto_post_on = body.auto_post_on;
-        }         
         _announcement.save((err, saved) => {
           err ? reject(err)
               : resolve(saved);
@@ -75,9 +70,6 @@ announcementSchema.static('updateAnnouncement', (id:string, announcement:Object)
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isObject(announcement)) {
-          return reject(new TypeError('Announcement is not a valid object.'));
-        }
 
         Announcement
           .findByIdAndUpdate(id, announcement)
@@ -92,9 +84,6 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, anno
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        if (!_.isObject(announcement)) {
-          return reject(new TypeError('Announcement is not a valid object.'));
         }
 
         let body:any = announcement

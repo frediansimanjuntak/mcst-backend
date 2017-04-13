@@ -12,7 +12,7 @@ bookingSchema.static('getAll', (development:string):Promise<any> => {
 
         Booking
           .find(_query)
-          .populate("created_by development facility" )
+          .populate("created_by development facility payment" )
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
@@ -28,7 +28,7 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
 
         Booking
           .findById(id)
-          .populate("created_by development facility" )
+          .populate("created_by development facility payment" )
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
