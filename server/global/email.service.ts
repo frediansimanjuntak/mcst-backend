@@ -19,10 +19,11 @@ export class EmailService {
       if (!GlobalService.validateEmail(emailTo))
         reject(new TypeError('Destination email is not a valid email.'))
       var data = {
-        from: 'MCST <noreply@mcst.com.sg>',
+        // from: 'MCST <noreply@mcst.com.sg>',
+        from: 'MCST <postmaster@sandbox505d981851714539987a1dd93d687e51.mailgun.org>',
         to: emailTo,
         subject: emailSubject,
-        text: emailText
+        html: emailText
       };
 
       mailgun.messages().send(data, function (error, body) {

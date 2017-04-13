@@ -17,8 +17,8 @@ export default {
   awsUrl: 's3-ap-southeast-1.amazonaws.com',
   // Mailgun api key and domain
   mailgun: {
-    apiKey: "key-20ff0e5ffdc1bb87f94edc511b5e4c25",
-    domain: "sandbox48d4e1febd4742f2b66e2b74f8237175.mailgun.org"
+    apiKey: 'key-82295c366bc190610da171f7c83b2a2a',
+    domain: 'sandbox505d981851714539987a1dd93d687e51.mailgun.org'
   },
 
   // Seed database on startup
