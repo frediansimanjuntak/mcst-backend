@@ -21,7 +21,11 @@ export class ContratorRoutes {
         .post(auth.isAuthenticated(), ContractorController.updateContractor);
 
       router
-        .route('/contractor/activation/:id')
-        .post(auth.isAuthenticated(), ContractorController.activationContractor);
+        .route('/contractor/activate/:id')
+        .post(auth.isAuthenticated(), ContractorController.activateContractor);
+
+      router
+        .route('/contractor/deactivate/:id')
+        .post(auth.isAuthenticated(), ContractorController.deactivateContractor);
     }
 }
