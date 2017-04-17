@@ -496,7 +496,7 @@ userSchema.static('activationUser', (id:string):Promise<any> => {
           })
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "user activated"});
           });
     });
 });
@@ -513,7 +513,7 @@ userSchema.static('unActiveUser', (id:string):Promise<any> => {
           })
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "user not activated"});
           });
     });
 });

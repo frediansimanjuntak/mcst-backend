@@ -23,11 +23,11 @@ var companySchema = new mongoose.Schema({
 	}],
 	chief: {
 		type: Schema.Types.ObjectId,
-    	ref: 'User'
+    	ref: 'Contractor'
 	},
 	employee: [{
 		type: Schema.Types.ObjectId,
-    	ref: 'User'
+    	ref: 'Contractor'
 	}],
 	active: {type: Boolean, default: false},
 	created_by: { 
