@@ -21,10 +21,11 @@ export class AnnouncementController {
   }
 
   static createAnnouncement(req: express.Request, res: express.Response):void {
+      console.log(req.body);
       let _announcement = req.body;
       let _userId = req["user"]._id;
       let _developmentId = req["user"].default_development;
-
+      
       AnnouncementDAO
         ['createAnnouncement'](_announcement, _userId, _developmentId)
         .then(announcement => res.status(201).json(announcement))

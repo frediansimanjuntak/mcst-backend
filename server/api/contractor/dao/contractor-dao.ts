@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import contractorSchema from '../model/contractor-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import Company from '../../company/dao/company-dao';
 import {AWSService} from '../../../global/aws.service';
 
 contractorSchema.static('getAll', ():Promise<any> => {
@@ -39,13 +40,66 @@ contractorSchema.static('createContractor', (contractor:Object, userId:string):P
         if (!_.isObject(contractor)) {
           return reject(new TypeError('Company is not a valid object.'));
         }
+        let body:any = contractor;
+        let companyId = body.company;
+        let role = body.role;
 
-        var _contractor = new Contractor(contractor);
-        _contractor.created_by = userId;
-        _contractor.save((err, saved) => {
-          err ? reject(err)
-              : resolve(saved);
-        });
+        if(role == "employee"){
+          var _contractor = new Contractor(contractor);
+          _contractor.created_by = userId;
+          _contractor.save((err, saved) => {
+            if(err){
+              reject(err);
+            }
+            if(saved){
+              Company
+                .findByIdAndUpdate(companyId, {
+                  $push: {
+                    "employee": saved._id
+                  }
+                })
+                .exec((err, updated) => {
+                  err ? reject(err)
+                      : resolve(updated);
+                })
+            }
+          });          
+        }
+        if(role == "admin"){
+          Company
+            .findById(companyId)
+            .exec((err, res) => {
+              if(err){
+                reject(err);
+              }
+              if(res){
+                if(res.chief){
+                  resolve({message: "Admin already exists"})
+                }
+                if(!res.chief){
+                  var _contractor = new Contractor(contractor);
+                  _contractor.created_by = userId;
+                  _contractor.save((err, saved) => {
+                    if(err){
+                      reject(err);
+                    }
+                    if(saved){
+                      Company
+                        .findByIdAndUpdate(companyId, {
+                          $set: {
+                            "chief": saved._id
+                          }
+                        })
+                        .exec((err, updated) => {
+                          err ? reject(err)
+                              : resolve(updated);
+                        })
+                    }
+                  });                  
+                }
+              }
+            })          
+        }                
     });
 });
 
@@ -55,13 +109,47 @@ contractorSchema.static('deleteContractor', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Contractor
-          .findByIdAndRemove(id)
-          .exec((err, deleted) => {
-              err ? reject(err)
-                  : resolve({message: "Delete Success"});
-          });
+          .findById(id)
+          .exec((err, res) => {
+            if(err){
+              reject(err);
+            }
+            if(res){
+              let role = res.role;
+              let company = res.company;
+              if(role == "admin"){
+                Company
+                  .update({"_id": company}, {
+                    $unset: {
+                      "chief": id
+                    }
+                  })
+                  .exec((err, updated) => {
+                    err ? reject(err)
+                        : resolve(updated);
+                  })
+              }
+              if(role == "employee"){
+                Company
+                  .update({"_id": company}, {
+                    $pull: {
+                      "employee": id
+                    }
+                  })
+                  .exec((err, updated) => {
+                    err ? reject(err)
+                        : resolve(updated);
+                  })
+              }
+              Contractor
+                .findByIdAndRemove(id)
+                .exec((err, deleted) => {
+                    err ? reject(err)
+                        : resolve({message: "Delete Success"});
+                });
+            }
+          })        
     });
 });
 
@@ -69,13 +157,7 @@ contractorSchema.static('updateContractor', (id:string, userId:string, contracto
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        if (!_.isObject(contractor)) {
-          return reject(new TypeError('Company is not a valid object.'));
-        }  
-        if (!_.isObject(attachment)) {
-          return reject(new TypeError('Attachment is not a valid.'));
-        }        
+        }       
 
         let file:any = attachment;
 
@@ -108,25 +190,41 @@ contractorSchema.static('updateContractor', (id:string, userId:string, contracto
         Contractor
           .findByIdAndUpdate(id, contractorObj)
           .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-              });
+              err ? reject(err)
+                  : resolve(saved);
+          });
     });
 });
 
-contractorSchema.static('activationContractor', (id:string, active:Object):Promise<any> => {
+contractorSchema.static('activateContractor', (id:string, active:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        if (!_.isObject(active)) {
-          return reject(new TypeError('Company is not a valid object.'));
         }
 
         Contractor
           .findByIdAndUpdate(id, {
               $set:{
-                "active": active
+                "active": true
+              }
+          })
+          .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+          });
+    });
+});
+
+contractorSchema.static('deactivateContractor', (id:string, active:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Contractor
+          .findByIdAndUpdate(id, {
+              $set:{
+                "active": false
               }
           })
           .exec((err, updated) => {

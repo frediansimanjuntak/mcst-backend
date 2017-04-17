@@ -54,31 +54,29 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
         if(saved){
           let paymentId = _payment._id;
           if(paymentProof){
-          Attachment.createAttachment(attachment, userId).then(res => {
-            var idAttachment = res.idAtt;
+            Attachment.createAttachment(attachment, userId).then(res => {
+              var idAttachment = res.idAtt;
 
-            Payments
-              .update({"_id": paymentId}, {
-                $set: {
-                  "payment_proof": idAttachment
-                }
-              })
-              .exec((err, updated) => {
-                  err ? reject(err)
-                      : resolve({message: "updated"});    
-              })
-          })
-          .catch(err=>{
-            resolve({message: "attachment error"});
-          })
+              Payments
+                .update({"_id": paymentId}, {
+                  $set: {
+                    "payment_proof": idAttachment
+                  }
+                })
+                .exec((err, updated) => {
+                    err ? reject(err)
+                        : resolve({message: "updated"});    
+                })
+            })
+            .catch(err=>{
+              resolve({message: "attachment error"});
+            })
+          }
+          if(!paymentProof){
+            resolve(saved);
+          }         
         }
-        if(!paymentProof){
-          resolve(saved);
-        }         
-        }
-      });
-
-           
+      });          
     });
 });
 

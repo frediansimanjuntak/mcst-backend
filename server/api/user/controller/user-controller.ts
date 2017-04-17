@@ -92,6 +92,26 @@ export class UserController {
         .catch(error => res.status(400).json(error));
   }
 
+  static resendVerificationUser(req: express.Request, res: express.Response):void {
+      let _userId = req["user"]._id;
+      let _body = req.body;
+
+      UserDAO
+        ['resendVerificationUser'](_userId, _body)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static verifiedUser(req: express.Request, res: express.Response):void {
+      let _userId = req["user"]._id;
+      let _body = req.body;
+
+      UserDAO
+        ['verifiedUser'](_userId, _body)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
+
   static updateUser(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _user = req.body;

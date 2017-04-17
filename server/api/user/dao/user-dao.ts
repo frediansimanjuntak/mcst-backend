@@ -5,6 +5,7 @@ import userSchema from '../model/user-model';
 import Development from '../../development/dao/development-dao'
 import UserGroup from '../../user_group/dao/user_group-dao'
 import * as auth from '../../../auth/auth-service';
+import {mail} from '../../../email/email';
 
 userSchema.static('index', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -92,19 +93,31 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         var ObjectID = mongoose.Types.ObjectId;  
         let body:any = user;
         let IDdevelopment;
+        let password = Math.random().toString(36).substr(2, 6); 
+        let code = Math.random().toString(36).substr(2, 4); 
 
-        console.log(body);
         var _user = new User(user);
         _user.default_development = developmentId;
         _user.default_property.development = developmentId;
+        _user.password = password.toUpperCase();
+        _user.verification.code = code.toUpperCase();
         _user.save((err, saved)=>{
           if(err){
             reject(err);
-            console.log(err);
           }
           if(saved){
-            console.log(saved);
-            var userId = saved._id; 
+            var userId = saved._id;
+            let data = {
+              "emailTo": saved.email,
+              "fullname": saved.details.first_name +" "+ saved.details.last_name,
+              "username": saved.username,
+              "verifyCode": saved.verification.code,
+              "password": password.toUpperCase(),
+              "from": "mcst-admin@mcst.sg.com",
+              "link": "http://mcst-web.shrimpventures.com/login"
+            } 
+            let typeMail = "signUp";
+            User.email(data, typeMail)
 
             if (body.owned_property != null){
               var ownedProperty_landlord = [].concat(saved.owned_property)
@@ -125,8 +138,8 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
                         }
                       })
                   .exec((err, saved) => {
-                        err ? reject(err)
-                            : resolve(saved);
+                      err ? reject(err)
+                          : resolve(saved);
                   });
               }
               resolve({message: "Success"});
@@ -152,14 +165,12 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
                    }
                 })
                 .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
+                    err ? reject(err)
+                        : resolve(saved);
                 });
             }
           }
-        });
-
-             
+        });             
     });
 });
 
@@ -261,7 +272,9 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
         return reject(new TypeError('User is not a valid object.'));
       }
       var _user = new User(user);
-      _user.active = true
+      _user.active = true;
+      _user.provider = "local";
+      _user.role = "superadmin";
       _user.save((err, saved) => {
         err ? reject(err)
             : resolve(saved);
@@ -338,13 +351,91 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
     });
 });
 
-userSchema.static('updateUser', (id:string, user:Object):Promise<any> => {
+userSchema.static('resendVerificationUser', (userId:string, user:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let body:any = user;
+        let code = Math.random().toString(36).substr(2, 4); 
+        User
+          .findById(userId, (err,user)=>{
+            var verified = user.verification.verified;
+            if(verified == "false"){
+              user.verification.code = code.toUpperCase();
+              user.save((err, saved) => {
+                if(err){
+                  reject(err);
+                }
+                if(saved){
+                    let data = {
+                      "emailTo": saved.email,
+                      "fullname": saved.details.first_name +" "+ saved.details.last_name,
+                      "username": saved.username,
+                      "verifyCode": code.toUpperCase(),
+                      "from": "mcst-admin@mcst.sg.com"
+                    } 
+                    let typeMail = "resendVerificationCode";
+                    User.email(data, typeMail).then(res => {
+                      resolve(saved);
+                    })
+                }
+              }) 
+            }
+            else{
+              reject({message: "Your Account is Verified"})
+            }
+               
+          })
+    });
+});
+
+userSchema.static('verifiedUser', (userId:string, data:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let body:any = data;
+        console.log(body);
+        User
+          .findById(userId, (err,user)=>{
+            var verified = user.verification.verified;
+            var code = user.verification.code; 
+            if(verified == "false"){
+              console.log(code);         
+              if (code == body.code){
+                  user.verification.verified = true;
+                  user.verification.verified_date = new Date();
+                  user.save((err, saved) => {
+                    if(err){
+                      reject(err);
+                    }
+                    if(saved){
+                      let data = {
+                        "emailTo": saved.email,
+                        "fullname": saved.details.first_name +" "+ saved.details.last_name,
+                        "username": saved.username,
+                        "verifyCode": code.toUpperCase(),
+                        "from": "mcst-admin@mcst.sg.com"
+                      } 
+                      let typeMail = "verifiedCode";
+                      User.email(data, typeMail).then(res => {
+                        resolve(saved);
+                      })
+                    }
+                  })            
+              }
+              else{
+                reject({message: 'Your code is wrong'});
+              }
+            }
+             else{
+              reject({message: "Your Account is Verified"})
+            }
+          })
+    });
+});
+
+userSchema.static('updateUser', (id:string, data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
-        let body:any = user;
+        let body:any = data;
         User
           .findById(id, (err, user)=>{
             user.username = body.username;
@@ -405,7 +496,7 @@ userSchema.static('activationUser', (id:string):Promise<any> => {
           })
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "user activated"});
           });
     });
 });
@@ -422,7 +513,7 @@ userSchema.static('unActiveUser', (id:string):Promise<any> => {
           })
           .exec((err, deleted) => {
               err ? reject(err)
-                  : resolve();
+                  : resolve({message: "user not activated"});
           });
     });
 });
@@ -495,6 +586,27 @@ userSchema.static('settingsocialProfile', (id:string, user:Object):Promise<any> 
                   : resolve(updated);
           });
     });
+});
+
+userSchema.static('email', (data:Object, type:string):Promise<any> => {
+  return new Promise((resolve:Function, reject:Function) => {
+
+    if(type == 'signUp'){
+      mail.signUp(data).then(res => {
+        resolve(res);
+      });
+    }
+    if(type == 'resendVerificationCode'){
+      mail.resendVerificationCode(data).then(res => {
+        resolve(res);
+      });
+    }
+    if(type == 'verifiedCode'){
+      mail.verifiedCode(data).then(res => {
+        resolve(res);
+      });
+    }
+  });
 });
 
 let User = mongoose.model('User', userSchema);

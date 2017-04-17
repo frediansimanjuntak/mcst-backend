@@ -63,8 +63,12 @@ var UserSchema = new mongoose.Schema({
     development: {type: String},
     property: {type: String}  
   }],
-  active_code: {type:String},
-  active: {type: Boolean, default: false},
+  verification: {
+    verified: {type: Boolean, default: false},
+    verified_date: {type: Date},
+    code: {type: String}
+  },
+  active: {type: Boolean, default: true},
   default_development: {
     type: Schema.Types.ObjectId,
     ref: 'Development' 

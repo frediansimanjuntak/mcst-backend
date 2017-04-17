@@ -21,6 +21,14 @@ export class UserRoutes {
         .post(auth.isAuthenticated(), UserController.updateUser);
 
       router
+        .route('/users/verification_code')
+        .post(auth.isAuthenticated(), UserController.verifiedUser);
+
+      router
+        .route('/users/verification_code/resend')
+        .post(auth.isAuthenticated(), UserController.resendVerificationUser);
+
+      router
         .route('/users/active/:id')
         .post(auth.isAuthenticated(), UserController.activationUser);
 

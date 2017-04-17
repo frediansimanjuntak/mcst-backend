@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
-var DateOnly = require('mongoose-dateonly')(mongoose);
 
 var announcementSchema = new mongoose.Schema({
 	title: {type: String, required: true, trim: true},

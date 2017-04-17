@@ -49,12 +49,20 @@ export class ContractorController {
         .catch(error => res.status(400).json(error));
   }
 
-  static activationContractor(req: express.Request, res: express.Response):void {
+  static activateContractor(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-      let _active = req.body.active;
 
       ContractorDAO
-        ['activationContractor'](_id, _active)
+        ['activateContractor'](_id)
+        .then(contractor => res.status(201).json(contractor))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static deactivateContractor(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+
+      ContractorDAO
+        ['deactivateContractor'](_id)
         .then(contractor => res.status(201).json(contractor))
         .catch(error => res.status(400).json(error));
   }

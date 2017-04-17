@@ -1,7 +1,7 @@
 var passport = require('passport')
 var passportLocal = require('passport-local')
 
-var LocalUserStrategy = passportLocal.Strategy;
+var LocalContratorStrategy = passportLocal.Strategy;
 
 function localAuthenticate(User, username, password, done) {
   User.findOne({
@@ -30,7 +30,7 @@ function localAuthenticate(User, username, password, done) {
 }
 
 export function setup(User/*, config*/) {
-  passport.use('local.user', new LocalUserStrategy({
+  passport.use('local.contractor', new LocalContratorStrategy({
     usernameField: 'username',
     passwordField: 'password' // this is the virtual field on the model
   }, function(username, password, done) {
