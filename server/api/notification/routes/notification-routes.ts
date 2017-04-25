@@ -12,12 +12,12 @@ export class NotificationRoutes {
         .post(auth.isAuthenticated(),NotificationController.createNotification);
 
       router
-        .route('/notifications/user/:userId')
+        .route('/notifications/user/')
         .get(auth.isAuthenticated(),NotificationController.getOwnNotification)
         .post(auth.isAuthenticated(),NotificationController.readNotification);
 
       router
-        .route('/notifications/user/:userId/unread')
+        .route('/notifications/user/unread')
         .get(auth.isAuthenticated(),NotificationController.getOwnUnreadNotification);
 
       router
