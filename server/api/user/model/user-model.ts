@@ -10,7 +10,7 @@ var Schema = mongoose.Schema;
 var UserSchema = new mongoose.Schema({
     username: {type: String, lowercase: true, unique: true, required: true, trim: true},
     name: {type: String},
-    email: {type: String, lowercase: true, unique: true, required: true, trim: true},
+    email: {type: String, lowercase: true, unique: true, trim: true},
     password: {type: String},  
     salt: {type: String}, 
     role: {type: String, enum:['user', 'admin', 'superadmin', 'master'], default: "user"},
@@ -39,46 +39,48 @@ var UserSchema = new mongoose.Schema({
     },
     social_profile: {
       resident_since: {type: String},
-      email: {type: String},
-      phone: {type: String},
       social_interaction: {type: String},
       young_kids: {type: String},
       age_kids: {type: String},
       hobbies: {type: String}
     },
-  rented_property:
-  [{
-    development: {type: String},
-    property: {type: String},
-    active: {type: Boolean, default: true}
-  }],
-  owned_property:
-  [{
-    development: {type: String},
-    property: {type: String}, 
-    active: {type: Boolean, default: true} 
-  }],
-  authorized_property:
-  [{
-    development: {type: String},
-    property: {type: String}  
-  }],
-  verification: {
-    verified: {type: Boolean, default: false},
-    verified_date: {type: Date},
-    code: {type: String}
-  },
-  active: {type: Boolean, default: true},
-  default_development: {
-    type: Schema.Types.ObjectId,
-    ref: 'Development' 
-  },
-  autorized_development: {type: String},
-  user_group: {
-    type: Schema.Types.ObjectId,
-    ref: 'UserGroup'
-  },  
-  created_at: {type: Date, default: Date.now}
+    private: {
+      phone: {type: Boolean, default: false},
+      email: {type: Boolean, default: false},
+    },
+    verification: {
+      verified: {type: Boolean, default: false},
+      verified_date: {type: Date},
+      code: {type: String}
+    },
+    active: {type: Boolean, default: true},
+    rented_property:
+    [{
+      development: {type: String},
+      property: {type: String},
+      active: {type: Boolean, default: true}
+    }],
+    owned_property:
+    [{
+      development: {type: String},
+      property: {type: String}, 
+      active: {type: Boolean, default: true} 
+    }],
+    authorized_property:
+    [{
+      development: {type: String},
+      property: {type: String}  
+    }],    
+    default_development: {
+      type: Schema.Types.ObjectId,
+      ref: 'Development' 
+    },
+    autorized_development: {type: String},
+    user_group: {
+      type: Schema.Types.ObjectId,
+      ref: 'UserGroup'
+    },  
+    created_at: {type: Date, default: Date.now}
 });
 
 // Public profile information
