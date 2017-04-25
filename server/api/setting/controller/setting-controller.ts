@@ -29,5 +29,22 @@ export class SettingController {
       ['settingsocialProfile'](_userId, _user)
       .then(user => res.status(201).json(user))
       .catch(error => res.status(400).json(error));
-    } 
+  }
+
+  static getAllSocialProfile(req: express.Request, res: express.Response):void {
+
+    UserDAO
+      ['getAllSocialProfile']()
+      .then(user => res.status(201).json(user))
+      .catch(error => res.status(400).json(error));
+  }
+
+  static getOwnSocialProfile(req: express.Request, res: express.Response):void {
+    let _userId = req["user"].id;
+
+    UserDAO
+      ['getOwnSocialProfile'](_userId)
+      .then(user => res.status(201).json(user))
+      .catch(error => res.status(400).json(error));
+  } 
 }
