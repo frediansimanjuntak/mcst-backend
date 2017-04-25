@@ -561,6 +561,95 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
     });
 });
 
+userSchema.static('getAllSocialProfile', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {};
+        User
+          .find(_query)
+          .exec((err, users) => {
+            if(err){
+              reject(err);
+            }
+            if(users){              
+              if(users.length == 0){
+                resolve({message: "no data"})
+              }
+              if(users.length >= 1){
+                console.log(users);
+                let dataArr = [];
+                for(var i = 0; i < users.length; i++){
+                  let userData = users[i];
+                  let phone;
+                  let email;
+                  let socialProfile = userData.social_profile;
+                  let privacy = userData.private;
+                  if(privacy.phone == false){
+                    phone = userData.phone;
+                  }
+                  if(privacy.email == false){
+                    email = userData.email;
+                  }
+
+                  let data = {
+                    "name": userData.name,
+                    "username": userData.username,
+                    "resident_since": socialProfile.resident_since,
+                    "social_interaction": socialProfile.social_interaction,
+                    "young_kids": socialProfile.young_kids,
+                    "age_kids": socialProfile.age_kids,
+                    "hobbies": socialProfile.hobbies,
+                    "phone": phone,
+                    "email": email
+                  } 
+                  console.log(data);           
+                  dataArr.push(data);      
+                }
+                resolve(dataArr);
+              }              
+            }            
+          })          
+    });
+});
+
+userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(userId)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        User
+          .findById(userId)
+          .exec((err, users) => {
+            if(err){
+              reject(err);
+            }
+            if(users){
+              let phone;
+              let email;
+              let socialProfile = users.social_profile;
+              let privacy = users.private;
+              if(privacy.phone == false){
+                phone = users.phone;
+              }
+              if(privacy.email == false){
+                email = users.email;
+              }
+
+              let data = {
+                "resident_since": socialProfile.resident_since,
+                "social_interaction": socialProfile.social_interaction,
+                "young_kids": socialProfile.young_kids,
+                "age_kids": socialProfile.age_kids,
+                "hobbies": socialProfile.hobbies,
+                "phone": phone,
+                "email": email
+              }
+              resolve(data);
+            }            
+          })          
+    });
+});
+
 userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(userId)) {

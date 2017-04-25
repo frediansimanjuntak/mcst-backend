@@ -42,7 +42,7 @@ var UserSchema = new mongoose.Schema({
       social_interaction: {type: String},
       young_kids: {type: String},
       age_kids: {type: String},
-      hobbies: {type: String}
+      hobbies: [{type: String}]
     },
     private: {
       phone: {type: Boolean, default: false},

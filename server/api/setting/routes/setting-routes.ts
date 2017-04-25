@@ -13,7 +13,12 @@ export class SettingRoutes {
 
       router
         .route('/setting/social_user')
+        .get(auth.isAuthenticated(), SettingController.getOwnSocialProfile)
         .post(auth.isAuthenticated(), SettingController.settingsocialProfile);
+
+      router
+        .route('/setting/social_user/all')
+        .get(auth.isAuthenticated(), SettingController.getAllSocialProfile)
     }
 
 
