@@ -20,4 +20,14 @@ export class SettingController {
       .then(user => res.status(201).json(user))
       .catch(error => res.status(400).json(error));
   	}  	
+
+  static settingsocialProfile(req: express.Request, res: express.Response):void {
+    let _userId = req["user"].id;
+    let _user = req.body;
+
+    UserDAO
+      ['settingsocialProfile'](_userId, _user)
+      .then(user => res.status(201).json(user))
+      .catch(error => res.status(400).json(error));
+    } 
 }

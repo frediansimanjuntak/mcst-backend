@@ -10,5 +10,11 @@ export class SettingRoutes {
         .route('/setting/user/:id')
         .get(auth.isAuthenticated(), SettingController.getDetailUser)
         .post(auth.isAuthenticated(), SettingController.settingDetailUser);
+
+      router
+        .route('/setting/social_user')
+        .post(auth.isAuthenticated(), SettingController.settingsocialProfile);
     }
+
+
 }
