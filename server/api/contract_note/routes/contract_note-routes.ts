@@ -7,8 +7,12 @@ import * as auth from '../../../auth/auth-service';
 export class ContractNoteRoutes {
     static init(router: express.Router) {
       router
+        .route('/contract_note')
+        .get(auth.isAuthenticated(), ContractNoteController.getAllContractNote);
+
+      router
         .route('/contract_note/:id')
-        .get(auth.isAuthenticated(), ContractNoteController.getAllContractNote)
+        .get(auth.isAuthenticated(), ContractNoteController.getContractNote)
         .post(auth.isAuthenticated(), ContractNoteController.createContractNote);
 
       router

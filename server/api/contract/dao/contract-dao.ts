@@ -255,7 +255,23 @@ contractSchema.static('updateContractSchedule', (id:string, userId:string, contr
 });
 
 //contract note 
-contractSchema.static('getAllContractNote', (id:string):Promise<any> => {
+contractSchema.static('getAllContractNote', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+
+        let _query = {};
+
+        Contract
+          .find(_query)
+          .select("contract_note")
+          .populate("contract_note.attachment contract_note.posted_by")
+          .exec((err, contractnotes) => {
+              err ? reject(err)
+                  : resolve(contractnotes);
+          });
+    });
+});
+
+contractSchema.static('getContractNote', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -292,8 +308,20 @@ contractSchema.static('getByIdContractNote', (id:string, idcontractnote:string):
             }
           })
           .exec((err, contractnotes) => {
-              err ? reject(err)
-                  : resolve(contractnotes);
+            if(err){
+              reject(err);
+            }
+            if(contractnotes){
+                _.each(contractnotes.contract_note, (err, result) => {
+                  if(err){
+                    reject(err);
+                  }
+                  if(result){
+                    resolve(result);
+                  }
+                })
+                
+            }
           });
     });
 });
@@ -423,7 +451,21 @@ contractSchema.static('updateContractNote', (id:string, idcontractnote:string, u
 });
 
 //contract notice
-contractSchema.static('getAllContractNotice', (id:string):Promise<any> => {
+contractSchema.static('getAllContractNotice', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {};
+
+        Contract
+          .find(_query)
+          .select("contract_notice")
+          .exec((err, contractnotices) => {
+              err ? reject(err)
+                  : resolve(contractnotices);
+          });
+    });
+});
+
+contractSchema.static('getContractNotice', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -462,8 +504,12 @@ contractSchema.static('getByIdContractNotice', (id:string, idcontractnotice:stri
           })
           .populate("contract_notice.attachment")
           .exec((err, contractnotices) => {
-              err ? reject(err)
-                  : resolve(contractnotices);
+            if(err){
+              reject(err);
+            }
+            if(contractnotices){
+                resolve(contractnotices);
+            }
           });
     });
 });
