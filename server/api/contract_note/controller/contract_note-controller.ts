@@ -3,10 +3,18 @@ import ContractDAO from '../../contract/dao/contract-dao';
 
 export class ContractNoteController {
   static getAllContractNote(req: express.Request, res: express.Response):void {
+
+      ContractDAO
+        ['getAllContractNote']()
+        .then(contractnotes => res.status(200).json(contractnotes))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static getContractNote(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
 
       ContractDAO
-        ['getAllContractNote'](_id)
+        ['getContractNote'](_id)
         .then(contractnotes => res.status(200).json(contractnotes))
         .catch(error => res.status(400).json(error));
   }

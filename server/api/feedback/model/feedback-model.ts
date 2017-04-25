@@ -7,12 +7,12 @@ var feedbackSchema = new mongoose.Schema({
     	ref: 'Development'
 	},
 	property: {type: String, trim: true},		
-	title: {type: String, trim: true},
-	feedback_type: {type: String, trim: true},
-	feedback_reply: {type: String, trim: true},
-	feedback_privacy: {type: String, trim: true},
+	title: {type: String},
+	privacy: {type: String},
+	type: {type: String},
+	content: {type: String},
+	reply: {type: String},
 	archieve: {type: Boolean, trim: true, default: false},
-	remarks: {type: String, trim: true},
 	status: {type: String, trim: true, default:"unpublish"},
 	reply_by: {
 		type: Schema.Types.ObjectId,

@@ -561,24 +561,23 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
     });
 });
 
-userSchema.static('settingsocialProfile', (id:string, user:Object):Promise<any> => {
+userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
+        if (!_.isString(userId)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
 
         let body:any = user;
-
         User
-          .findByIdAndUpdate(id,{
+          .findByIdAndUpdate(userId,{
             $set: {
               "social_profile.resident_since": body.resident_since,
-              "social_profile.email": body.email,
-              "social_profile.phone": body.phone,
               "social_profile.social_interaction": body.social_interaction,
               "social_profile.young_kids": body.young_kids,
               "social_profile.age_kids": body.age_kids,
-              "social_profile.hobbies": body.hobbies
+              "social_profile.hobbies": body.hobbies,
+              "private.phone_number": body.showPhoneNumber,
+              "private.email": body.showEmail
             }
         })
         .exec((err, updated) => {
