@@ -103,7 +103,7 @@ developmentSchema.static('getNewsletter', (name_url:string):Promise<any> => {
             .populate("newsletter.attachment  newsletter.release_by newsletter.created_by")
             .exec((err, newsletters) => {
                 err ? reject(err)
-                    : resolve(newsletters);
+                    : resolve(newsletters.newsletter);
             });
     });
 });
@@ -121,8 +121,14 @@ developmentSchema.static('getByIdNewsletter', (name_url:string, idnewsletter:str
             .populate("newsletter.attachment newsletter.release_by newsletter.created_by")
             .select({"newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}})
             .exec((err, newsletters) => {
-                err ? reject(err)
-                    : resolve(newsletters);
+                if(err){
+                    reject(err);
+                }
+                if(newsletters){
+                    _.each(newsletters.newsletter, (result) => {
+                        resolve(result);
+                    })
+                }
             });
     });
 });
