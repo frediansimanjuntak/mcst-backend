@@ -43,15 +43,17 @@ lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, deve
 
         Attachment.createAttachment(attachment, userId).then(res => {
         var idAttachment = res.idAtt;
+        let serial = Math.ceil(Math.random()*10000000);
 
         var _lostfound = new Lost_found(lostfound);
-            _lostfound.created_by = userId;
-            _lostfound.development = developmentId;
-            _lostfound.photo = idAttachment;
-            _lostfound.save((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-              });
+        _lostfound.created_by = userId;
+        _lostfound.serial_number = serial;
+        _lostfound.development = developmentId;
+        _lostfound.photo = idAttachment;
+        _lostfound.save((err, saved) => {
+          err ? reject(err)
+              : resolve(saved);
+        });
       })
       .catch(err=>{
         resolve({message: "attachment error"});

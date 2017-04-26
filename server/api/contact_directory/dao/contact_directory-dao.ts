@@ -1,58 +1,57 @@
 import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
-import accesscontrolSchema from '../model/access_control-model';
+import contactDirectorySchema from '../model/contact_directory-model';
 
-accesscontrolSchema.static('getAll', (development:string):Promise<any> => {
+contactDirectorySchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"development": development};
+        let _query = {};
 
-        AccessControl
+        ContactDirectory
           .find(_query)
-          .exec((err, accesscontrols) => {
+          .exec((err, contacts) => {
               err ? reject(err)
-                  : resolve(accesscontrols);
+                  : resolve(contacts);
           });
     });
 });
 
-accesscontrolSchema.static('getById', (id:string):Promise<any> => {
+contactDirectorySchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
 
-        AccessControl
+        ContactDirectory
           .findById(id)
-          .exec((err, accesscontrols) => {
+          .exec((err, contact) => {
               err ? reject(err)
-                  : resolve(accesscontrols);
+                  : resolve(contact);
           });
     });
 });
 
-accesscontrolSchema.static('createAccessControl', (accesscontrol:Object):Promise<any> => {
+contactDirectorySchema.static('createContactDirectory', (data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(accesscontrol)) {
+        if (!_.isObject(data)) {
           return reject(new TypeError('Access Control is not a valid object.'));
         }
 
-        var _accesscontrol = new AccessControl(accesscontrol);
-
-        _accesscontrol.save((err, saved) => {
+        var _contact = new ContactDirectory(data);
+        _contact.save((err, saved) => {
           err ? reject(err)
               : resolve(saved);
         });
     });
 });
 
-accesscontrolSchema.static('deleteAccessControl', (id:string):Promise<any> => {
+contactDirectorySchema.static('deleteContactDirectory', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
 
-        AccessControl
+        ContactDirectory
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
               err ? reject(err)
@@ -61,21 +60,20 @@ accesscontrolSchema.static('deleteAccessControl', (id:string):Promise<any> => {
     });
 });
 
-accesscontrolSchema.static('updateAccessControl', (id:string, accesscontrol:Object):Promise<any> => {
+contactDirectorySchema.static('updateContactDirectory', (id:string, data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
-        AccessControl
-          .findByIdAndUpdate(id, accesscontrol)
+        ContactDirectory
+          .findByIdAndUpdate(id, data)
           .exec((err, updated) => {
-                err ? reject(err)
-                    : resolve(updated);
+              err ? reject(err)
+                  : resolve(updated);
           });
     });
 });
 
-let AccessControl = mongoose.model('AccessControl', accesscontrolSchema);
+let ContactDirectory = mongoose.model('ContactDirectory', contactDirectorySchema);
 
-export default AccessControl;
+export default ContactDirectory;

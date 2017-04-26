@@ -13,7 +13,7 @@ contractSchema.static('getAll', (development:string):Promise<any> => {
 
         Contract
           .find(_query)
-          .populate("development attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
+          .populate("development company attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
           .exec((err, contracts) => {
               err ? reject(err)
                   : resolve(contracts);
@@ -29,7 +29,7 @@ contractSchema.static('getById', (id:string):Promise<any> => {
 
         Contract
           .findById(id)
-          .populate("development attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
+          .populate("development company attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
           .exec((err, contracts) => {
               err ? reject(err)
                   : resolve(contracts);
