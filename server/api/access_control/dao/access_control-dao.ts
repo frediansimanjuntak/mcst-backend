@@ -66,9 +66,6 @@ accesscontrolSchema.static('updateAccessControl', (id:string, accesscontrol:Obje
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isObject(accesscontrol)) {
-          return reject(new TypeError('Access Control is not a valid object.'));
-        }
 
         AccessControl
           .findByIdAndUpdate(id, accesscontrol)

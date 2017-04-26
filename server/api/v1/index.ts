@@ -1,4 +1,5 @@
 import * as express from 'express';
+import {FaqRoutes} from '../faq/routes/faq-routes';
 import {TodoRoutes} from '../todo/routes/todo-routes';
 import {UserRoutes} from '../user/routes/user-routes';
 import {PollRoutes} from '../polls/routes/poll-routes';
@@ -27,9 +28,11 @@ import {AccessControlRoutes} from '../access_control/routes/access_control-route
 import {PaymentBookingRoutes} from '../payment_booking/routes/payment_booking-routes';
 import {ContractNoticeRoutes} from '../contract_notice/routes/contract_notice-routes';
 import {PaymentReminderRoutes} from '../payment_reminder/routes/payment_reminder-routes';
+import {ContactDiretoryRoutes} from '../contact_directory/routes/contact_directory-routes';
 
 var router = express.Router();
 
+FaqRoutes.init(router);
 TodoRoutes.init(router);
 UserRoutes.init(router);     
 PollRoutes.init(router);
@@ -55,8 +58,9 @@ NotificationRoutes.init(router);
 AnnouncementRoutes.init(router);
 ContractNoteRoutes.init(router);
 AccessControlRoutes.init(router);
-PaymentReminderRoutes.init(router);
 ContractNoticeRoutes.init(router);
-PaymentBookingRoutes.init(router);  
+PaymentBookingRoutes.init(router); 
+PaymentReminderRoutes.init(router); 
+ContactDiretoryRoutes.init(router); 
 
 export default router; 
