@@ -2,8 +2,9 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import userSchema from '../model/user-model';
-import Development from '../../development/dao/development-dao'
-import UserGroup from '../../user_group/dao/user_group-dao'
+import Development from '../../development/dao/development-dao';
+import Hobbies from '../../hobbies/dao/hobbies-dao';
+import UserGroup from '../../user_group/dao/user_group-dao';
 import * as auth from '../../../auth/auth-service';
 import {mail} from '../../../email/email';
 
@@ -670,9 +671,18 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
             }
         })
         .exec((err, updated) => {
-              err ? reject(err)
-                  : resolve(updated);
-          });
+            if(err){
+              reject(err);
+            }
+            if(updated){
+              Hobbies.createHobbies(body).then((res) => {
+                  resolve(updated);
+                })
+                .catch((err) => {
+                  reject(err);
+                })
+            }                  
+        });
     });
 });
 
