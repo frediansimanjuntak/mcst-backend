@@ -4,7 +4,7 @@ import * as express from 'express';
 import {HobbiesController} from '../controller/hobbies-controller';
 import * as auth from '../../../auth/auth-service';
 
-export class AccessControlRoutes {
+export class HobbiesRoutes {
     static init(router: express.Router) {
       router
         .route('/hobbies')
