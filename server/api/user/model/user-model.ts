@@ -22,7 +22,10 @@ var UserSchema = new mongoose.Schema({
     },
     default_property:
     {
-      development: {type: String },
+      development: {
+        type: Schema.Types.ObjectId,
+        ref: 'Development'
+      },
       property: {type: String },
       role: {type: String }
     },
@@ -56,26 +59,38 @@ var UserSchema = new mongoose.Schema({
     active: {type: Boolean, default: true},
     rented_property:
     [{
-      development: {type: String},
+      development: {
+        type: Schema.Types.ObjectId,
+        ref: 'Development'
+      },
       property: {type: String},
       active: {type: Boolean, default: true}
     }],
     owned_property:
     [{
-      development: {type: String},
+      development: {
+        type: Schema.Types.ObjectId,
+        ref: 'Development'
+      },
       property: {type: String}, 
       active: {type: Boolean, default: true} 
     }],
     authorized_property:
     [{
-      development: {type: String},
+      development: {
+        type: Schema.Types.ObjectId,
+        ref: 'Development'
+      },
       property: {type: String}  
     }],    
     default_development: {
       type: Schema.Types.ObjectId,
       ref: 'Development' 
     },
-    autorized_development: {type: String},
+    autorized_development: {
+      type: Schema.Types.ObjectId,
+      ref: 'Development'
+    },
     user_group: {
       type: Schema.Types.ObjectId,
       ref: 'UserGroup'
