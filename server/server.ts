@@ -48,17 +48,22 @@ const opts = {
   key: fs.readFileSync(__dirname + '/../server/cert/server.key'),
   cert: fs.readFileSync(__dirname + '/../server/cert/server.crt')
 }
-
-// run using https
-https.createServer(opts, app)
+// if(http){
+  // run using http
+http.createServer(app)
      .listen(PORT, () => {
        console.log(`up and running @: ${os.hostname()} on port: ${PORT}`);
        console.log(`enviroment: ${process.env.NODE_ENV}`);
      });
-
-// run using http
-// http.createServer(app)
+// }
+// if(https){
+//   // run using https
+// https.createServer(opts, app)
 //      .listen(PORT, () => {
 //        console.log(`up and running @: ${os.hostname()} on port: ${PORT}`);
 //        console.log(`enviroment: ${process.env.NODE_ENV}`);
 //      });
+// }
+
+
+
