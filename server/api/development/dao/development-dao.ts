@@ -827,12 +827,23 @@ developmentSchema.static('getRegisterVehicleProperties', (name_url:string, idpro
         var ObjectID = mongoose.Types.ObjectId;
 
         Development
-            .find({"name_url": name_url}, {"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})
-            .select("properties.registered_vehicle")  
+            .findOne({"name_url": name_url})
+            .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})  
             .populate("properties.register_vehicle.owner properties.register_vehicle.document") 
-            .exec((err, properties) => {
-                err ? reject(err)
-                    : resolve(properties);
+            .exec((err, res) => {
+                if(err){
+                    reject(err);
+                }
+                if(res){
+                    let property;
+                    if(res.properties){
+                        property = res.properties
+                    }
+                    console.log(property);
+                    _.each(property, (res) => {
+                        resolve(res.registered_vehicle);
+                    })
+                }
             });
     });
 });
@@ -888,7 +899,7 @@ developmentSchema.static('createRegisterVehicleProperties', (name_url:string, id
 
         let ObjectID = mongoose.Types.ObjectId; 
         let body:any = registervehicle;
-
+        console.log(registervehicle);
         Attachment.createAttachment(attachment, userId)
             .then(res => {
                 var idAttachment = res.idAtt;

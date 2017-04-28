@@ -69,7 +69,7 @@ export function signToken(id, role, default_development, remember) {
   let session
   console.log(remember);
   if(remember == "true"){
-    session = config.secrets.session, {expiresIn: false };
+    session = config.secrets.session, {expiresIn: 60 * 60 * 60 * 60 };
   }
   if(remember == "false"){
     session = config.secrets.session, {expiresIn: 60 * 60 * 5};
