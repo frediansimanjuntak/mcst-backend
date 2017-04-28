@@ -72,7 +72,7 @@ export function signToken(id, role, default_development, remember) {
     session = config.secrets.session, {expiresIn: false };
   }
   if(remember == "false"){
-    session = config.secrets.session, {expiresIn: 60};
+    session = config.secrets.session, {expiresIn: 60 * 60 * 5};
   }
   return jwt.sign({ _id: id, role, default_development }, session);
 }

@@ -425,7 +425,7 @@ userSchema.static('verifiedUser', (userId:string, data:Object):Promise<any> => {
               }
             }
              else{
-              reject({message: "Your Account is Verified"})
+              reject({message: "Already Verified"})
             }
           })
     });
