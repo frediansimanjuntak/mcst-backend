@@ -396,7 +396,7 @@ userSchema.static('verifiedUser', (userId:string, data:Object):Promise<any> => {
           .findById(userId, (err,user)=>{
             var verified = user.verification.verified;
             var code = user.verification.code; 
-            if(verified == "false"){
+            if(verified == false){
               console.log(code);         
               if (code == body.code){
                   user.verification.verified = true;
