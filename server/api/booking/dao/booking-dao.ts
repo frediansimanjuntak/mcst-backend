@@ -38,7 +38,6 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
 
 bookingSchema.static('createBooking', (booking:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-
         let idAttachment;
         let file:any = attachment;
         let attachmentFile = file.payment_proof;

@@ -591,25 +591,33 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                   let unit_no_2;
                   let defaultPropertyDev;
                   let defaultPropertyDevId;
+                  let defaultProperty;
+                  let defaultDevelopment;
                   let socialProfile = userData.social_profile;
-                  let defaultProperty = userData.default_property.property;
-                  let defaultDevelopment = userData.default_property.development;
+                  if(userData.default_property.property){
+                    defaultProperty = userData.default_property.property;
+                  }
+                  if(userData.default_property.development){
+                    defaultDevelopment = userData.default_property.development;
+                  }                  
                   if(defaultDevelopment){
                     defaultPropertyDev = defaultDevelopment.properties;
                     defaultPropertyDevId = defaultDevelopment._id;
-                    for(var i = 0; i < defaultPropertyDev.length; i++){
-                       if(defaultPropertyDev[i]._id == defaultProperty){
-                         property = defaultPropertyDev[i].address;
-                         unit_no = defaultPropertyDev[i].address.unit_no;
-                         unit_no_2 = defaultPropertyDev[i].address.unit_no_2;
-                       }
-                    }
+                    if(defaultProperty){
+                      for(var i = 0; i < defaultPropertyDev.length; i++){
+                        if(defaultPropertyDev[i]._id == defaultProperty){
+                          property = defaultPropertyDev[i].address;
+                          unit_no = defaultPropertyDev[i].address.unit_no;
+                          unit_no_2 = defaultPropertyDev[i].address.unit_no_2;
+                        }
+                      }
+                    }                    
                   }                 
                   let privacy = userData.private;
-                  if(privacy.phone == false){
+                  if(privacy.phone == true){
                     phone = userData.phone;
                   }
-                  if(privacy.email == false){
+                  if(privacy.email == true){
                     email = userData.email;
                   }           
                   if(unit_no && unit_no_2){

@@ -4,8 +4,6 @@ import * as _ from 'lodash';
 import notificationSchema from '../model/notification-model';
 import {GlobalService} from '../../../global/global.service';
 
-var fs = require('fs-extra');
-
 notificationSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       let _query = {"development": development};
