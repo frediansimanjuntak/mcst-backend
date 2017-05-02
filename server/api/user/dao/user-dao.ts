@@ -391,42 +391,41 @@ userSchema.static('resendVerificationUser', (userId:string, user:Object):Promise
 userSchema.static('verifiedUser', (userId:string, data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let body:any = data;
-        console.log(body);
         User
-          .findById(userId, (err,user)=>{
-            var verified = user.verification.verified;
-            var code = user.verification.code; 
-            if(verified == false){
-              console.log(code);         
-              if (code == body.code){
-                  user.verification.verified = true;
-                  user.verification.verified_date = new Date();
-                  user.save((err, saved) => {
-                    if(err){
-                      reject(err);
-                    }
-                    if(saved){
-                      let data = {
-                        "emailTo": saved.email,
-                        "fullname": saved.details.first_name +" "+ saved.details.last_name,
-                        "username": saved.username,
-                        "verifyCode": code.toUpperCase(),
-                        "from": "mcst-admin@mcst.sg.com"
-                      } 
-                      let typeMail = "verifiedCode";
-                      User.email(data, typeMail).then(res => {
-                        resolve(saved);
-                      })
-                    }
-                  })            
+          .findById(userId)
+          .exec((err, user) => {
+              var verified = user.verification.verified;
+              var code = user.verification.code; 
+              if(verified == false){    
+                if (code == body.code){
+                    user.verification.verified = true;
+                    user.verification.verified_date = new Date();
+                    user.save((err, saved) => {
+                      if(err){
+                        reject(err);
+                      }
+                      if(saved){
+                        let data = {
+                          "emailTo": saved.email,
+                          "fullname": saved.details.first_name +" "+ saved.details.last_name,
+                          "username": saved.username,
+                          "verifyCode": code.toUpperCase(),
+                          "from": "mcst-admin@mcst.sg.com"
+                        } 
+                        let typeMail = "verifiedCode";
+                        User.email(data, typeMail).then(res => {
+                          resolve(saved);
+                        })
+                      }
+                    })            
+                }
+                else{
+                  reject({message: 'Your code is wrong'});
+                }
               }
-              else{
-                reject({message: 'Your code is wrong'});
+               else{
+                reject({message: "Already Verified"})
               }
-            }
-             else{
-              reject({message: "Already Verified"})
-            }
           })
     });
 });
@@ -567,7 +566,7 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
 
         var ObjectID = mongoose.Types.ObjectId;
         let _query = {};
-
+        
         User
           .find(_query)
           .populate("default_property.development")
@@ -582,7 +581,6 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
               if(users.length >= 1){
                 let dataArr = [];
                 for(var i = 0; i < users.length; i++){
-                  let userData = users[i];
                   let phone;
                   let email;
                   let property;
@@ -593,6 +591,8 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                   let defaultPropertyDevId;
                   let defaultProperty;
                   let defaultDevelopment;
+                  let userData = users[i];
+                  let privacy = users[i].private;
                   let socialProfile = userData.social_profile;
                   if(userData.default_property.property){
                     defaultProperty = userData.default_property.property;
@@ -602,26 +602,25 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                   }                  
                   if(defaultDevelopment){
                     defaultPropertyDev = defaultDevelopment.properties;
-                    defaultPropertyDevId = defaultDevelopment._id;
                     if(defaultProperty){
                       for(var i = 0; i < defaultPropertyDev.length; i++){
-                        if(defaultPropertyDev[i]._id == defaultProperty){
+                        let defaultPropertyDevId = defaultPropertyDev[i]._id.toString();
+                        if(defaultPropertyDevId == defaultProperty){
                           property = defaultPropertyDev[i].address;
                           unit_no = defaultPropertyDev[i].address.unit_no;
                           unit_no_2 = defaultPropertyDev[i].address.unit_no_2;
                         }
                       }
                     }                    
-                  }                 
-                  let privacy = userData.private;
-                  if(privacy.phone == true){
+                  }               
+                  if(privacy.phone == false){
                     phone = userData.phone;
                   }
-                  if(privacy.email == true){
+                  if(privacy.email == false){
                     email = userData.email;
                   }           
                   if(unit_no && unit_no_2){
-                    unit = "Unit #" + unit_no + "-" + unit_no_2
+                    unit = "Unit #" + unit_no + "-" + unit_no_2;
                   }       
                   let data = {
                     "default_development": defaultPropertyDevId,
@@ -654,11 +653,13 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
 
         User
           .findById(userId)
+          .populate("default_property.development")
           .exec((err, users) => {
             if(err){
               reject(err);
             }
             if(users){
+              console.log(users);
               let phone;
               let email;
               let privacy = users.private;
@@ -715,8 +716,23 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
         if (!_.isString(userId)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         let body:any = user;
+        let private_phone;
+        let private_email;
+
+        if(body.showPhoneNumber == true){
+          private_phone = false;
+        }
+        if(body.showPhoneNumber == false){
+          private_phone = true;
+        }
+        if(body.showEmail == true){
+          private_email = false;
+        }
+        if(body.showEmail == false){
+          private_email = true;
+        }
+        
         User
           .findByIdAndUpdate(userId,{
             $set: {
@@ -725,8 +741,8 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
               "social_profile.young_kids": body.young_kids,
               "social_profile.age_kids": body.age_kids,
               "social_profile.hobbies": body.hobbies,
-              "private.phone_number": body.showPhoneNumber,
-              "private.email": body.showEmail
+              "private.phone": private_phone,
+              "private.email": private_email
             }
         })
         .exec((err, updated) => {
