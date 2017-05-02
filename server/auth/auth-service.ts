@@ -27,7 +27,22 @@ export function isAuthenticated() {
       if(req.query && typeof req.headers.authorization === 'undefined') {
         req.headers.authorization = `Bearer ${req.cookies.token}`;
       }
-      validateJwt(req, res, next);
+      validateJwt(req, res, function(err, validate){
+        if(err) {
+          if(err.message == "jwt expired"){
+            return res.status(err.status).send({message: "Your session has been expired", code: 411});
+          }
+          if(err.message == "jwt malformed"){
+            return res.status(err.status).send({message: "You must be logged in to do this", code: 412});
+          }
+          else{
+            return res.status(err.status).send({message: err.message});
+          }
+        }
+        else{
+          validateJwt(req, res, next);
+        }
+      });
     })
     // Attach user to request
     .use(function(req, res, next) {
@@ -67,7 +82,6 @@ export function hasRole(roleRequired) {
  */
 export function signToken(id, role, default_development, remember) {
   let session
-  console.log(remember);
   if(remember == "true"){
     session = config.secrets.session, {expiresIn: 60 * 60 * 60 * 60 };
   }

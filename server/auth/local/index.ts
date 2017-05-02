@@ -12,20 +12,29 @@ router.post('/', function(req, res, next) {
     var error = err || info;
     var remember;
     if(error) {
-      return res.status(401).json(error);
+      if(error.message == "Missing credentials"){
+        return res.status(401).json({message: "Incomplete Data Username/Password to logged in", code: 413});
+      }      
+      else{
+        return res.status(401).json(error);
+      }
     }
     if(!user) {
-      return res.status(404).json({message: 'Something went wrong, please try again.'});
+      return res.status(404).json({message: 'Something went wrong, please try again.', code: 404});
+    }    
+    if(user._id && user.role && user.username) {
+      if(!req.body.remember){
+        remember = "false";
+      }
+      if(req.body.remember){
+        remember = "true";
+      }
+      var token = signToken(user._id, user.role, user.default_development, remember);
+      res.json({ token });
     }
-    if(!req.body.remember){
-      remember = "false";
-    }
-    if(req.body.remember){
-      remember = "true";
-    }
-
-    var token = signToken(user._id, user.role, user.default_development, remember);
-    res.json({ token });
+    else{
+      res.json({message: 'please login first.'});
+    }    
   })(req, res, next);
 });
 
