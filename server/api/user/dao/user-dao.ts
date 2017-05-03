@@ -191,6 +191,12 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
                   "development": body.id_development,
                   "property": body.id_property
                 }
+              },
+              $set: {
+                "default_property": {
+                  "development": body.id_development,
+                  "property": body.default_property.property
+                }
               }
             })
             .exec((err, updated) => {
@@ -223,6 +229,12 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
                 "rented_property":{
                   "development": body.id_development,
                   "property": body.id_property
+                }
+              },
+              $set: {
+                "default_property": {
+                  "development": body.id_development,
+                  "property": body.default_property.property
                 }
               }
             })
@@ -550,8 +562,10 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
                "name": body.name,
                "email": body.email,
                "phone": body.phone,
-               "emergancy_contact.name": body.emergancy.name,
-               "emergency_contact.contact_number": body.emergancy.contact_number
+               "emergency_contact": {
+                 "name": body.emergancy.name,
+                 "contact_number": body.emergancy.contact_number
+               }
             }
           })
           .exec((err, updated) => {
