@@ -587,31 +587,49 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                   let unit;
                   let unit_no;
                   let unit_no_2;
+                  let block;
+                  let address;
                   let defaultPropertyDev;
+                  let defaultPropertyDevName;
                   let defaultPropertyDevId;
                   let defaultProperty;
                   let defaultDevelopment;
+                  let vehicles;
+                  let licenseVehicle;
                   let userData = users[i];
-                  let privacy = users[i].private;
+                  let privacy = userData.private;
+                  let userId = userData._id;
+                  let name = userData.name;
                   let socialProfile = userData.social_profile;
                   if(userData.default_property.property){
                     defaultProperty = userData.default_property.property;
                   }
                   if(userData.default_property.development){
                     defaultDevelopment = userData.default_property.development;
-                  }                  
-                  if(defaultDevelopment){
+                    defaultPropertyDevId = userData.default_property.development._id;
                     defaultPropertyDev = defaultDevelopment.properties;
+                    defaultPropertyDevName = defaultDevelopment.name;
                     if(defaultProperty){
-                      for(var i = 0; i < defaultPropertyDev.length; i++){
-                        let defaultPropertyDevId = defaultPropertyDev[i]._id.toString();
-                        if(defaultPropertyDevId == defaultProperty){
-                          property = defaultPropertyDev[i].address;
-                          unit_no = defaultPropertyDev[i].address.unit_no;
-                          unit_no_2 = defaultPropertyDev[i].address.unit_no_2;
+                      for(var j = 0; j < defaultPropertyDev.length; j++){
+                        let defaultDevPropId = defaultPropertyDev[j]._id.toString();
+                        if(defaultDevPropId == defaultProperty){
+                          property = defaultPropertyDev[j];
+                          vehicles = property.registered_vehicle;
+                          unit_no = property.address.unit_no;
+                          unit_no_2 = property.address.unit_no_2;
+                          block = property.address.block_no;
+                          if(vehicles.length != 0){
+                            for (var k = 0; k < vehicles.length; k++){
+                              let vehicle = vehicles[k];
+                              let owner = vehicle.owner;
+                              if(owner == userId){
+                                licenseVehicle = vehicle.license_plate;
+                              }
+                            }
+                          }
                         }
                       }
-                    }                    
+                    } 
                   }               
                   if(privacy.phone == false){
                     phone = userData.phone;
@@ -619,20 +637,25 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                   if(privacy.email == false){
                     email = userData.email;
                   }           
-                  if(unit_no && unit_no_2){
-                    unit = "Unit #" + unit_no + "-" + unit_no_2;
-                  }       
+                  if(privacy.unit == false){
+                    if(unit_no && unit_no_2){
+                      unit = "Unit #" + unit_no + "-" + unit_no_2; 
+                      address = defaultPropertyDevName + " blk " + block + " #" + unit_no + "-" + unit_no_2;               
+                    }                
+                  }      
                   let data = {
                     "default_development": defaultPropertyDevId,
                     "default_property": defaultProperty,
                     "unit": unit,
-                    "name": userData.name,
+                    "address": address,
+                    "name": name,
                     "username": userData.username,
                     "resident_since": socialProfile.resident_since,
                     "social_interaction": socialProfile.social_interaction,
                     "young_kids": socialProfile.young_kids,
                     "age_kids": socialProfile.age_kids,
                     "hobbies": socialProfile.hobbies,
+                    "vehicle": licenseVehicle,
                     "phone": phone,
                     "email": email
                   };            
@@ -666,19 +689,37 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
               let unit;
               let unit_no;
               let unit_no_2;
+              let block;
+              let address;
+              let vehicles;
+              let licenseVehicle;
               let defaultPropertyDev;
+              let defaultPropertyDevName;
               let defaultPropertyDevId;
+              let name = users.name;
               let socialProfile = users.social_profile;
               let defaultProperty = users.default_property.property;
               let defaultDevelopment = users.default_property.development;
               if(defaultDevelopment){
                 defaultPropertyDev = defaultDevelopment.properties;
+                defaultPropertyDevName = defaultDevelopment.name;
                 defaultPropertyDevId = defaultDevelopment._id;
                 for(var i = 0; i < defaultPropertyDev.length; i++){
                    if(defaultPropertyDev[i]._id == defaultProperty){
-                     property = defaultPropertyDev[i].address;
-                     unit_no = defaultPropertyDev[i].address.unit_no;
-                     unit_no_2 = defaultPropertyDev[i].address.unit_no_2;
+                     property = defaultPropertyDev[i];
+                     unit_no = property.address.unit_no;
+                     unit_no_2 = property.address.unit_no_2;
+                     block = property.address.block_no;
+                     vehicles = property.registered_vehicle;
+                     if(vehicles.length != 0){
+                        for (var k = 0; k < vehicles.length; k++){
+                          let vehicle = vehicles[k];
+                          let owner = vehicle.owner.toString();
+                          if(owner == userId){
+                            licenseVehicle = vehicle.license_plate;
+                          }
+                        }
+                      }
                    }
                 }
               }                 
@@ -688,19 +729,25 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
               if(privacy.email == false){
                 email = users.email;
               }
-              if(unit_no && unit_no_2){
-                unit = "Unit #" + unit_no + "-" + unit_no_2
-              }
+              if(privacy.unit == false){
+                if(unit_no && unit_no_2){
+                  unit = "Unit #" + unit_no + "-" + unit_no_2; 
+                  address = defaultPropertyDevName + " Block " + block + " #" + unit_no + "-" + unit_no_2;               
+                }                
+              }             
 
               let data = {
                 "default_development": defaultPropertyDevId,
                 "default_property": defaultProperty,
                 "unit": unit,
+                "name": name,
+                "address": address,
                 "resident_since": socialProfile.resident_since,
                 "social_interaction": socialProfile.social_interaction,
                 "young_kids": socialProfile.young_kids,
                 "age_kids": socialProfile.age_kids,
                 "hobbies": socialProfile.hobbies,
+                "vehicle": licenseVehicle,
                 "phone": phone,
                 "email": email
               }
@@ -718,6 +765,7 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
         let body:any = user;
         let private_phone;
         let private_email;
+        let private_unit;
 
         if(body.showPhoneNumber == true){
           private_phone = false;
@@ -731,6 +779,12 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
         if(body.showEmail == false){
           private_email = true;
         }
+        if(body.showUnit == true){
+          private_unit = false;
+        }
+        if(body.showUnit == false){
+          private_unit = true;
+        }
         
         User
           .findByIdAndUpdate(userId,{
@@ -741,7 +795,8 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
               "social_profile.age_kids": body.age_kids,
               "social_profile.hobbies": body.hobbies,
               "private.phone": private_phone,
-              "private.email": private_email
+              "private.email": private_email,
+              "private.unit": private_unit
             }
         })
         .exec((err, updated) => {
