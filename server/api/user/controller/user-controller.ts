@@ -104,7 +104,7 @@ export class UserController {
 
   static verifiedUser(req: express.Request, res: express.Response):void {
       let _userId = req["user"]._id;
-      let _body = req.body;
+      let _body = req.body; 
 
       UserDAO
         ['verifiedUser'](_userId, _body)

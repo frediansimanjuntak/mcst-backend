@@ -50,6 +50,7 @@ var UserSchema = new mongoose.Schema({
     private: {
       phone: {type: Boolean, default: false},
       email: {type: Boolean, default: false},
+      unit: {type: Boolean, default: false}
     },
     verification: {
       verified: {type: Boolean, default: false},
