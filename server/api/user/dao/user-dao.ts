@@ -550,8 +550,8 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
                "name": body.name,
                "email": body.email,
                "phone": body.phone,
-               "emergancy_contact.name": body.contact_name,
-               "emergency_contact.contact_number": body.contact_number
+               "emergancy_contact.name": body.emergancy.name,
+               "emergency_contact.contact_number": body.emergancy.contact_number
             }
           })
           .exec((err, updated) => {
@@ -659,7 +659,6 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
               reject(err);
             }
             if(users){
-              console.log(users);
               let phone;
               let email;
               let privacy = users.private;
