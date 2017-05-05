@@ -59,6 +59,39 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
     });
 });
 
+petitionSchema.static('createPetitionNewTenant', (petition:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isObject(petition)) {
+          return reject(new TypeError('Petition is not a valid object.'));
+        }
+        let body:any = petition;
+          Attachment.createAttachment(attachment, userId)
+            .then(res => {
+              var idAttachment = res.idAtt;
+
+              var _petition = new Petition(petition);
+              _petition.petition_type = "new tenant";
+              _petition.created_by = userId;
+              _petition.development = developmentId;
+              _petition.attachment = idAttachment;
+              _petition.additional = {
+                "tenant": {
+                  "name": body.name,
+                  "salulation": body.salulation,
+                  "contact_number": body.contact_number
+                }
+              }
+              _petition.save((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+              });
+            })
+            .catch(err=>{
+              resolve({message: "attachment error"});
+            })      
+    });
+});
+
 petitionSchema.static('deletePetition', (id:string, ):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {

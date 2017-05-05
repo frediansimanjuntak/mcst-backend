@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var petitionSchema = new mongoose.Schema({
-	reference_no: {type: String, required: true, trim: true},
+	reference_no: {type: String, trim: true},
 	development: {
 		type: Schema.Types.ObjectId,
     	ref: 'Development'
@@ -17,6 +17,7 @@ var petitionSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'Contract'
 	},
+	additional : {},
 	remark: {type: String, trim: true},
 	archieve: {type: Boolean, trim: true, default: false},
 	status: {type: String, trim: true, default: "pending"},
