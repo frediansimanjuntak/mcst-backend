@@ -149,4 +149,22 @@ export class UserController {
         .then(user => res.status(201).json(user))
         .catch(error => res.status(400).json(error));
   }
+
+  static decodeToken(req: express.Request, res: express.Response):void {
+      let _data = req.body;
+
+      UserDAO
+        ['decodeToken'](_data)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static refreshToken(req: express.Request, res: express.Response):void {
+      let _authorization = req.headers.authorization;
+
+      UserDAO
+        ['refreshToken'](_authorization)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
 }

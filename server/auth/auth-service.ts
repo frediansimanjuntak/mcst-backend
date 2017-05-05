@@ -81,14 +81,14 @@ export function hasRole(roleRequired) {
  * Returns a jwt token signed by the app secret
  */
 export function signToken(id, role, default_development, remember) {
-  let session
-  if(remember == "true"){
-    session = config.secrets.session, {expiresIn: 60 * 60 * 60 * 60 };
-  }
-  if(remember == "false"){
-    session = config.secrets.session, {expiresIn: 60 * 60 * 5};
-  }
-  return jwt.sign({ _id: id, role, default_development }, session);
+  // let session
+  // if(remember == "true"){
+  //   session = config.secrets.session, {expiresIn: 60 * 60 * 60 * 60 };
+  // }
+  // if(remember == "false"){
+  //   session = config.secrets.session, {expiresIn: 30};
+  // }
+  return jwt.sign({ _id: id, role, default_development }, config.secrets.session, {expiresIn: 60 * 60});
 }
 
 // export function signToken(id, role, default_development) {
