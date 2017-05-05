@@ -20,6 +20,15 @@ export class FacilityController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getByName(req: express.Request, res: express.Response):void {
+      let _name = req.params.name;
+
+      FacilityDAO
+        ['getByName'](_name)
+        .then(facilities => res.status(200).json(facilities))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createFacility(req: express.Request, res: express.Response):void {
       let _facility = req.body;
       let _userId= req["user"]._id;

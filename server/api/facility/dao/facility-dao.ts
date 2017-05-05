@@ -32,6 +32,22 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+facilitySchema.static('getByName', (name:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(name)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        Facility
+          .findOne({"name": name})
+          .populate("created_by development")
+          .exec((err, facilities) => {
+              err ? reject(err)
+                  : resolve(facilities);
+          });
+    });
+});
+
 facilitySchema.static('createFacility', (facility:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(facility)) {

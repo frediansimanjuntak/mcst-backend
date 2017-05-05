@@ -17,6 +17,10 @@ export class FacilityRoutes {
         .delete(auth.isAuthenticated(), FacilityController.deleteFacility);
 
       router
+        .route('/facilities/name/:name')
+        .get(auth.isAuthenticated(), FacilityController.getByName);
+
+      router
         .route('/facilities/update/:id')
         .post(auth.isAuthenticated(), FacilityController.updateFacility);
     }
