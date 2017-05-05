@@ -63,6 +63,10 @@ var developmentSchema = new mongoose.Schema({
 				data: {}		
 			}]
 		},
+		vehicles: [{
+			type: Schema.Types.ObjectId,
+			ref: 'Vehicles'
+		}],
 		registered_vehicle: [{
 			license_plate: {type:String},
 			owner: {
