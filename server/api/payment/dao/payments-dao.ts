@@ -43,7 +43,6 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
 
       let files:any = attachment;
       let paymentProof = files.payment_proof;
-
       var _payment = new Payments(payment);
       _payment.created_by = userId;
       _payment.development = developmentId;
@@ -52,29 +51,27 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
           reject(err);
         }
         if(saved){
-          let paymentId = _payment._id;
+          let paymentId = saved._id;
           if(paymentProof){
-            Attachment.createAttachment(attachment, userId).then(res => {
+            Attachment.createAttachment(paymentProof, userId).then(res => {
               var idAttachment = res.idAtt;
-
               Payments
                 .update({"_id": paymentId}, {
                   $set: {
-                    "payment_proof": idAttachment
+                    "payment_proof": idAttachment,
+                    "status": "paid"
                   }
                 })
                 .exec((err, updated) => {
                     err ? reject(err)
-                        : resolve({message: "updated"});    
+                        : resolve(saved);    
                 })
             })
             .catch(err=>{
               resolve({message: "attachment error"});
             })
           }
-          if(!paymentProof){
-            resolve(saved);
-          }         
+          resolve(saved);
         }
       });          
     });
