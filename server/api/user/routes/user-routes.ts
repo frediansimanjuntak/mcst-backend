@@ -59,10 +59,18 @@ export class UserRoutes {
       //for global user without certain rules
       router
         .route('/create_user')
-        .post(auth.isAuthenticated(), UserController.createUsers)
+        .post(auth.isAuthenticated(), UserController.createUsers);
 
       router
         .route('/update_user/:id')
-        .post(auth.isAuthenticated(), UserController.updateUsers) 
+        .post(auth.isAuthenticated(), UserController.updateUsers);
+
+      router
+        .route('/refresh_token')
+        .get(UserController.refreshToken);
+
+      router
+        .route('/decode_token')
+        .post(UserController.decodeToken);
     }
 }

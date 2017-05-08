@@ -19,6 +19,8 @@ var incidentSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'Contract'
 	},
+	description: {type: String},
+	preferred_method : {type: String},
 	remark: {type: String, trim: true},
 	starred_by: [{
 		type: Schema.Types.ObjectId,

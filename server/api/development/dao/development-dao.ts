@@ -891,6 +891,7 @@ developmentSchema.static('getByIdRegisterVehicleProperties', (name_url:string, i
         });
 });
 
+
 developmentSchema.static('createRegisterVehicleProperties', (name_url:string, idproperties:string, userId:string, registervehicle:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
@@ -925,6 +926,22 @@ developmentSchema.static('createRegisterVehicleProperties', (name_url:string, id
             .catch(err=>{
                 resolve({message: "attachment error"});
             })         
+    });
+});
+
+developmentSchema.static('getOwnerVehicleByLicensePlat', (name_url:string, license_plate:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(name_url)) {
+        return reject(new TypeError('Development Name is not a valid string.'));
+        }
+        var _query = {"name_url": name_url, "properties.registered_vehicle.license_plate": license_plate};
+
+        Development
+            .find(_query)
+            .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });
     });
 });
 

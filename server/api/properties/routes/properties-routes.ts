@@ -53,6 +53,10 @@ export class PropertiesRoutes {
         .get(auth.isAuthenticated(), PropertiesController.getRegisterVehicleProperties)
         .post(auth.isAuthenticated(), PropertiesController.createRegisterVehicleProperties);
 
+       router
+        .route('/properties/:name_url/vehicle/:license_plate')
+        .get(auth.isAuthenticated(), PropertiesController.getOwnerVehicleByLicensePlat);
+
       router
         .route('/properties/:name_url/:idproperties/register_vehicle/:idregistervehicle')
         .get(auth.isAuthenticated(), PropertiesController.getByIdRegisterVehicleProperties)

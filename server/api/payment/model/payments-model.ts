@@ -24,9 +24,9 @@ var paymentSchema = new mongoose.Schema({
     	ref: 'User'
 	},
 	fees: [{
-			deposit_fee: {type: String, trim: true},
-			booking_fee: {type: String, trim: true},
-			admin_fee: {type: String, trim: true},
+			deposit_fee: {type: Number, trim: true},
+			booking_fee: {type: Number, trim: true},
+			admin_fee: {type: Number, trim: true},
 			status: {type: String, trim: true}
 	}],
 	total_amount: {type: String, trim: true},

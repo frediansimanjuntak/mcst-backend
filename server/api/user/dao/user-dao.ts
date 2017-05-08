@@ -7,6 +7,8 @@ import Hobbies from '../../hobbies/dao/hobbies-dao';
 import UserGroup from '../../user_group/dao/user_group-dao';
 import * as auth from '../../../auth/auth-service';
 import {mail} from '../../../email/email';
+import {signToken} from '../../../auth/auth-service';
+var jwtDecode = require('jwt-decode');
 
 userSchema.static('index', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -818,14 +820,48 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
               reject(err);
             }
             if(updated){
-              Hobbies.createHobbies(body).then((res) => {
-                  resolve(updated);
-                })
-                .catch((err) => {
-                  reject(err);
-                })
+              if(body.hobbies){
+                Hobbies.createHobbies(body);
+              }
+              resolve({message: "updated"});
             }                  
         });
+    });
+});
+
+userSchema.static('decodeToken', (token:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var decoded = jwtDecode(token);
+        resolve(decoded);
+    });
+});
+
+userSchema.static('refreshToken', (authorization:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let token = authorization.substring(7);
+        User.decodeToken(token).then((res) => {
+          let userId = res._id;
+          if(res.exp){
+            User
+            .findById(userId)
+            .exec((err, user) => {
+              if(err){
+                reject(err);
+              }
+              if(user){
+                let remember = "true"
+                var newToken = signToken(user._id, user.role, user.default_development, remember);
+                resolve({token: newToken})
+              }
+            })
+          }
+          else{
+            reject({message:"token not expired"})
+          }          
+        })
+        .catch((err)=> {
+          reject(err);
+        })        
     });
 });
 

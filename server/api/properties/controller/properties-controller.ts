@@ -89,6 +89,16 @@ export class PropertiesController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwnerVehicleByLicensePlat(req: express.Request, res: express.Response):void {
+      let _name_url = req.params.name_url;
+      let _license_plate = req.params.license_plate;
+
+      DevelopmentDAO
+        ['getOwnerVehicleByLicensePlat'](_name_url, _license_plate)
+        .then(properties => res.status(201).json(properties))
+        .catch(error => res.status(400).json(error));
+  }
+
   static deleteCodeProperties(req: express.Request, res: express.Response):void {
       let _name_url = req.params.name_url;
       let _idproperties = req.params.idproperties;

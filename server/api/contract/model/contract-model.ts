@@ -24,6 +24,18 @@ var contractSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'Quotation'
 	}],
+	confirmation:{
+		costumer: {
+			sign: {type: String, trim: true},
+			date: {type: Date},
+			remarks: {type: String}
+		},
+		contractor: {
+			sign: {type: String, trim: true},
+			date: {type: Date},
+			remarks: {type: String}
+		}
+	},
 	purchase_order: {type: String, trim: true},
 	start_time: {type: Date, trim: true},
 	end_time: {type: Date, trim: true},
@@ -48,6 +60,7 @@ var contractSchema = new mongoose.Schema({
 			title : {type: String, trim: true},
 			start_time : {type: Date, trim: true},
 			end_time : {type: Date, trim: true},
+			affected_area : {type: String, trim: true},
 			description: {type: String, trim: true},
 			attachment : [{
 				type: Schema.Types.ObjectId,
