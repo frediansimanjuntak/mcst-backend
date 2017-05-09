@@ -281,6 +281,30 @@ developmentSchema.static('getProperties', (name_url:string):Promise<any> => {
     });
 });
 
+developmentSchema.static('getByIdDevProperties', (idDevelopment:string, idProperties:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(idDevelopment)) {
+            return reject(new TypeError('Development Name is not a valid string.'));
+        }
+
+        var ObjectID = mongoose.Types.ObjectId;
+
+        Development 
+            .findOne({"_id": idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idProperties)}}})
+            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident")            
+            .exec((err, res) => {
+                if(err){
+                    reject(err);
+                }
+                if(res){
+                    _.each(res.properties, (result) => {
+                        resolve(result);
+                    })
+                }
+            });
+    });
+});
+
 developmentSchema.static('getByIdProperties', (name_url:string, idproperties:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(name_url)) {
@@ -369,54 +393,34 @@ developmentSchema.static('generateCodeProperties', (name_url:string, idpropertie
         }    
 
         let body:any = properties;
-        let ObjectID = mongoose.Types.ObjectId;  
+          
         let landlordCode = Math.random().toString(36).substr(2, 5);  
         let tenantCode = Math.random().toString(36).substr(2, 5); 
-
+        let updateObj = {$set: {}};
+        let dataLandlord = {
+            "code": {
+                "landlord": landlordCode,
+                "create_at_landlord": new Date()
+            }
+        }
+        let dataTenant = {
+            "code": {
+                "tenant": tenantCode,
+                "create_at_tenant": new Date()
+            }
+        }
         if (body.type == "landlord"){
-            Development
-                .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                    $set: {              
-                        "properties.$.code.landlord": landlordCode,
-                        "properties.$.code.create_at_landlord": new Date()
-                    }
-                })
-                .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                });
+            Development.updateProperties(name_url, idproperties, dataLandlord);
         }
 
         if (body.type == "tenant"){
-            Development
-                .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                    $set: {              
-                        "properties.$.code.tenant": tenantCode,
-                        "properties.$.code.create_at_tenant": new Date()
-                    }
-                })
-                .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                });
+            Development.updateProperties(name_url, idproperties, dataTenant);
         }
 
         if (body.type == "all"){
-            Development
-                .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                    $set: {              
-                        "properties.$.code.landlord": landlordCode,
-                        "properties.$.code.create_at_landlord": new Date(),
-                        "properties.$.code.tenant": tenantCode,
-                        "properties.$.code.create_at_tenant": new Date()
-                    }
-                })
-                .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                });
+            Development.updateProperties(name_url, idproperties, dataLandlord);
+            Development.updateProperties(name_url, idproperties, dataTenant);
         }
-
     });
 });
 
