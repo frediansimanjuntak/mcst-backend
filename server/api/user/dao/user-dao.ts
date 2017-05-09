@@ -34,7 +34,7 @@ userSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"default_development": development};
 
         User
-          .find(_query)
+          .find(_query, '-salt -password')
           .exec((err, users) => {
               err ? reject(err)
                   : resolve(users);
@@ -46,11 +46,24 @@ userSchema.static('me', (userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
 
         User
-          .findOne({_id:userId}, '-salt -password')
-          .populate("default_development user_group")
+          .findById(userId, '-salt -password')
+          .populate("default_development user_group vehicles")
           .exec((err, users) => {
-              err ? reject(err)
-                  : resolve(users);
+            if(err){
+              reject(err);
+            }
+            if(users){
+              let developmentID = users.default_property.development.toString();
+              let propertyID = users.default_property.property;
+              Development.getByIdDevProperties(developmentID, propertyID).then((res) => {
+                console.log(res);
+                resolve({"user": users, "property_data": res});
+              })
+              .catch((err) => {
+                reject(err);
+                console.log(err);
+              })
+            }
           });
     });
 });
@@ -63,7 +76,7 @@ userSchema.static('getById', (id:string):Promise<any> => {
 
         User
           .findById(id, '-salt -password')
-          .populate("default_development user_group")
+          .populate("default_development user_group vehicles")
           .exec((err, users) => {
               err ? reject(err)
                   : resolve(users);
@@ -87,6 +100,62 @@ userSchema.static('getDetailUser', (id:string):Promise<any> => {
     });
 });
 
+userSchema.static('updatePropertyOwner', (idDevelopment:string, idProperty:string, idUser:string, remarks:string) :Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(idDevelopment && idProperty)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        let ObjectID = mongoose.Types.ObjectId;  
+
+        Development
+          .update({"_id": idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idProperty)}}},
+              {
+                $set: {  
+                  "properties.$.landlord.data": {
+                    "resident": idUser,
+                    "remarks": remarks,
+                    "created_at": new Date()
+                  },
+                  "properties.$.status": "own stay"
+                }
+              })
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
+userSchema.static('updatePropertyTenant', (idDevelopment:string, idProperty:string, idUser:string, remarks:string) :Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(idDevelopment && idProperty)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+
+        let ObjectID = mongoose.Types.ObjectId;  
+
+        Development
+          .update({"_id": idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idProperty)}}},{
+            $push:{
+              "properties.$.tenant.data": {
+                "resident": idUser,
+                "type": "tenant",
+                "remarks": remarks,
+                "created_at": new Date()
+              }
+             },
+             $set:{
+               "properties.$.status": "tenanted"
+             }
+          })
+          .exec((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+          });
+    });
+});
+
 userSchema.static('createUser', (user:Object, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(user)) {
@@ -96,82 +165,55 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         var ObjectID = mongoose.Types.ObjectId;  
         let body:any = user;
         let IDdevelopment;
-        let password = Math.random().toString(36).substr(2, 6); 
-        let code = Math.random().toString(36).substr(2, 4); 
+        let password = Math.random().toString(36).substr(2, 6).toUpperCase(); 
+        let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
+        let role;
 
         var _user = new User(user);
         _user.default_development = developmentId;
         _user.default_property.development = developmentId;
-        _user.password = password.toUpperCase();
-        _user.verification.code = code.toUpperCase();
-        _user.save((err, saved)=>{
+        _user.default_property.role = role;
+        _user.password = password;
+        _user.verification.code = code;
+        _user.save((err, res)=>{
           if(err){
             reject(err);
           }
-          if(saved){
-            var userId = saved._id;
+          if(res){            
+            if (body.owned_property != null){
+              var ownedProperty_landlord = [].concat(res.owned_property)
+              for (var i = 0; i < ownedProperty_landlord.length; i++) {
+                var ownedProperty = ownedProperty_landlord[i];
+                let idDevelopment = ownedProperty.development;
+                let idProperty = ownedProperty.property;
+                User.updatePropertyOwner(idDevelopment, idProperty, userId, body.remarks);                
+              }
+              role = "owner";
+            }
+            
+            if(body.rented_property != null){
+              let idDevelopment = body.rented_property.development;
+              let idProperty = body.rented_property.property;
+              User.updatePropertyTenant(idDevelopment, idProperty, userId, body.remarks); 
+              role = "tenant";             
+            }
+            var userId = res._id;
             let data = {
-              "emailTo": saved.email,
-              "fullname": saved.details.first_name +" "+ saved.details.last_name,
-              "username": saved.username,
-              "verifyCode": saved.verification.code,
-              "password": password.toUpperCase(),
+              "emailTo": res.email,
+              "fullname": res.details.first_name +" "+ res.details.last_name,
+              "username": res.username,
+              "verifyCode": res.verification.code,
+              "password": password,
               "from": "mcst-admin@mcst.sg.com",
               "link": "http://mcst-web.shrimpventures.com/login"
             } 
             let typeMail = "signUp";
-            User.email(data, typeMail)
-
-            if (body.owned_property != null){
-              var ownedProperty_landlord = [].concat(saved.owned_property)
-              for (var i = 0; i < ownedProperty_landlord.length; i++) {
-                var ownedProperty = ownedProperty_landlord[i];
-                IDdevelopment = ownedProperty.development;
-                let propertyId = ownedProperty.property;
-                Development
-                  .update({"_id": IDdevelopment, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
-                      {
-                        $set: {  
-                          "properties.$.landlord.data": {
-                            "resident": userId,
-                            "remarks": body.remarks,
-                            "created_at": new Date()
-                          },
-                          "properties.$.status": "own stay"
-                        }
-                      })
-                  .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                  });
-              }
-              resolve({message: "Success"});
-            }
-            
-            if(body.rented_property != null){
-              // for(var i = 0; i < saved.rented_property.)
-              IDdevelopment = body.rented_property.development;
-              let propertyId = body.rented_property.property;
-
-              Development
-                .update({"_id": IDdevelopment, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},{
-                  $push:{
-                    "properties.$.tenant.data": {
-                      "resident": userId,
-                      "type": "tenant",
-                      "remarks": body.remarks,
-                      "created_at": new Date()
-                    }
-                   },
-                   $set:{
-                     "properties.$.status": "tenanted"
-                   }
-                })
-                .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                });
-            }
+            User.email(data, typeMail);
+            res.role = role;
+            res.save((err, saved) => {
+              err ? reject(err)
+                  : resolve(saved);
+            })
           }
         });             
     });
@@ -182,88 +224,37 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
         }
-
         let body:any = user;
         let ObjectID = mongoose.Types.ObjectId;
-        if(body.type == 'landlord'){
-          User
-            .findByIdAndUpdate(body.id_user, {
-              $push:{
-                "owned_property": {
-                  "development": body.id_development,
-                  "property": body.id_property
-                }
-              },
-              $set: {
-                "default_property": {
-                  "development": body.id_development,
-                  "property": body.default_property.property
-                }
-              }
-            })
-            .exec((err, updated) => {
-                  err ? reject(err)
-                      : resolve(updated);
-            });
+        let idProperty = body.id_property;
+        let idDevelopment = body.id_development;
+        let idUser = body.id_user;
+        let remarks = body.remarks;
+        let updateObj = {$push: {}, $set: {}};
 
-          Development
-            .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},
-                {
-                  $set: {  
-                    "properties.$.landlord.data": {
-                      "resident": body.id_user,
-                      "remarks": body.remarks,
-                      "created_at": new Date()
-                    },
-                    "properties.$.status": "own stay"
-                  }
-                }, {upsert: true})
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-            });
+        if(body.type == 'landlord'){
+          updateObj.$push["owned_property.development"] = body.id_development;
+          updateObj.$push["owned_property.property"] = body.id_property;
+          User.updatePropertyOwner(idDevelopment, idProperty, idUser, remarks); 
         }
 
-        if(body.type == 'tenant') {
-          User
-            .findByIdAndUpdate(body.id_user, {
-              $push:{
-                "rented_property":{
-                  "development": body.id_development,
-                  "property": body.id_property
-                }
-              },
-              $set: {
-                "default_property": {
-                  "development": body.id_development,
-                  "property": body.default_property.property
-                }
-              }
-            })
-            .exec((err, updated) => {
-                  err ? reject(err)
-                      : resolve(updated);
-            });
+        if(body.type == 'tenant'){
+          updateObj.$push["rented_property.development"] = body.id_development;
+          updateObj.$push["rented_property.property"] = body.id_property;
+          User.updatePropertyTenant(idDevelopment, idProperty, idUser, remarks); 
+        }
 
-          Development
-            .update({"_id": body.id_development, "properties": {$elemMatch: {"_id": new ObjectID(body.id_property)}}},{
-              $push:{
-                "properties.$.tenant.data": {
-                  "resident": body.id_user,
-                  "remarks": body.remarks,
-                  "type": "tenant",
-                  "created_at": new Date()
-                }
-               },
-               $set:{
-                 "properties.$.status": "tenanted"
-               }
-            })
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-            });
-        }      
+        if(body.default_property.property){
+          updateObj.$set["default_property.development"] = body.id_development;
+          updateObj.$set["default_property.property"] = body.default_property.property;
+        }
+
+        User
+          .findByIdAndUpdate(idUser, updateObj)
+          .exec((err, updated) => {
+            err ? reject(err)
+                : resolve(updated);
+          })         
     });
 });
 
@@ -369,36 +360,41 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
 userSchema.static('resendVerificationUser', (userId:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let body:any = user;
-        let code = Math.random().toString(36).substr(2, 4); 
+        let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
+
         User
-          .findById(userId, (err,user)=>{
-            var verified = user.verification.verified;
-            if(verified == "false"){
-              user.verification.code = code.toUpperCase();
-              user.save((err, saved) => {
-                if(err){
-                  reject(err);
-                }
-                if(saved){
-                    let data = {
-                      "emailTo": saved.email,
-                      "fullname": saved.details.first_name +" "+ saved.details.last_name,
-                      "username": saved.username,
-                      "verifyCode": code.toUpperCase(),
-                      "from": "mcst-admin@mcst.sg.com"
-                    } 
-                    let typeMail = "resendVerificationCode";
-                    User.email(data, typeMail).then(res => {
+          .findById(userId)
+          .exec((err, res) => {
+            if(err){
+              reject(err);
+            }
+            if(res){
+              var verified = res.verification.verified;
+              if(verified == false){
+                res.verification.code = code;
+                res.save((err, saved) => {
+                  if(err){
+                    reject(err);
+                  }
+                  if(saved){
+                      let data = {
+                        "emailTo": saved.email,
+                        "fullname": saved.details.first_name +" "+ saved.details.last_name,
+                        "username": saved.username,
+                        "verifyCode": code.toUpperCase(),
+                        "from": "mcst-admin@mcst.sg.com"
+                      } 
+                      let typeMail = "resendVerificationCode";
+                      User.email(data, typeMail)
                       resolve(saved);
-                    })
-                }
-              }) 
+                  }
+                })                  
+              }
+              else{
+                reject({message: "Your Account Already Verified"})
+              }
             }
-            else{
-              reject({message: "Your Account is Verified"})
-            }
-               
-          })
+          })        
     });
 });
 

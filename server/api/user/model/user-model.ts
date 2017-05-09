@@ -92,6 +92,10 @@ var UserSchema = new mongoose.Schema({
       type: Schema.Types.ObjectId,
       ref: 'Development'
     },
+    vehicles: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Vehicles'
+    }],
     user_group: {
       type: Schema.Types.ObjectId,
       ref: 'UserGroup'
