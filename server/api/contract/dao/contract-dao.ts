@@ -281,7 +281,7 @@ contractSchema.static('getContractNote', (id:string):Promise<any> => {
         let _query = {"_id": id};
 
         Contract
-          .find(_query)
+          .findOne(_query)
           .select("contract_note")
           .populate("contract_note.attachment contract_note.posted_by")
           .exec((err, contractnotes) => {
@@ -474,7 +474,7 @@ contractSchema.static('getContractNotice', (id:string):Promise<any> => {
         let _query = {"_id": id};
 
         Contract
-          .find(_query)
+          .findOne(_query)
           .select("contract_notice")
           .exec((err, contractnotices) => {
               err ? reject(err)

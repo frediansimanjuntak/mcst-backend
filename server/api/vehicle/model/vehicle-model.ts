@@ -12,7 +12,7 @@ var vehicleSchema = new mongoose.Schema({
     	ref: 'Development'
 	},
 	property: {type: String, trim: true},
-	license_plate: {type:String},
+	license_plate: {type:String, unique: true},
 	owner: {
 		type: Schema.Types.ObjectId,
 		ref: 'User'
