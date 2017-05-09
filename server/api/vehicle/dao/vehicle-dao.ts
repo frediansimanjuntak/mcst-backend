@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import vehicleSchema from '../model/vehicle-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import Development from '../../development/dao/development-dao';
+import User from '../../user/dao/user-dao';
 import {AWSService} from '../../../global/aws.service';
 
 vehicleSchema.static('getAll', ():Promise<any> => {
@@ -99,9 +100,11 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
           let data = {
             "idDevelopment": saved.development,
             "idProperty": saved.property,
-            "idVehicle": saved._id
+            "idVehicle": saved._id,
+            "idUser": saved.owner
           }
           Vehicles.addVehicleToProperty(data);
+          Vehicles.addVehicleToUser(data);
           if(attachment){
             Attachment.createAttachment(attachment, userId)
               .then(res => {
@@ -121,6 +124,29 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
           }
         }
       });        
+    });
+});
+
+vehicleSchema.static('addVehicleToUser', (data:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(data)) {  
+        return reject(new TypeError('Lost and Found is not a valid object.'));
+      }
+
+      let ObjectID = mongoose.Types.ObjectId;   
+      let body:any = data;
+
+      User
+        .update({"_id": body.idUser}, {
+          $push: {
+            "vehicles": body.idVehicle
+          }
+        })
+        .exec((err, updated) => {
+          console.log(updated);
+            err ? reject(err)
+                : resolve(updated);
+        });       
     });
 });
 
@@ -154,13 +180,80 @@ vehicleSchema.static('deleteVehicle', (id:string):Promise<any> => {
         }
 
         Vehicles
-          .findByIdAndRemove(id)
-          .exec((err, deleted) => {
-              err ? reject(err)
-                  : resolve();
-          });
+          .findById(id)
+          .exec((err, vehicle) => {
+            if(err){
+              reject(err);
+            }
+            if(vehicle){
+              let data = {
+                "idDevelopment": vehicle.development,
+                "idProperty": vehicle.property,
+                "idVehicle": vehicle._id,
+                "idUser": vehicle.owner
+              }
+              Vehicles.deleteVehicleToUser(data);
+              Vehicles.deleteVehicleToProperty(data);
+              Vehicles
+              .findByIdAndRemove(id)
+              .exec((err, deleted) => {
+                  err ? reject(err)
+                      : resolve({message: "Delete Success"});
+              });
+            }
+            else{
+              resolve({message: "No data to delete"});
+            }
+          })        
     });
 });
+
+vehicleSchema.static('deleteVehicleToUser', (data:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(data)) {  
+        return reject(new TypeError('Lost and Found is not a valid object.'));
+      }
+
+      let ObjectID = mongoose.Types.ObjectId;   
+      let body:any = data;
+
+      User
+        .update({"_id": body.idUser}, {
+          $pull: {
+            "vehicles": body.idVehicle
+          }
+        })
+        .exec((err, updated) => {
+          console.log(updated);
+            err ? reject(err)
+                : resolve(updated);
+        });       
+    });
+});
+
+vehicleSchema.static('deleteVehicleToProperty', (data:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isObject(data)) {  
+        return reject(new TypeError('Lost and Found is not a valid object.'));
+      }
+
+      let ObjectID = mongoose.Types.ObjectId;   
+      let body:any = data;
+
+      Development
+        .update({"_id": body.idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(body.idProperty)}}}, {
+          $pull: {
+            "properties.$.vehicles": body.idVehicle
+          }
+        })
+        .exec((err, updated) => {
+          console.log(updated);
+            err ? reject(err)
+                : resolve(updated);
+        });       
+    });
+});
+
 
 vehicleSchema.static('updateVehicle', (id:string, userId:string, vehicle:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
