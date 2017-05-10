@@ -54,15 +54,20 @@ userSchema.static('me', (userId:string):Promise<any> => {
             }
             if(users){
               let developmentID = users.default_development.toString();
-              let propertyID = users.default_property.property;
-              Development.getByIdDevProperties(developmentID, propertyID).then((res) => {
-                console.log(res);
-                resolve({"user": users, "property_data": res});
-              })
-              .catch((err) => {
-                reject(err);
-                console.log(err);
-              })
+              if(users.default_property.property){
+                let propertyID = users.default_property.property;
+                Development.getByIdDevProperties(developmentID, propertyID).then((res) => {
+                  console.log(res);
+                  resolve({"user": users, "property_data": res});
+                })
+                .catch((err) => {
+                  reject(err);
+                  console.log(err);
+                })
+              }
+              else{
+                resolve({"user": users});
+              }
             }
           });
     });
