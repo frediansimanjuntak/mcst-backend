@@ -53,7 +53,7 @@ userSchema.static('me', (userId:string):Promise<any> => {
               reject(err);
             }
             if(users){
-              let developmentID = users.default_property.development.toString();
+              let developmentID = users.default_development.toString();
               let propertyID = users.default_property.property;
               Development.getByIdDevProperties(developmentID, propertyID).then((res) => {
                 console.log(res);
@@ -245,8 +245,9 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
         }
 
         if(body.default_property.property){
-          updateObj.$set["default_property.development"] = body.id_development;
+          updateObj.$set["default_property.development"] = body.id_development;          
           updateObj.$set["default_property.property"] = body.default_property.property;
+          updateObj.$set["default_development"] = body.id_development;
         }
 
         User
