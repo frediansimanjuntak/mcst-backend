@@ -57,7 +57,7 @@ contractSchema.static('changeIncidentStatus', (id:string, idContract:string):Pro
     });
 });
 
-contractSchema.static('changePetitionStatus', (id:string, idContract:string):Promise<any> => {
+contractSchema.static('addContractInPetition', (id:string, idContract:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id && idContract)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -65,7 +65,6 @@ contractSchema.static('changePetitionStatus', (id:string, idContract:string):Pro
         Petition
           .findByIdAndUpdate(id, {
             $set: {
-              "status": "in progress",
               "contract": idContract
             }
           })
@@ -137,7 +136,7 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                 Contract.changeIncidentStatus(contract.reference_id.toString(), contract._id.toString());
               }
               if(contract.reference_type == "petition"){
-                Contract.changePetitionStatus(contract.reference_id.toString(), contract._id.toString());
+                Contract.addContractInPetition(contract.reference_id.toString(), contract._id.toString());
               }
               if(attachment){
                 Attachment.createAttachment(attachment, userId).then((res) => {
@@ -183,11 +182,15 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
-        let body:any = contract;
         let file:any = attachment;        
         let attachmentfile = file.attachment;
         let _query = {"_id": id};
+
+        let contractObj = {$set: {}};
+        for(var param in contract) {
+          contractObj.$set[param] = contract[param];
+        }
+        contractObj.$set["updated_at"] = new Date();
 
         if(attachmentfile){
           Attachment.createAttachment(attachmentfile, userId)
@@ -210,16 +213,7 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
         } 
         
         Contract
-          .update(_query, {
-              $set:{
-                "title": body.title,
-                "contract_type": body.contract_type,
-                "remark": body.remark,
-                "start_time": body.start_time,
-                "end_time": body.end_time,
-                "updated_at": new Date()
-              }
-          })
+          .update(_query, contractObj)
           .exec((err, saved) => {
             err ? reject(err)
                 : resolve(saved);             
@@ -232,15 +226,12 @@ contractSchema.static('getAllContractSchedule', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }
-        
-        let _query = {"_id": id};
-
+        }        
         Contract
-          .find(_query)
+          .findById(id)
           .exec((err, contracts) => {
               err ? reject(err)
-                  : resolve(contracts);
+                  : resolve(contracts.schedule);
           });
     });
 });
