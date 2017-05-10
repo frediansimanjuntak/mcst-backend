@@ -5,9 +5,9 @@ import companySchema from '../model/company-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
-companySchema.static('getAll', (development:string):Promise<any> => {
+companySchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"development": development};
+        let _query = {};
 
         Company
           .find(_query)

@@ -2,13 +2,10 @@ import * as express from 'express';
 import CompanyDAO from '../dao/company-dao';
 
 
-
 export class CompanyController {
   static getAll(req: express.Request, res: express.Response):void {
-    let _developmentId = req["user"].default_development;
-
       CompanyDAO
-        ['getAll'](_developmentId)
+        ['getAll']()
         .then(companies => res.status(200).json(companies))
         .catch(error => res.status(400).json(error));
   }
