@@ -22,24 +22,12 @@ export class PetitionController {
 
   static createPetition(req: express.Request, res: express.Response):void {
       let _petition = req.body;
-      let _attachment = req["files"].attachment;
+      let _attachment = req["files"];
       let _userId = req["user"]._id;
       let _developmentId= req["user"].default_development;
 
       PetitionDAO
         ['createPetition'](_petition, _userId, _developmentId, _attachment)
-        .then(petition => res.status(201).json(petition))
-        .catch(error => res.status(400).json(error));
-  }
-
-  static createPetitionNewTenant(req: express.Request, res: express.Response):void {
-      let _petition = req.body;
-      let _attachment = req["files"].attachment;
-      let _userId = req["user"]._id;
-      let _developmentId= req["user"].default_development;
-
-      PetitionDAO
-        ['createPetitionNewTenant'](_petition, _userId, _developmentId, _attachment)
         .then(petition => res.status(201).json(petition))
         .catch(error => res.status(400).json(error));
   }

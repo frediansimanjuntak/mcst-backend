@@ -17,7 +17,7 @@ var petitionSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'Contract'
 	},
-	additional : {},
+	extra : {},
 	remark: {type: String, trim: true},
 	archieve: {type: Boolean, trim: true, default: false},
 	status: {type: String, trim: true, default: "pending"},

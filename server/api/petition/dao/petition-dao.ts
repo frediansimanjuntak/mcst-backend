@@ -3,6 +3,8 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import petitionSchema from '../model/petition-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import Company from '../../company/dao/company-dao';
+import Contract from '../../contract/dao/contract-dao';
 import {AWSService} from '../../../global/aws.service';
 
 petitionSchema.static('getAll', (development:string):Promise<any> => {
@@ -35,60 +37,102 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+petitionSchema.static('generateCode', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var generateCode = function(){
+          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+          let _query = {"registration_no": randomCode};
+          Petition
+            .find(_query)
+            .exec((err, petition) => {
+              if(err){
+                reject(err);
+              }
+              if(petition){
+                if(petition.length != 0){
+                  generateCode();
+                }
+                if(petition.length == 0){
+                  resolve(randomCode);
+                }
+              }
+            })
+        }
+        generateCode();
+    });
+});
+
 petitionSchema.static('createPetition', (petition:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(petition)) {
           return reject(new TypeError('Petition is not a valid object.'));
         }
-          Attachment.createAttachment(attachment, userId)
-            .then(res => {
-              var idAttachment = res.idAtt;
-
-              var _petition = new Petition(petition);
-              _petition.created_by = userId;
-              _petition.development = developmentId;
-              _petition.attachment = idAttachment;
-              _petition.save((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-              });
-            })
-            .catch(err=>{
-              resolve({message: "attachment error"});
-            })      
-    });
-});
-
-petitionSchema.static('createPetitionNewTenant', (petition:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(petition)) {
-          return reject(new TypeError('Petition is not a valid object.'));
-        }
         let body:any = petition;
-          Attachment.createAttachment(attachment, userId)
-            .then(res => {
-              var idAttachment = res.idAtt;
+        let file:any = attachment;
+        let extra;
+        if(body.petition_type = "new tenant"){
+          extra = body.tenant;
+        }
 
-              var _petition = new Petition(petition);
-              _petition.petition_type = "new tenant";
-              _petition.created_by = userId;
-              _petition.development = developmentId;
-              _petition.attachment = idAttachment;
-              _petition.additional = {
-                "tenant": {
-                  "name": body.name,
-                  "salulation": body.salulation,
-                  "contact_number": body.contact_number
-                }
+        Petition.generateCode().then((code) => {
+          var _petition = new Petition(petition);
+          _petition.reference_no = code;
+          _petition.created_by = userId;
+          _petition.extra = extra;
+          _petition.development = developmentId;        
+          _petition.save((err, petitions) => {
+            if(err){
+              reject(err);
+            }
+            if(petitions){
+              let data = {
+                "property": body.property,
+                "company": body.company,
+                "title": body.petition_type,
+                "contract_type": body.petition_type,
+                "reference_type": "petition",
+                "reference_id": petitions._id,
+                "start_time": body.start_time,
+                "end_time": body.end_time,
+                "created_by": userId,
+                "remark": body.remark,
+                "new_company": body.new_company,
+                "sign": body.sign
               }
-              _petition.save((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-              });
-            })
-            .catch(err=>{
-              resolve({message: "attachment error"});
-            })      
+              Contract.createContract(data, userId, developmentId, file.attachment).then((result) =>{
+                petitions.contract = result._id;
+                petitions.save((err, saved) => {
+                  if(err){
+                    reject(err);
+                  }
+                });
+              })
+              .catch(err=>{
+                reject(err);
+              })
+              
+              if(file.attachment){
+                Attachment.createAttachment(file.attachment, userId)
+                  .then(res => {
+                    let idAttachment = res.idAtt;
+                    petitions.attachment = idAttachment;
+                    petitions.save((err, saved) => {
+                      if(err){
+                        reject(err);
+                      }
+                    });              
+                  })
+                  .catch(err=>{
+                    reject(err);
+                  })  
+              }
+              resolve(petitions);  
+            }
+          }); 
+        })        
+        .catch((err) => {
+          reject(err);
+        })                    
     });
 });
 
@@ -97,7 +141,6 @@ petitionSchema.static('deletePetition', (id:string, ):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Petition
           .findByIdAndRemove(id)
           .exec((err, deleted) => {

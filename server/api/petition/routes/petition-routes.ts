@@ -12,10 +12,6 @@ export class PetitionRoutes {
         .post(auth.isAuthenticated(), PetitionController.createPetition);
 
       router
-        .route('/petitions/new_tenant')
-        .post(auth.isAuthenticated(), PetitionController.createPetitionNewTenant);
-
-      router
         .route('/petitions/:id')
         .get(auth.isAuthenticated(), PetitionController.getById)
         .delete(auth.isAuthenticated(), PetitionController.deletePetition);

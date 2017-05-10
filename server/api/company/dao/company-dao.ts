@@ -34,19 +34,49 @@ companySchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+companySchema.static('getGenerateCode', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var generateCode = function(){
+          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+          let _query = {"registration_no": randomCode};
+          Company
+            .find(_query)
+            .exec((err, company) => {
+              if(err){
+                reject(err);
+              }
+              if(company){
+                console.log(company);
+                if(company.length != 0){
+                  generateCode();
+                }
+                if(company.length == 0){
+                  resolve(randomCode);
+                }
+              }
+            })
+        }
+        generateCode();
+    });
+});
+
 companySchema.static('createCompany', (company:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(company)) {
           return reject(new TypeError('Company is not a valid object.'));
         }
-
-        var _company = new Company(company);
-        _company.created_by = userId;
-        _company.save((err, saved) => {
-          err ? reject(err)
-              : resolve(saved);
-        });
-
+        Company.getGenerateCode().then((code) => {
+          var _company = new Company(company);
+          _company.registration_no = code;
+          _company.created_by = userId;
+          _company.save((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
+        })
+        .catch((err) => {
+          reject(err);
+        }) 
     });
 });
 
