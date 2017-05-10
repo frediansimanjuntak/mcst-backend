@@ -80,7 +80,7 @@ contractSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function(){
           let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
-          let _query = {"registration_no": randomCode};
+          let _query = {"reference_no": randomCode};
           Contract
             .find(_query)
             .exec((err, contract) => {
@@ -107,10 +107,10 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
           return reject(new TypeError('Contract is not a valid object.'));
         }
         let body:any = contract;
-
         Contract.generateCode().then((code) => {
-          var _contract = new Contract(contract);
+          var _contract = new Contract(body);
           _contract.created_by = userId;
+          _contract.reference_no = code;
           _contract.development = developmentId;
           _contract.confirmation.costumer.sign = body.sign;
           _contract.confirmation.costumer.date = new Date();
@@ -134,10 +134,10 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                 })
               }
               if(contract.reference_type == "incident"){
-                Contract.changeIncidentStatus(contract.reference_id, contract._id);
+                Contract.changeIncidentStatus(contract.reference_id.toString(), contract._id.toString());
               }
               if(contract.reference_type == "petition"){
-                Contract.changePetitionStatus(contract.reference_id, contract._id);
+                Contract.changePetitionStatus(contract.reference_id.toString(), contract._id.toString());
               }
               if(attachment){
                 Attachment.createAttachment(attachment, userId).then((res) => {
