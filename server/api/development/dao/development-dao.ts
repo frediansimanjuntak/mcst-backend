@@ -283,15 +283,11 @@ developmentSchema.static('getProperties', (name_url:string):Promise<any> => {
 
 developmentSchema.static('getByIdDevProperties', (idDevelopment:string, idProperties:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(idDevelopment)) {
-            return reject(new TypeError('Development Name is not a valid string.'));
-        }
-
         var ObjectID = mongoose.Types.ObjectId;
-
         Development 
-            .findOne({"_id": idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idProperties)}}})
-            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident")            
+            .findById(idDevelopment)
+            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident") 
+            .select({"properties": {$elemMatch: {"_id": new ObjectID(idProperties)}}})                
             .exec((err, res) => {
                 if(err){
                     reject(err);
@@ -301,7 +297,7 @@ developmentSchema.static('getByIdDevProperties', (idDevelopment:string, idProper
                         resolve(result);
                     })
                 }
-            });
+            });        
     });
 });
 

@@ -53,11 +53,10 @@ userSchema.static('me', (userId:string):Promise<any> => {
               reject(err);
             }
             if(users){
-              let developmentID = users.default_development.toString();
+              let developmentID = users.default_development._id;
               if(users.default_property.property){
                 let propertyID = users.default_property.property;
-                Development.getByIdDevProperties(developmentID, propertyID).then((res) => {
-                  console.log(res);
+                Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
                   resolve({"user": users, "property_data": res});
                 })
                 .catch((err) => {
