@@ -70,7 +70,7 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
         let body:any = petition;
         let file:any = attachment;
         let extra;
-        if(body.petition_type = "new tenant"){
+        if(body.petition_type == "new tenant"){
           extra = body.tenant;
         }
 
