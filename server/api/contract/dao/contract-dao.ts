@@ -5,6 +5,7 @@ import contractSchema from '../model/contract-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import Incident from '../../incident/dao/incident-dao';
 import Petition from '../../petition/dao/petition-dao';
+import Company from '../../company/dao/company-dao';
 import {AWSService} from '../../../global/aws.service';
 
 contractSchema.static('getAll', (development:string):Promise<any> => {
@@ -37,55 +38,128 @@ contractSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+contractSchema.static('changeIncidentStatus', (id:string, idContract:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id && idContract)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        Incident
+          .findByIdAndUpdate(id, {
+            $set: {
+              "status": "in progress",
+              "contract": idContract
+            }
+          })
+          .exec((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
+    });
+});
+
+contractSchema.static('changePetitionStatus', (id:string, idContract:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id && idContract)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        Petition
+          .findByIdAndUpdate(id, {
+            $set: {
+              "status": "in progress",
+              "contract": idContract
+            }
+          })
+          .exec((err, saved) => {
+            err ? reject(err)
+                : resolve(saved);
+          });
+    });
+});
+
+contractSchema.static('generateCode', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var generateCode = function(){
+          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+          let _query = {"registration_no": randomCode};
+          Contract
+            .find(_query)
+            .exec((err, contract) => {
+              if(err){
+                reject(err);
+              }
+              if(contract){
+                if(contract.length != 0){
+                  generateCode();
+                }
+                if(contract.length == 0){
+                  resolve(randomCode);
+                }
+              }
+            })
+        }
+        generateCode();
+    });
+});
+
 contractSchema.static('createContract', (contract:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(contract)) {
           return reject(new TypeError('Contract is not a valid object.'));
         }
-          let body:any = contract;
+        let body:any = contract;
 
-          Attachment.createAttachment(attachment, userId)
-            .then(res => {
-              var idAttachment=res.idAtt;
-
-              var _contract = new Contract(contract);
-              _contract.attachment = idAttachment;
-              _contract.created_by = userId;
-              _contract.development = developmentId;
-              _contract.save((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-              });
-
-              if(_contract.reference_type == "incident"){
-                  Incident
-                    .findByIdAndUpdate(_contract.reference_id, {
-                      $set: {
-                        "status": "in progress",
-                        "contract": _contract._id
-                      }
-                    })
-                    .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                    });
+        Contract.generateCode().then((code) => {
+          var _contract = new Contract(contract);
+          _contract.created_by = userId;
+          _contract.development = developmentId;
+          _contract.confirmation.costumer.sign = body.sign;
+          _contract.confirmation.costumer.date = new Date();
+          _contract.save((err, contract) => {
+            if(err){
+              reject(err);
+            }
+            if(contract){
+              if(body.new_company){
+                Company.createCompany(body.new_company, userId).then((company) => {
+                  let idCompany = company._id;
+                  contract.company = idCompany;
+                  contract.save((err, saved) => {
+                    if(err){
+                      reject(err);
+                    }
+                  })
+                })
+                .catch((err) => {
+                  reject(err);
+                })
               }
-              if(_contract.reference_type == "petition"){
-                  Petition
-                    .findByIdAndUpdate(_contract.reference_id, {
-                      $set:{
-                        "status": "in progress"
-                      }
-                    })
-                    .exec((err, saved) => {
-                        err ? reject(err)
-                            : resolve(saved);
-                    });
+              if(contract.reference_type == "incident"){
+                Contract.changeIncidentStatus(contract.reference_id, contract._id);
               }
-            })
-            .catch(err => {
-              resolve({message: "attachment error"});
-            })                  
+              if(contract.reference_type == "petition"){
+                Contract.changePetitionStatus(contract.reference_id, contract._id);
+              }
+              if(attachment){
+                Attachment.createAttachment(attachment, userId).then((res) => {
+                  let idAttachment = res.idAtt;
+                  contract.attachment = idAttachment;
+                  contract.save((err, saved) => {
+                    if(err){
+                      reject(err);
+                    }
+                  })
+                })
+                .catch((err) => {
+                  reject(err);
+                })
+              }
+              resolve(contract);
+            }
+          });
+        })
+        .catch((err) => {
+          reject(err);
+        })                                  
     });
 });
 
