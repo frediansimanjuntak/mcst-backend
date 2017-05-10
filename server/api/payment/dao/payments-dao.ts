@@ -35,6 +35,31 @@ paymentSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+paymentSchema.static('generateCode', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var generate = function(){
+          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+          let _query = {"serial_no": randomCode};
+          Payments
+            .find(_query)
+            .exec((err, payment) => {
+              if(err){
+                reject(err);
+              }
+              if(payment){
+                if(payment.length != 0){
+                  generate();
+                }
+                if(payment.length == 0){
+                  resolve(randomCode);
+                }
+              }
+            })
+        }
+        generate();
+    });
+});
+
 paymentSchema.static('createPayments', (payment:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(Payments)) {
@@ -43,32 +68,39 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
 
       let files:any = attachment;
       let paymentProof = files.payment_proof;
-      var _payment = new Payments(payment);
-      _payment.created_by = userId;
-      _payment.development = developmentId;
-      _payment.save((err, payment) => {
-        if(err){
-          reject(err);
-        }
-        if(payment){
-          let paymentId = payment._id;
-          if(paymentProof){
-            Attachment.createAttachment(paymentProof, userId).then(res => {
-              var idAttachment = res.idAtt;
-              payment.payment_proof = idAttachment;
-              payment.status = "paid";
-              payment.save((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-              })              
-            })
-            .catch(err=>{
-              resolve({message: "attachment error", err});
-            })
+      Payments.generateCode().then((code)=> {
+        var _payment = new Payments(payment);
+        _payment.created_by = userId;
+        _payment.serial_no = code;
+        _payment.development = developmentId;
+        _payment.save((err, payment) => {
+          if(err){
+            reject(err);
           }
-          resolve(payment);
-        }
-      });          
+          if(payment){
+            let paymentId = payment._id;
+            if(paymentProof){
+              Attachment.createAttachment(paymentProof, userId).then(res => {
+                var idAttachment = res.idAtt;
+                payment.payment_proof = idAttachment;
+                payment.status = "paid";
+                payment.save((err, saved) => {
+                  err ? reject(err)
+                      : resolve(saved);
+                })              
+              })
+              .catch(err=>{
+                resolve({message: "attachment error", err});
+              })
+            }
+            resolve(payment);
+          }
+        });
+      })
+      .catch((err) => {
+        reject(err);
+      })
+                
     });
 });
 

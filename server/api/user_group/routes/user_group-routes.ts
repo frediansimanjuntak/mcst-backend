@@ -12,6 +12,10 @@ export class UserGroupRoutes {
         .post(auth.isAuthenticated(), UserGroupController.createUserGroup);
 
       router
+        .route('/user_groups/own')
+        .get(auth.isAuthenticated(), UserGroupController.getOwn);
+
+      router
         .route('/user_groups/:id')
         .get(auth.isAuthenticated(), UserGroupController.getById)
         .delete(auth.isAuthenticated(), UserGroupController.deleteUserGroup);

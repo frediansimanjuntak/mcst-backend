@@ -18,6 +18,15 @@ export class UserGroupController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwn(req: express.Request, res: express.Response):void {
+      let _userId = req["user"]._id;
+
+      UserGroupDAO
+        ['getById'](_userId)
+        .then(user_groups => res.status(200).json(user_groups))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createUserGroup(req: express.Request, res: express.Response):void {
       let _userGroup = req.body;
       let _userId = req["user"]._id;

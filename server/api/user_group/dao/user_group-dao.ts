@@ -30,6 +30,18 @@ userGroupSchema.static('getById', (id: string):Promise<any> => {
     });
 });
 
+userGroupSchema.static('getOwn', (userid: string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        UserGroup
+          .findOne({"chief": userid})
+          .populate("development chief created_by users")
+          .exec((err, user_groups) => {
+              err ? reject(err)
+                  : resolve(user_groups);
+          });
+    });
+});
+
 userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(userGroup)) {
