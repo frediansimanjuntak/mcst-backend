@@ -49,7 +49,7 @@ export class VehicleController {
 
   static createVehicle(req: express.Request, res: express.Response):void {
       let _lostfound = req.body;
-      let _attachment = req["files"].document;
+      let _attachment = req["files"];
       let _userId = req["user"]._id;
       let _developmentId = req["user"].default_development;      
 

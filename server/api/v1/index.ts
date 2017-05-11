@@ -31,6 +31,7 @@ import {PaymentBookingRoutes} from '../payment_booking/routes/payment_booking-ro
 import {ContractNoticeRoutes} from '../contract_notice/routes/contract_notice-routes';
 import {PaymentReminderRoutes} from '../payment_reminder/routes/payment_reminder-routes';
 import {ContactDiretoryRoutes} from '../contact_directory/routes/contact_directory-routes';
+import {ContractScheduleRoutes} from '../contract_schedule/routes/contract_schedule-routes';
 
 var router = express.Router();
 
@@ -66,5 +67,6 @@ ContractNoticeRoutes.init(router);
 PaymentBookingRoutes.init(router); 
 PaymentReminderRoutes.init(router); 
 ContactDiretoryRoutes.init(router); 
+ContractScheduleRoutes.init(router); 
 
 export default router; 

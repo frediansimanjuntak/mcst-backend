@@ -59,7 +59,7 @@ vehicleSchema.static('getByLicensePlate', (license:string):Promise<any> => {
         }
 
         Vehicles
-          .findOne({"license_plate":license})
+          .findOne({"license_plate": license})
           .populate("development owner created_by document")
           .exec((err, vehicle) => {
               err ? reject(err)
@@ -75,7 +75,7 @@ vehicleSchema.static('getByOwner', (owner:string):Promise<any> => {
         }
 
         Vehicles
-          .find({"owner":owner})
+          .findOne({"owner": owner})
           .populate("development owner created_by document")
           .exec((err, vehicles) => {
               err ? reject(err)
@@ -89,6 +89,8 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
       if (!_.isObject(vehicle)) {  
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
+      let files:any = attachment;
+      let document = files.document;
       var _vehicle = new Vehicles(vehicle);
       _vehicle.created_by = userId;
       _vehicle.development = developmentId;
@@ -105,18 +107,18 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
           }
           Vehicles.addVehicleToProperty(data);
           Vehicles.addVehicleToUser(data);
-          if(attachment){
-            Attachment.createAttachment(attachment, userId)
+          if(document){
+            Attachment.createAttachment(document, userId)
               .then(res => {
                 var idAttachment = res.idAtt;
-                saved.photo = idAttachment;
+                saved.document = idAttachment;
                 saved.save((err, result) => {
                   err ? reject(err)
                       : resolve(result);
                 })
               })
               .catch(err=>{
-                resolve({message: "attachment error"});
+                resolve({message: "attachment error", err});
               })
           }
           else{
