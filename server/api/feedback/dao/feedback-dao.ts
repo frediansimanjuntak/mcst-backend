@@ -112,20 +112,25 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        console.log(reply);
         let body:any = reply;
-        Feedback
-          .findByIdAndUpdate(id, {
-            $set: {
-              "feedback_reply": body.feedback_reply,
-              "reply_by": userId,
-              "reply_at": new Date()
-            }
-          })
-          .exec((err, updated) => {
-                err ? reject(err)
-                    : resolve(updated);
-                  });
+        if(body.reply){
+          Feedback
+            .findByIdAndUpdate(id, {
+              $set: {
+                "reply": body.reply,
+                "reply_by": userId,
+                "reply_at": new Date()
+              }
+            })
+            .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+            });
+        }
+        else{
+          reject({message: "no data to reply"});
+        }
+        
     });
 });
 
