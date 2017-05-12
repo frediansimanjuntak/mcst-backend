@@ -36,28 +36,74 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+incidentSchema.static('generateCode', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var generateCode = function(){
+          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+          console.log(randomCode);
+          let _query = {"reference_no": randomCode};
+          Incident
+            .find(_query)
+            .exec((err, incident) => {
+              if(err){
+                reject(err);
+              }
+              if(incident){
+                if(incident.length != 0){
+                  generateCode();
+                }
+                if(incident.length == 0){
+                  resolve(randomCode);
+                }
+              }
+            })
+        }
+        generateCode();
+    });
+});
+
 incidentSchema.static('createIncident', (incident:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(incident)) {
           return reject(new TypeError('Incident is not a valid object.'));
         }
 
-        Attachment.createAttachment(attachment, userId)
-          .then(res => {
-            var idAttachment = res.idAtt;
-
-            var _incident = new Incident(incident);
-                _incident.created_by = userId;
-                _incident.attachment = idAttachment;
-                _incident.development = developmentId;
-                _incident.save((err, saved) => {
+        let files:any = attachment;
+        let attachments = files.attachment;
+        console.log(attachment);
+        Incident.generateCode().then((code) => {
+          var _incident = new Incident(incident);
+          _incident.reference_no = code;
+          _incident.created_by = userId;
+          _incident.development = developmentId;
+          _incident.save((err, incident) => {
+            if(err){
+              reject(err);
+            }
+            if(incident){
+              if(attachments){
+                Attachment.createAttachment(attachments, userId)
+                .then((res) => {
+                  var idAttachment = res.idAtt;
+                  console.log(idAttachment);
+                  incident.attachment = idAttachment;
+                  incident.save((err, saved) => {
                     err ? reject(err)
                         : resolve(saved);
-                      });
-          })
-          .catch(err=>{
-            resolve({message: "attachment error"});
-          })             
+                        console.log(saved);
+                  });
+                })
+                .catch((err) => {
+                  resolve({message: "attachment error"});
+                }) 
+              }
+              resolve(incident);
+            }
+          });
+        })
+        .catch((err)=> {
+          reject(err);
+        })             
     });
 });
 

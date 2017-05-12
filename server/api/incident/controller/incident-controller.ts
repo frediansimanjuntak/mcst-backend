@@ -22,7 +22,7 @@ export class IncidentController {
 
   static createIncident(req: express.Request, res: express.Response):void {
       let _incident = req.body;
-      let _attachment = req["files"].attachment;
+      let _attachment = req["files"];
       let _userId = req["user"]._id;
       let _developmentId = req["user"].default_development;
       
