@@ -172,7 +172,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         let password = Math.random().toString(36).substr(2, 6).toUpperCase(); 
         let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
         let role;
-
+        console.log(body);
         var _user = new User(user);
         _user.default_development = developmentId;
         _user.default_property.development = developmentId;
@@ -445,6 +445,38 @@ userSchema.static('verifiedUser', (userId:string, data:Object):Promise<any> => {
     });
 });
 
+
+userSchema.static('changePassword', (id:string, oldpass:string, newpass:string):Promise<any> => {
+  return new Promise((resolve:Function, reject:Function) => {
+    if (!_.isString(id)) {
+      return reject(new TypeError('Id is not a valid string.'));
+    }
+    User
+      .findById(id)
+      .exec((err, user) => {
+        if(err){
+          reject(err);
+        }
+        if(user){
+          user.authenticate(oldpass, (err, ok) => {
+                if(err) {
+                  reject(err);
+                }
+                if(ok) {
+                  user.password = newpass;
+                  user.save((err, res) => {
+                    err ? reject(err)
+                  : resolve({message: 'data updated'});
+                  });
+                } else {
+                  reject({message: "old password didn't match"});                  
+                }
+            });
+        }
+      })
+  });
+});
+
 userSchema.static('updateUser', (id:string, data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
@@ -456,13 +488,24 @@ userSchema.static('updateUser', (id:string, data:Object):Promise<any> => {
             user.username = body.username;
             user.email = body.email;
             user.phone = body.phone;
-            if(body.password){
-              user.password = body.password;
-            }            
             user.save((err, saved) => {
-              err ? reject(err)
-                  : resolve(saved);
-              });
+              if(err){
+                reject(err);
+              }
+              if(saved){
+                if(body.oldPassword && body.newPassword) {
+                  User.changePassword(id, body.oldPassword, body.newPassword).then((res) => {
+                    resolve(res);
+                  })
+                  .catch((err) => {
+                    reject(err);
+                  })
+                }
+                else{
+                  resolve({message: 'data updated'});
+                }
+              }
+            });
           })
     });
 });
