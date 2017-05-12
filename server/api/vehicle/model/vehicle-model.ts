@@ -18,10 +18,10 @@ var vehicleSchema = new mongoose.Schema({
 		ref: 'User'
 	},
 	transponder: {type: String},
-	document: {
+	document: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Attachment'
-	},
+	}],
 	created_by: {
 		type: Schema.Types.ObjectId,
 		ref: 'User'
