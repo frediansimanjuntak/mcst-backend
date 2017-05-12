@@ -48,10 +48,26 @@ const opts = {
   key: fs.readFileSync(__dirname + '/../server/cert/server.key'),
   cert: fs.readFileSync(__dirname + '/../server/cert/server.crt')
 }
+
+var server = http.createServer(app)
+var io = require('socket.io')(server);
+
+export class socketIo{
+  static notif(data){
+    let body:any = data;    
+    let userId = body.user;
+    io.on('connect', onConnect);
+    function onConnect(socket){
+      socket.emit('notification_'+userId, { message: 'You get new notification', type: body.type, referenceId: body.reference_id});
+    }
+  }
+}
+
+
 // if(http){
   // run using http
-http.createServer(app)
-     .listen(PORT, () => {
+// http.createServer(app)
+server.listen(PORT, () => {
        console.log(`up and running @: ${os.hostname()} on port: ${PORT}`);
        console.log(`enviroment: ${process.env.NODE_ENV}`);
      });
