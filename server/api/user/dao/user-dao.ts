@@ -176,32 +176,32 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         var _user = new User(user);
         _user.default_development = developmentId;
         _user.default_property.development = developmentId;
-        _user.default_property.role = role;
         _user.password = password;
         _user.verification.code = code;
         _user.save((err, res)=>{
           if(err){
             reject(err);
           }
-          if(res){            
+          if(res){     
+            var userId = res._id.toString();
+
             if (body.owned_property != null){
               var ownedProperty_landlord = [].concat(res.owned_property)
               for (var i = 0; i < ownedProperty_landlord.length; i++) {
                 var ownedProperty = ownedProperty_landlord[i];
-                let idDevelopment = ownedProperty.development;
-                let idProperty = ownedProperty.property;
-                User.updatePropertyOwner(idDevelopment, idProperty, userId, body.remarks);                
+                let idDevelopment = ownedProperty.development.toString();
+                let idProperty = ownedProperty.property.toString();
+                User.updatePropertyOwner(idDevelopment, idProperty, userId, body.remarks);           
               }
               role = "owner";
             }
             
             if(body.rented_property != null){
-              let idDevelopment = body.rented_property.development;
-              let idProperty = body.rented_property.property;
+              let idDevelopment = body.rented_property.development.toString();
+              let idProperty = body.rented_property.property.toString();
               User.updatePropertyTenant(idDevelopment, idProperty, userId, body.remarks); 
               role = "tenant";             
-            }
-            var userId = res._id;
+            }            
             let data = {
               "emailTo": res.email,
               "fullname": res.details.first_name +" "+ res.details.last_name,
@@ -213,7 +213,7 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
             } 
             let typeMail = "signUp";
             User.email(data, typeMail);
-            res.role = role;
+            res.default_property.role = role;
             res.save((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
@@ -230,35 +230,38 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
         }
         let body:any = user;
         let ObjectID = mongoose.Types.ObjectId;
-        let idProperty = body.id_property;
-        let idDevelopment = body.id_development;
-        let idUser = body.id_user;
+        let idProperty = body.id_property.toString();
+        let idDevelopment = body.id_development.toString();
+        let idUser = body.id_user.toString();
+        let role = body.default_property.role;
+        let defaultProperty = body.default_property.property;
         let remarks = body.remarks;
         let updateObj = {$push: {}, $set: {}};
 
         if(body.type == 'landlord'){
-          updateObj.$push["owned_property.development"] = body.id_development;
-          updateObj.$push["owned_property.property"] = body.id_property;
+          // updateObj.$push["owned_property.$.development"] = idDevelopment;
+          // updateObj.$push["owned_property.$.property"] = idProperty;
+          updateObj.$push["owned_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyOwner(idDevelopment, idProperty, idUser, remarks); 
         }
 
         if(body.type == 'tenant'){
-          updateObj.$push["rented_property.development"] = body.id_development;
-          updateObj.$push["rented_property.property"] = body.id_property;
+          updateObj.$push["rented_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyTenant(idDevelopment, idProperty, idUser, remarks); 
         }
 
         if(body.default_property.property){
-          updateObj.$set["default_property.development"] = body.id_development;          
-          updateObj.$set["default_property.property"] = body.default_property.property;
-          updateObj.$set["default_development"] = body.id_development;
+          updateObj.$set["default_property"] = ({"development": idDevelopment, "role": role, "property": defaultProperty})
+          updateObj.$set["default_development"] = idDevelopment;
         }
 
+        console.log(updateObj);
         User
           .findByIdAndUpdate(idUser, updateObj)
           .exec((err, updated) => {
             err ? reject(err)
                 : resolve(updated);
+                console.log(err);
           })         
     });
 });
