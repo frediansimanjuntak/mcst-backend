@@ -113,11 +113,11 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
             return reject(new TypeError('Id is not a valid string.'));
         }
         let body:any = reply;
-        if(body.reply){
+        if(body.replies){
           Feedback
             .findByIdAndUpdate(id, {
               $set: {
-                "reply": body.reply,
+                "replies": body.replies,
                 "reply_by": userId,
                 "reply_at": new Date()
               }
