@@ -26,7 +26,7 @@ var vehicleSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	created_at: {type: Date},
+	created_at: {type: Date, default: Date.now},
 	remarks: {type: String}		
 });	
 
