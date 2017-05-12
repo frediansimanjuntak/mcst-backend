@@ -100,7 +100,7 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
                           reject(err);
                         }
                         if(saved){
-                          resolve(saved);
+                          resolve({"booking": booking, "payment": saved});
                         }  
                       })
                     }
