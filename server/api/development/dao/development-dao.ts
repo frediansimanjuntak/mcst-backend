@@ -394,28 +394,44 @@ developmentSchema.static('generateCodeProperties', (name_url:string, idpropertie
         let tenantCode = Math.random().toString(36).substr(2, 5); 
         let updateObj = {$set: {}};
         let dataLandlord = {
-            "code": {
-                "landlord": landlordCode,
-                "create_at_landlord": new Date()
-            }
+            "code.landlord": landlordCode,
+            "code.create_at_landlord": new Date()
         }
         let dataTenant = {
-            "code": {
-                "tenant": tenantCode,
-                "create_at_tenant": new Date()
-            }
+            "code.tenant": tenantCode,
+            "code.create_at_tenant": new Date()
         }
         if (body.type == "landlord"){
-            Development.updateProperties(name_url, idproperties, dataLandlord);
+            Development.updateProperties(name_url, idproperties, dataLandlord).then((res) => {
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
         }
 
         if (body.type == "tenant"){
-            Development.updateProperties(name_url, idproperties, dataTenant);
+            Development.updateProperties(name_url, idproperties, dataTenant).then((res) => {
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
         }
 
         if (body.type == "all"){
-            Development.updateProperties(name_url, idproperties, dataLandlord);
-            Development.updateProperties(name_url, idproperties, dataTenant);
+            Development.updateProperties(name_url, idproperties, dataLandlord).then((res) => {
+                Development.updateProperties(name_url, idproperties, dataTenant).then((res) => {
+                    resolve(res);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+            })
+            .catch((err) => {
+                reject(err);
+            });
+            
         }
     });
 });
