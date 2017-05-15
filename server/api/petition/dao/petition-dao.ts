@@ -5,6 +5,7 @@ import petitionSchema from '../model/petition-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import Company from '../../company/dao/company-dao';
 import Contract from '../../contract/dao/contract-dao';
+import Development from '../../development/dao/development-dao';
 import {AWSService} from '../../../global/aws.service';
 
 petitionSchema.static('getAll', (development:string):Promise<any> => {
@@ -29,10 +30,49 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
 
         Petition
           .findById(id)
-          .populate("development attachment contract created_by")
+          .populate("development attachment created_by")
+          .populate({
+            path: 'contract',
+            populate: {
+              path: 'company',
+              model: 'Company'
+            }
+          })
+          .populate({
+            path: 'created_by',
+            populate: {
+              path: 'default_development',
+              model: 'Development'
+            }
+          })
           .exec((err, petitions) => {
-              err ? reject(err)
-                  : resolve(petitions);
+            if(err){
+              reject(err);
+            }
+            if(petitions){
+              let user = petitions.created_by;
+              let developmentID = user.default_development._id;
+              let developmentName = user.default_development.name;
+              if(user.default_property.property){
+                let propertyID = user.default_property.property;
+                Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
+                  let data = {
+                    "name": user.name,
+                    "phone": user.phone,
+                    "address": developmentName + " blk " + res.address.block_no + " #"+ res.address.unit_no + "-" + res.address.unit_no_2
+                  }
+                  resolve({petitions, "user_details": data});
+                  console.log({petitions, "user_details": data});
+                })
+                .catch((err) => {
+                  reject(err);
+                  console.log(err);
+                })
+              }
+              else{
+                resolve(petitions);
+              }
+            }
           });
     });
 });
