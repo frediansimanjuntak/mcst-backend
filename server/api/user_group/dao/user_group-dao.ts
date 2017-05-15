@@ -48,34 +48,51 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
         return reject(new TypeError('User Group is not a valid object.'));
       }
 
-      var _user_group = new UserGroup(userGroup);
-          _user_group.development = developmentId;
-          _user_group.created_by = userId;
-          _user_group.save((err, saved) => {
-            err ? reject(err)
-                : resolve(saved);
-          });
-      var userGroupId = _user_group._id;
+      let body:any = userGroup;
 
-      if(_user_group.users != null){
-        var users = [].concat(_user_group.users)
-        for (var i = 0; i < users.length; i++) {
-          var iduser = users[i];
-
-          User
-            .findByIdAndUpdate(iduser,
-                {
-                  $set: {  
-                    "user_group": userGroupId
-                  }
-                }, {upsert: true})
-            .exec((err, saved) => {
-                  err ? reject(err)
-                      : resolve(saved);
-              });
-        }
-        resolve({message: "Success"});
-      }
+      UserGroup
+        .findOne({"chief" : body.chief})
+        .exec((err, res) => {
+          if(err){
+            reject(err);
+          }
+          if(res){
+            reject({message: "Chief is Allready"});
+          }
+          else{
+            var _user_group = new UserGroup(userGroup);
+            _user_group.development = developmentId;
+            _user_group.created_by = userId;
+            _user_group.save((err, saved) => {
+              if(err){
+                reject(err);
+              }
+              if(saved){
+                let userGroupId = saved._id;
+                if(saved.users != null){
+                  let users = saved.users
+                  _.each(users, (result) => {
+                    let iduser = result;
+                    User
+                      .findByIdAndUpdate(iduser,
+                          {
+                            $set: {  
+                              "user_group": userGroupId
+                            }
+                          }, {upsert: true})
+                      .exec((err, saved) => {
+                            err ? reject(err)
+                                : resolve(saved);
+                        });
+                  })
+                }
+                else{
+                  resolve(saved);
+                }
+              }
+            });
+          }
+        })      
     });
 });
 

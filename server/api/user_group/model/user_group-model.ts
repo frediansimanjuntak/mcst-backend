@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var UserGroupSchema = new mongoose.Schema({
-    description: {type: String, required: true},
+    description: {type: String},
     chief: {
     	type: Schema.Types.ObjectId,
     	ref: 'User'
@@ -17,7 +17,7 @@ var UserGroupSchema = new mongoose.Schema({
     	type: Schema.Types.ObjectId,
     	ref: 'User'
     }], 
-    status: {type: String},
+    status: {type: String, enum: ['active', 'not active'], default: "active"},
     created_by: {
     	type: Schema.Types.ObjectId,
     	ref: 'User'

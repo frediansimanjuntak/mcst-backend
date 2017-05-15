@@ -22,7 +22,7 @@ export class UserGroupController {
       let _userId = req["user"]._id;
 
       UserGroupDAO
-        ['getById'](_userId)
+        ['getOwn'](_userId)
         .then(user_groups => res.status(200).json(user_groups))
         .catch(error => res.status(400).json(error));
   }
