@@ -66,8 +66,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
         return reject(new TypeError('Incident is not a valid object.'));
       }
 
-      let files:any = attachment;
-      let paymentProof = files.payment_proof;
+      let files:any = attachment;      
       Payments.generateCode().then((code)=> {
         var _payment = new Payments(payment);
         _payment.created_by = userId;
@@ -79,7 +78,8 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
           }
           if(payment){
             let paymentId = payment._id;
-            if(paymentProof){
+            if(attachment){
+              let paymentProof = files.payment_proof;
               Attachment.createAttachment(paymentProof, userId).then(res => {
                 var idAttachment = res.idAtt;
                 payment.payment_proof = idAttachment;
