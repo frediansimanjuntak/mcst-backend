@@ -1,18 +1,18 @@
 import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
-import paymentreminderSchema from '../model/payment_reminder-model';
+import paymentReminderSchema from '../model/payment_reminder-model';
 import Development from '../../development/dao/development-dao';
 import Notifications from '../../notification/dao/notification-dao';
 import Payments from '../../payment/dao/payments-dao';
 import Vehicles from '../../vehicle/dao/vehicle-dao';
 import User from '../../vehicle/dao/vehicle-dao';
 
-paymentreminderSchema.static('getAll', (development:string):Promise<any> => {
+paymentReminderSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
 
-        Payment_reminder
+        paymentReminder
           .find(_query)
           .exec((err, guests) => {
               err ? reject(err)
@@ -21,13 +21,13 @@ paymentreminderSchema.static('getAll', (development:string):Promise<any> => {
     });
 });
 
-paymentreminderSchema.static('getById', (id:string):Promise<any> => {
+paymentReminderSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
 
-        Payment_reminder
+        paymentReminder
           .findById(id)
           .populate("development created_by")
           .exec((err, feedbacks) => {
@@ -37,12 +37,12 @@ paymentreminderSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-paymentreminderSchema.static('generateCode', ():Promise<any> => {
+paymentReminderSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function(){
           let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
           let _query = {"reference_no": randomCode};
-          Payment_reminder
+          paymentReminder
             .find(_query)
             .exec((err, contract) => {
               if(err){
@@ -62,14 +62,14 @@ paymentreminderSchema.static('generateCode', ():Promise<any> => {
     });
 });
 
-paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, userId:string, developmentId:string):Promise<any> => {
+paymentReminderSchema.static('createPaymentReminder', (paymentreminder:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(paymentreminder)) {  
           return reject(new TypeError('Payment Reminder is not a valid object.'));
         }
 
-        Payment_reminder.generateCode().then((code) => {
-          var _paymentreminder = new Payment_reminder(paymentreminder);
+        paymentReminder.generateCode().then((code) => {
+          var _paymentreminder = new paymentReminder(paymentreminder);
           _paymentreminder.created_by = userId;
           _paymentreminder.reference_no = code;
           _paymentreminder.development = developmentId;
@@ -99,9 +99,9 @@ paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
                 }
                 return data;
               });
-              Payment_reminder.notifPayment(notificationlists, developmentId, userId, referenceId, referenceNo);
-              Payment_reminder.updateUserLandlordPaymentReminder(userId, developmentId, notificationlists);
-              Payment_reminder.updateVehiclePaymentReminder(userId, notificationlists);
+              paymentReminder.notifPayment(notificationlists, developmentId, userId, referenceId, referenceNo);
+              paymentReminder.updateUserLandlordPaymentReminder(userId, developmentId, notificationlists);
+              paymentReminder.updateVehiclePaymentReminder(userId, notificationlists);
               resolve(saved);
             }
           })
@@ -112,7 +112,7 @@ paymentreminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
     });
 });
 
-paymentreminderSchema.static('notifPayment', (data:Object, developmentId:string, userId:string, referenceId:string, referenceNo:string):Promise<any> => {
+paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string, userId:string, referenceId:string, referenceNo:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let bodies:any = data;
         let dataAll = [];
@@ -234,7 +234,7 @@ paymentreminderSchema.static('notifPayment', (data:Object, developmentId:string,
     });
 });
 
-paymentreminderSchema.static('updateUserLandlordPaymentReminder', (userId:string, developmentId:string, datas:Object):Promise<any> => {
+paymentReminderSchema.static('updateUserLandlordPaymentReminder', (userId:string, developmentId:string, datas:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let bodies:any = datas;
         let attachment:any;
@@ -277,7 +277,7 @@ paymentreminderSchema.static('updateUserLandlordPaymentReminder', (userId:string
     });
 });
 
-paymentreminderSchema.static('updateVehiclePaymentReminder', (userId:string, datas:Object):Promise<any> => {
+paymentReminderSchema.static('updateVehiclePaymentReminder', (userId:string, datas:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let bodies:any = datas;
         let attachment:any;
@@ -318,13 +318,13 @@ paymentreminderSchema.static('updateVehiclePaymentReminder', (userId:string, dat
     });
 });
 
-paymentreminderSchema.static('deletePaymentReminder', (id:string):Promise<any> => {
+paymentReminderSchema.static('deletePaymentReminder', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
 
-        Payment_reminder
+        paymentReminder
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
               err ? reject(err)
@@ -333,13 +333,13 @@ paymentreminderSchema.static('deletePaymentReminder', (id:string):Promise<any> =
     });
 });
 
-paymentreminderSchema.static('updatePaymentReminder', (id:string, paymentreminder:Object):Promise<any> => {
+paymentReminderSchema.static('updatePaymentReminder', (id:string, paymentreminder:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(paymentreminder)) {
           return reject(new TypeError('Payment Reminder is not a valid object.'));
         }
 
-        Payment_reminder
+        paymentReminder
           .findByIdAndUpdate(id, paymentreminder)
           .exec((err, updated) => {
                 err ? reject(err)
@@ -348,13 +348,13 @@ paymentreminderSchema.static('updatePaymentReminder', (id:string, paymentreminde
     });
 });
 
-paymentreminderSchema.static('publishPaymentReminder', (id:string):Promise<any> => {
+paymentReminderSchema.static('publishPaymentReminder', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
           return reject(new TypeError('Id is not a valid string.'));
         }
 
-        Payment_reminder
+        paymentReminder
           .findByIdAndUpdate(id,{
             $set: {publish: "true"}
           })
@@ -365,6 +365,6 @@ paymentreminderSchema.static('publishPaymentReminder', (id:string):Promise<any> 
     });
 });
 
-let Payment_reminder = mongoose.model('Payment_reminder', paymentreminderSchema);
+let paymentReminder = mongoose.model('paymentReminder', paymentReminderSchema);
 
-export default Payment_reminder;
+export default paymentReminder;
