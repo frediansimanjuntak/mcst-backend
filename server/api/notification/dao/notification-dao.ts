@@ -7,7 +7,7 @@ import {GlobalService} from '../../../global/global.service';
 notificationSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       let _query = {"development": development};
-      Notification
+      Notifications
         .find(_query)
         .exec((err, notifications) => {
           err ? reject(err)
@@ -23,7 +23,7 @@ notificationSchema.static('getOwnNotification', (userId:string):Promise<any> => 
       }
 
       let _query = {user: userId};
-      Notification
+      Notifications
         .find(_query)
         .exec((err, notifications) => {
           err ? reject(err)
@@ -39,7 +39,7 @@ notificationSchema.static('getOwnUnreadNotification', (userId:string):Promise<an
       }
 
       let _query = { user: userId, read_at: { $exists: false } };
-      Notification
+      Notifications
         .find(_query)
         .exec((err, notifications) => {
           err ? reject(err)
@@ -54,7 +54,7 @@ notificationSchema.static('createNotification', (idUser:string, notification:Obj
         return reject(new TypeError('Notification is not a valid object.'));
       }
 
-      let _notification = new Notification(notification);
+      let _notification = new Notifications(notification);
           _notification.created_by = idUser;
           _notification.save((err, saved) => {
             err ? reject(err)
@@ -68,7 +68,7 @@ notificationSchema.static('deleteNotification', (id:string, ):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        Notification
+        Notifications
           .findById(id)
           .exec((err, notification) => {
             if (err)
@@ -91,11 +91,7 @@ notificationSchema.static('readNotification', (userId:string, arrayId:string[]):
           return reject(new TypeError('User ID is not a valid ObjectId.'));
         }
 
-        if (!_.isArray(arrayId)) {
-          return reject(new TypeError('Array of ID is not a valid array.'));
-        }
-
-        Notification
+        Notifications
         .update({_id: {$in: arrayId}}, {
           $set: {
             "read_at": new Date()
@@ -115,7 +111,7 @@ notificationSchema.static('updateNotification', (id:string, notification:Object)
           return reject(new TypeError('Notification is not a valid object.'));
         }
 
-        Notification
+        Notifications
         .findByIdAndUpdate(id, notification)
         .exec((err, updated) => {
               err ? reject(err)
@@ -124,6 +120,24 @@ notificationSchema.static('updateNotification', (id:string, notification:Object)
     });
 });
 
-let Notification = mongoose.model('Notification', notificationSchema);
+notificationSchema.static('markRead', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!_.isString(id)) {
+          return reject(new TypeError('Id is not a valid string.'));
+      }
+      Notifications
+        .findByIdAndUpdate(id, {
+          $set: {
+            "mark_read": true
+          }
+        })
+        .exec((err, updated) => {
+              err ? reject(err)
+                  : resolve(updated);
+          });
+    });
+});
 
-export default Notification;
+let Notifications = mongoose.model('Notification', notificationSchema);
+
+export default Notifications;

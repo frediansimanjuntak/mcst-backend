@@ -27,5 +27,9 @@ export class NotificationRoutes {
       router
         .route('/notifications/update/:id')
         .post(auth.isAuthenticated(),NotificationController.updateNotification);
+
+      router
+        .route('/notifications/mark_read/:id')
+        .post(auth.isAuthenticated(),NotificationController.markRead);
     }
 }

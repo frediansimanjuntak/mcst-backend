@@ -67,4 +67,13 @@ export class NotificationController {
       .then(notification => res.status(201).json(notification))
       .catch(error => res.status(400).json(error));
   }
+
+  static markRead(req: express.Request, res: express.Response):void {
+    let _id = req.params.id;
+
+    NotificationDAO
+      ['markRead'](_id)
+      .then(notification => res.status(201).json(notification))
+      .catch(error => res.status(400).json(error));
+  }
 }
