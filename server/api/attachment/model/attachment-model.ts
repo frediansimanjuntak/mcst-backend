@@ -35,8 +35,9 @@ attachmentSchema.post('remove', function(removed){
 
 attachmentSchema
   .virtual('url')
-  .get(function () {
-    return 'https://'+ config.awsBucket + '.' + config.awsUrl + '/'+ this.key;
+  .get(function() {
+    let keys = this.key.replace(/ /g,"%20");
+    return 'https://'+config.awsBucket+config.awsUrl+keys;
   });
 
 export default attachmentSchema;
