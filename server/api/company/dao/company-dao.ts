@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import companySchema from '../model/company-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import ContactDirectory from '../../contact_directory/dao/contact_directory-dao';
 import {AWSService} from '../../../global/aws.service';
 
 companySchema.static('getAll', ():Promise<any> => {
@@ -49,16 +50,30 @@ companySchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-companySchema.static('createCompany', (company:Object, userId:string):Promise<any> => {
+companySchema.static('createCompany', (company:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(company)) {
           return reject(new TypeError('Company is not a valid object.'));
         }
         var _company = new Company(company);
         _company.created_by = userId;
-        _company.save((err, saved) => {
-          err ? reject(err)
-              : resolve(saved);
+        _company.save((err, company) => {
+          if(err){
+            reject(err);
+          }
+          if(company){
+            let data = {
+              "name": company.name,
+              "type_contact": "all",
+              "service": company.category,
+              "register_number": company.business_registration,
+              "address": company.address.full_address,
+              "website": company.website,
+              "contact": company.phone
+            }
+            ContactDirectory.createContactDirectory(data, developmentId);
+            resolve (company);
+          }
         });
     });
 });

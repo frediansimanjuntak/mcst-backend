@@ -2,6 +2,10 @@ import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var contactDirectorySchema = new mongoose.Schema({
+	development: {
+		type: Schema.Types.ObjectId,
+    	ref: 'Development'
+	},
 	name: {type: String, required: true},
 	type_contact: {type: String},
 	service: {type: String},

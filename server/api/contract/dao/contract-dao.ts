@@ -119,7 +119,7 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
             }
             if(contract){
               if(body.new_company){
-                Company.createCompany(body.new_company, userId).then((company) => {
+                Company.createCompany(body.new_company, userId, developmentId.toString()).then((company) => {
                   let idCompany = company._id;
                   contract.company = idCompany;
                   contract.save((err, saved) => {

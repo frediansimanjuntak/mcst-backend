@@ -3,9 +3,9 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import contactDirectorySchema from '../model/contact_directory-model';
 
-contactDirectorySchema.static('getAll', ():Promise<any> => {
+contactDirectorySchema.static('getAll', (developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {};
+        let _query = {"development": developmentId};
 
         ContactDirectory
           .find(_query)
@@ -16,14 +16,15 @@ contactDirectorySchema.static('getAll', ():Promise<any> => {
     });
 });
 
-contactDirectorySchema.static('getById', (id:string):Promise<any> => {
+contactDirectorySchema.static('getById', (id:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        let _query = {"_id": id,"development": developmentId};
 
         ContactDirectory
-          .findById(id)
+          .findOne(_query)
           .exec((err, contact) => {
               err ? reject(err)
                   : resolve(contact);
@@ -31,13 +32,14 @@ contactDirectorySchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
-contactDirectorySchema.static('createContactDirectory', (data:Object):Promise<any> => {
+contactDirectorySchema.static('createContactDirectory', (data:Object, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(data)) {
           return reject(new TypeError('Access Control is not a valid object.'));
         }
 
         var _contact = new ContactDirectory(data);
+        _contact.development = developmentId;
         _contact.save((err, saved) => {
           err ? reject(err)
               : resolve(saved);
