@@ -18,6 +18,20 @@ companySchema.static('getAll', ():Promise<any> => {
     });
 });
 
+companySchema.static('getAllNameCompany', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {};
+
+        Company
+          .find(_query)
+          .select("name")
+          .exec((err, companies) => {
+              err ? reject(err)
+                  : resolve(companies);
+          });
+    });
+});
+
 companySchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {

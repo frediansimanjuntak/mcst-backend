@@ -12,6 +12,10 @@ export class CompanyRoutes {
         .post(auth.isAuthenticated(), CompanyController.createCompany);
 
       router
+        .route('/company/name')
+        .get(auth.isAuthenticated(), CompanyController.getAllNameCompany);
+
+      router
         .route('/company/:id')
         .get(auth.isAuthenticated(), CompanyController.getById)
         .delete(auth.isAuthenticated(), CompanyController.deleteCompany);
