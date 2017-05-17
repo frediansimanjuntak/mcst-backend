@@ -12,19 +12,21 @@ export class ContactDiretoryController {
   }
 
   static getById(req: express.Request, res: express.Response):void {
+      let _development = req["user"].default_development;
       let _id = req.params.id;
       
       ContactDirectoryDAO
-        ['getById'](_id)
+        ['getById'](_id, _development)
         .then(contact => res.status(200).json(contact))
         .catch(error => res.status(400).json(error));
   }
 
   static createContactDirectory(req: express.Request, res: express.Response):void {
       let _data = req.body;
+      let _developmentId= req["user"].default_development;
 
       ContactDirectoryDAO
-        ['createContactDirectory'](_data)
+        ['createContactDirectory'](_data, _developmentId)
         .then(contact => res.status(201).json(contact))
         .catch(error => res.status(400).json(error));
   }
