@@ -14,7 +14,22 @@ petitionSchema.static('getAll', (development:string):Promise<any> => {
 
         Petition
           .find(_query)
-          .populate("development attachment contract created_by")
+          .populate("development attachment")
+          .populate({
+            path: 'contract',
+            populate: {
+              path: 'company',
+              model: 'Company',
+              select: '_id name'
+            }
+          })
+          .populate({
+            path: 'created_by',
+            populate: {
+              path: 'default_development',
+              model: 'Development'
+            }
+          })
           .exec((err, petitions) => {
               err ? reject(err)
                   : resolve(petitions);
@@ -30,7 +45,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
 
         Petition
           .findById(id)
-          .populate("development attachment created_by")
+          .populate("development attachment")
           .populate({
             path: 'contract',
             populate: {
