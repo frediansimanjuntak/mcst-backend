@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var companySchema = new mongoose.Schema({
 	name: {type: String, required: true, trim: true},
-	registration_no: {type: String, trim: true},
+	business_registration: {type: String, trim: true},
 	category: {type: String, trim: true},
 	phone: {type: String, required: true, trim: true},		
 	email: {type: String, required: true, trim: true},
