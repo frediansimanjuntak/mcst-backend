@@ -10,6 +10,13 @@ export class CompanyController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getAllNameCompany(req: express.Request, res: express.Response):void {
+      CompanyDAO
+        ['getAllNameCompany']()
+        .then(companies => res.status(200).json(companies))
+        .catch(error => res.status(400).json(error));
+  }
+
   static getById(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
 
