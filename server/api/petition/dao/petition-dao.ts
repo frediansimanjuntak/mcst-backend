@@ -140,48 +140,51 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
               reject(err);
             }
             if(petitions){
-              let data = {
-                "property": body.property,
-                "company": body.company,
-                "title": body.petition_type,
-                "contract_type": body.petition_type,
-                "reference_type": "petition",
-                "reference_id": petitions._id,
-                "start_time": body.start_time,
-                "end_time": body.end_time,
-                "created_by": userId,
-                "remark": body.remark,
-                "new_company": body.new_company,
-                "sign": body.sign
+              if(petitions.petition_type != "new tenant"){
+                let data = {
+                  "property": body.property,
+                  "company": body.company,
+                  "title": body.petition_type,
+                  "contract_type": body.petition_type,
+                  "reference_type": "petition",
+                  "reference_id": petitions._id,
+                  "start_time": body.start_time,
+                  "end_time": body.end_time,
+                  "created_by": userId,
+                  "remark": body.remark,
+                  "new_company": body.new_company,
+                  "sign": body.sign
+                }
+                Contract.createContract(data, userId, developmentId, file.attachment).then((result) =>{
+                  petitions.contract = result._id;
+                  petitions.save((err, saved) => {
+                    if(err){
+                      reject(err);
+                    }
+                  });
+                })
+                .catch(err=>{
+                  reject(err);
+                })
               }
-              Contract.createContract(data, userId, developmentId, file.attachment).then((result) =>{
-                petitions.contract = result._id;
-                petitions.save((err, saved) => {
-                  if(err){
-                    reject(err);
-                  }
-                });
-              })
-              .catch(err=>{
-                reject(err);
-              })
-              
-              if(file.attachment){
-                Attachment.createAttachment(file.attachment, userId)
-                  .then(res => {
-                    let idAttachment = res.idAtt;
-                    petitions.attachment = idAttachment;
-                    petitions.save((err, saved) => {
-                      if(err){
-                        reject(err);
-                      }
-                    });              
-                  })
-                  .catch(err=>{
-                    reject(err);
-                  })  
-              }
-              resolve(petitions);  
+              else{
+                if(file.attachment){
+                   Attachment.createAttachment(file.attachment, userId)
+                    .then(res => {
+                      let idAttachment = res.idAtt;
+                      petitions.attachment = idAttachment;
+                      petitions.save((err, saved) => {
+                        if(err){
+                          reject(err);
+                        }
+                      });              
+                    })
+                    .catch(err=>{
+                      reject(err);
+                    })
+                }                   
+                resolve(petitions); 
+              }   
             }
           }); 
         })        

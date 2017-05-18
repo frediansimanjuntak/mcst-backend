@@ -86,6 +86,4 @@ export class CompanyController {
         .then(company => res.status(201).json(company))
         .catch(error => res.status(400).json(error));
   }
-
-
 }
