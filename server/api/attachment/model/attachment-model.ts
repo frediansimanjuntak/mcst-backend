@@ -37,7 +37,7 @@ attachmentSchema
   .virtual('url')
   .get(function() {
     let keys = this.key.replace(/ /g,"%20");
-    return 'https://'+config.awsBucket+config.awsUrl+keys;
+    return 'https://'+config.awsBucket+config.awsUrl+'/'+keys;
   });
 
 export default attachmentSchema;

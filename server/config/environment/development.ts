@@ -14,7 +14,7 @@ export default {
     }
   },
   awsBucket: 'mcst-app',
-  awsUrl: 's3-ap-southeast-1.amazonaws.com',
+  awsUrl: '.s3-ap-southeast-1.amazonaws.com',
   // Mailgun api key and domain
   mailgun: {
     apiKey: 'key-82295c366bc190610da171f7c83b2a2a',
