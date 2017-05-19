@@ -158,9 +158,8 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
                 Contract.createContract(data, userId, developmentId, file.attachment).then((result) =>{
                   petitions.contract = result._id;
                   petitions.save((err, saved) => {
-                    if(err){
-                      reject(err);
-                    }
+                    err ? reject(err)
+                        : resolve(saved);
                   });
                 })
                 .catch(err=>{
