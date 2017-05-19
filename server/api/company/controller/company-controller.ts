@@ -1,4 +1,5 @@
 import * as express from 'express';
+import development = require("./../../../config/environment/development")
 import CompanyDAO from '../dao/company-dao';
 
 
@@ -29,9 +30,10 @@ export class CompanyController {
   static createCompany(req: express.Request, res: express.Response):void {
       let _company = req.body;
       let _userId = req["user"]._id;
+      let _development = req["user"].development;
 
       CompanyDAO
-        ['createCompany'](_company, _userId)
+        ['createCompany'](_company, _userId, _development)
         .then(company => res.status(201).json(company))
         .catch(error => res.status(400).json(error));
   }
