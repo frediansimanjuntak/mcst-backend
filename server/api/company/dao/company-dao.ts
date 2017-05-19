@@ -64,7 +64,7 @@ companySchema.static('createCompany', (company:Object, userId:string, developmen
           if(company){
             let data = {
               "name": company.name,
-              "type_contact": "all",
+              "type_contact": "other",
               "service": company.category,
               "register_number": company.business_registration,
               "address": company.address.full_address,
