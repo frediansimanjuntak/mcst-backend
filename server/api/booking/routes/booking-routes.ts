@@ -10,6 +10,10 @@ export class BookingRoutes {
         .route('/booking')
         .get(auth.isAuthenticated(), BookingController.getAll)
         .post(auth.isAuthenticated(), BookingController.createBooking);
+      
+      router
+        .route('/booking/me')
+        .get(auth.isAuthenticated(), BookingController.getOwn);
 
       router
         .route('/booking/:id')
