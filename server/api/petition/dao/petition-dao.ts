@@ -77,11 +77,9 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
                     "address": developmentName + " blk " + res.address.block_no + " #"+ res.address.unit_no + "-" + res.address.unit_no_2
                   }
                   resolve({petitions, "user_details": data});
-                  console.log({petitions, "user_details": data});
                 })
                 .catch((err) => {
                   reject(err);
-                  console.log(err);
                 })
               }
               else{
@@ -98,7 +96,22 @@ petitionSchema.static('getOwn', (userId:string, development:string):Promise<any>
 
         Petition
           .find(_query)
-          .populate("created_by development facility payment" )
+          .populate("development attachment")
+          .populate({
+            path: 'contract',
+            populate: {
+              path: 'company',
+              model: 'Company',
+              select: '_id name'
+            }
+          })
+          .populate({
+            path: 'created_by',
+            populate: {
+              path: 'default_development',
+              model: 'Development'
+            }
+          })
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
