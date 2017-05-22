@@ -31,5 +31,9 @@ export class NotificationRoutes {
       router
         .route('/notifications/mark_read/:id')
         .post(auth.isAuthenticated(),NotificationController.markRead);
+      
+      router
+        .route('/notifications/payment/me')
+        .get(auth.isAuthenticated(),NotificationController.getOwnPaymentNotification);
     }
 }

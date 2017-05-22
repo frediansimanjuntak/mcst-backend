@@ -31,6 +31,16 @@ export class NotificationController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwnPaymentNotification(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
+
+      NotificationDAO
+        ['getOwnPaymentNotification'](_userId, _developmentId)
+        .then(notifications => res.status(200).json(notifications))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createNotification(req: express.Request, res: express.Response):void {
       let _notification = req.body;
       let _idUser = req["user"]._id;
