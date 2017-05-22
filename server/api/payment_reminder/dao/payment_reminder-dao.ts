@@ -99,7 +99,7 @@ paymentReminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
                 }
                 return data;
               });
-              paymentReminder.notifPayment(notificationlists, developmentId, userId, referenceId, referenceNo);
+              paymentReminder.notifPayment(notificationlists, developmentId, userId, referenceId, referenceNo, title);
               paymentReminder.updateUserLandlordPaymentReminder(userId, developmentId, notificationlists);
               paymentReminder.updateVehiclePaymentReminder(userId, notificationlists);
               resolve(saved);
@@ -112,7 +112,7 @@ paymentReminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
     });
 });
 
-paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string, userId:string, referenceId:string, referenceNo:string):Promise<any> => {
+paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string, userId:string, referenceId:string, referenceNo:string, title:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let bodies:any = data;
         let dataAll = [];
@@ -191,6 +191,7 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                               "property": owner.prop_id,
                               "user": owner.owner,
                               "type": "Payment Reminder",
+                              "reference_title": title,
                               "reference_number": referenceNo,
                               "reference_id": referenceId,
                               "extra": {"payment": datas}
@@ -204,6 +205,7 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                               "property": propertyOwn.prop_id,
                               "user": propertyOwn.owner,
                               "type": "Payment Reminder",
+                              "reference_title": title,
                               "reference_number": referenceNo,
                               "reference_id": referenceId,
                               "extra": {"payment": dataAll}
@@ -220,6 +222,7 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                           "property": vehOwner.prop_id,
                           "user": vehOwner.owner,
                           "type": "Payment Reminder",
+                          "reference_title": title,
                           "reference_number": referenceNo,
                           "reference_id": referenceId,
                           "extra": {"payment": dataVehicle}

@@ -9,6 +9,7 @@ notificationSchema.static('getAll', (development:string):Promise<any> => {
       let _query = {"development": development};
       Notifications
         .find(_query)
+        .populate("user development created_by")
         .exec((err, notifications) => {
           err ? reject(err)
               : resolve(notifications);
@@ -24,6 +25,7 @@ notificationSchema.static('getOwnNotification', (userId:string, developmentId:st
       let _query = {"development": developmentId, "user": userId};
       Notifications
         .find(_query)
+        .populate("user development created_by")
         .exec((err, notifications) => {
           err ? reject(err)
               : resolve(notifications);
@@ -39,6 +41,23 @@ notificationSchema.static('getOwnUnreadNotification', (userId:string, developmen
       let _query = {"development": developmentId, "user": userId, read_at: { $exists: false }};
       Notifications
         .find(_query)
+        .populate("user development created_by")
+        .exec((err, notifications) => {
+          err ? reject(err)
+              : resolve(notifications);
+        });
+    });
+});
+
+notificationSchema.static('getOwnPaymentNotification', (userId:string, developmentId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      if (!GlobalService.validateObjectId(userId)) {
+        return reject(new TypeError('User ID is not a valid ObjectId.'));
+      }
+      let _query = {"development": developmentId, "user": userId, "type": "Payment Reminder"};
+      Notifications
+        .find(_query)
+        .populate("user development created_by")
         .exec((err, notifications) => {
           err ? reject(err)
               : resolve(notifications);

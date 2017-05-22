@@ -17,6 +17,7 @@ var notificationSchema = new mongoose.Schema({
   },
   property: {type: String, trim: true},
   message: {type: String},
+  reference_title: {type: String},
   reference_number: {type: String},
   reference_id: {type: String},
   created_by: { 
