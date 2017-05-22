@@ -20,6 +20,16 @@ export class GuestController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwnGuest(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
+
+      GuestDAO
+        ['getOwnGuest'](_userId, _developmentId)
+        .then(guests => res.status(200).json(guests))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createGuest(req: express.Request, res: express.Response):void {
       let _guest = req.body;
       let _userId = req["user"]._id;

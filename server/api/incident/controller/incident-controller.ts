@@ -20,6 +20,16 @@ export class IncidentController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwnIncident(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
+
+      IncidentDAO
+        ['getOwnIncident'](_userId, _developmentId)
+        .then(incidents => res.status(200).json(incidents))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createIncident(req: express.Request, res: express.Response):void {
       let _incident = req.body;
       let _attachment = req["files"];

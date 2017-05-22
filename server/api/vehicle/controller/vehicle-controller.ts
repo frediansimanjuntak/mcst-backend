@@ -47,6 +47,16 @@ export class VehicleController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwnVehicle(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _usertId = req["user"]._id;
+
+      VehicleDAO
+        ['getOwnVehicle'](_developmentId, _usertId)
+        .then(vehicles => res.status(200).json(vehicles))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createVehicle(req: express.Request, res: express.Response):void {
       let _lostfound = req.body;
       let _attachment = req["files"];

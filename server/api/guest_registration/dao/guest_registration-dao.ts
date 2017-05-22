@@ -33,6 +33,19 @@ guestSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+guestSchema.static('getOwnGuest', (userId:string, developmentId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"development": developmentId, "created_by": userId};
+
+        Guest
+          .find(_query)
+          .populate("development created_by checkin_by checkout_by contract")
+          .exec((err, guests) => {
+              err ? reject(err)
+                  : resolve(guests);
+          });
+    });
+});
 
 guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {

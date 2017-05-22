@@ -36,6 +36,21 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+
+incidentSchema.static('getOwnIncident', (userId:string, developmentId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"development": developmentId, "created_by":userId};
+
+        Incident
+          .find(_query)
+          .populate("development attachment starred_by created_by contract")
+          .exec((err, incidents) => {
+              err ? reject(err)
+                  : resolve(incidents);
+          });
+    });
+});
+
 incidentSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function(){
