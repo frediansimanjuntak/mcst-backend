@@ -10,6 +10,10 @@ export class IncidentRoutes {
         .route('/incidents')
         .get(auth.isAuthenticated(), IncidentController.getAll)
         .post(auth.isAuthenticated(), IncidentController.createIncident);
+      
+      router
+        .route('/incidents/me')
+        .get(auth.isAuthenticated(), IncidentController.getOwnIncident)
 
       router
         .route('/incidents/:id')
