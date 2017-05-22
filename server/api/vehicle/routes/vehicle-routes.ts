@@ -10,11 +10,15 @@ export class VehicleRoutes {
         .route('/vehicles')
         .get(auth.isAuthenticated(), VehicleController.getAll)
         .post(auth.isAuthenticated(), VehicleController.createVehicle);
+      
+      router
+        .route('/vehicles/me')
+        .get(auth.isAuthenticated(), VehicleController.getOwnVehicle);
 
       router
         .route('/vehicles/:id')
         .get(auth.isAuthenticated(), VehicleController.getById)
-        .delete(auth.isAuthenticated(), VehicleController.deleteVehicle);
+        .delete(auth.isAuthenticated(), VehicleController.deleteVehicle);   
 
       router
         .route('/vehicles/owner/:owner')

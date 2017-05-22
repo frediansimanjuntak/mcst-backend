@@ -75,7 +75,20 @@ vehicleSchema.static('getByOwner', (owner:string):Promise<any> => {
         }
 
         Vehicles
-          .findOne({"owner": owner})
+          .find({"owner": owner})
+          .populate("development owner created_by document")
+          .exec((err, vehicles) => {
+              err ? reject(err)
+                  : resolve(vehicles);
+          });
+    });
+});
+
+vehicleSchema.static('getOwnVehicle', (developmentId:string, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"owner": userId, "development": developmentId};
+        Vehicles
+          .find(_query)
           .populate("development owner created_by document")
           .exec((err, vehicles) => {
               err ? reject(err)
