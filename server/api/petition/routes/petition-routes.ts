@@ -10,6 +10,10 @@ export class PetitionRoutes {
         .route('/petitions')
         .get(auth.isAuthenticated(), PetitionController.getAll)
         .post(auth.isAuthenticated(), PetitionController.createPetition);
+      
+      router
+        .route('/petitions/me')
+        .get(auth.isAuthenticated(), PetitionController.getOwn);
 
       router
         .route('/petitions/:id')

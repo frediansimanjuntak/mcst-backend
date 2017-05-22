@@ -20,6 +20,16 @@ export class PetitionController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwn(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
+
+      PetitionDAO
+        ['getOwn'](_userId, _developmentId)
+        .then(petitions => res.status(200).json(petitions))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createPetition(req: express.Request, res: express.Response):void {
       let _petition = req.body;
       let _attachment = req["files"];

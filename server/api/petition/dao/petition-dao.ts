@@ -92,6 +92,20 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+petitionSchema.static('getOwn', (userId:string, development:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"development": development, "created_by": userId};
+
+        Petition
+          .find(_query)
+          .populate("created_by development facility payment" )
+          .exec((err, bookings) => {
+              err ? reject(err)
+                  : resolve(bookings);
+          });
+    });
+});
+
 petitionSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function(){
