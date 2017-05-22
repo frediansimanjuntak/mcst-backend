@@ -10,6 +10,10 @@ export class LostfoundRoutes {
         .route('/lost_found')
         .get(auth.isAuthenticated(), LostfoundController.getAll)
         .post(auth.isAuthenticated(), LostfoundController.createLostfound);
+      
+       router
+        .route('/lost_found/me')
+        .get(auth.isAuthenticated(), LostfoundController.getOwnLostFound)
 
       router
         .route('/lost_found/:id')

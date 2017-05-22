@@ -20,6 +20,16 @@ export class LostfoundController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwnLostFound(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
+
+      LostfoundDAO
+        ['getOwnLostFound'](_userId, _developmentId)
+        .then(lostfounds => res.status(200).json(lostfounds))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createLostfound(req: express.Request, res: express.Response):void {
       let _lostfound = req.body;
       let _attachment = req["files"].photo;

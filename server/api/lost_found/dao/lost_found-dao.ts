@@ -35,6 +35,19 @@ lostfoundSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+lostfoundSchema.static('getOwnLostFound', (userId:string, developmentId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"development": developmentId, "created_by": userId};
+        Lost_found
+          .find(_query)
+          .populate("development created_by photo")
+          .exec((err, lostfounds) => {
+              err ? reject(err)
+                  : resolve(lostfounds);
+          });
+    });
+});
+
 lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(lostfound)) {  
