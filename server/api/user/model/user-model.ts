@@ -10,6 +10,7 @@ var Schema = mongoose.Schema;
 var UserSchema = new mongoose.Schema({
     username: {type: String, lowercase: true, unique: true, required: true, trim: true},
     name: {type: String},
+    salulation: {type: String},
     email: {type: String, lowercase: true, unique: true, trim: true},
     password: {type: String},  
     salt: {type: String}, 
