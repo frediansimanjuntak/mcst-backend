@@ -12,19 +12,21 @@ export class NotificationController {
   }
 
   static getOwnNotification(req: express.Request, res: express.Response):void {
-      let _userId = req.params.userId;
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
 
       NotificationDAO
-        ['getOwnNotification'](_userId)
+        ['getOwnNotification'](_userId, _developmentId)
         .then(notifications => res.status(200).json(notifications))
         .catch(error => res.status(400).json(error));
   }
 
   static getOwnUnreadNotification(req: express.Request, res: express.Response):void {
-      let _userId = req.params.userId;
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
 
       NotificationDAO
-        ['getOwnUnreadNotification'](_userId)
+        ['getOwnUnreadNotification'](_userId, _developmentId)
         .then(notifications => res.status(200).json(notifications))
         .catch(error => res.status(400).json(error));
   }

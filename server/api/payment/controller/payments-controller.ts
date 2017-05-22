@@ -7,7 +7,7 @@ export class PaymentsController {
 
       PaymentDAO
         ['getAll'](_developmentId)
-        .then(Paymentss => res.status(200).json(Paymentss))
+        .then(payments => res.status(200).json(payments))
         .catch(error => res.status(400).json(error));
   }
 
@@ -16,7 +16,17 @@ export class PaymentsController {
 
       PaymentDAO
         ['getById'](_id)
-        .then(Paymentss => res.status(200).json(Paymentss))
+        .then(payment => res.status(200).json(payment))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static getByOwnPaymentReceiver(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
+
+      PaymentDAO
+        ['getByOwnPaymentReceiver'](_userId, _developmentId)
+        .then(payments => res.status(200).json(payments))
         .catch(error => res.status(400).json(error));
   }
 
@@ -29,7 +39,7 @@ export class PaymentsController {
 
       PaymentDAO
         ['createPayments'](_payments, _userId, _developmentId, _attachment)
-        .then(Payments => res.status(201).json(Payments))
+        .then(payment => res.status(201).json(payment))
         .catch(error => res.status(400).json(error));
   }
 
@@ -50,7 +60,7 @@ export class PaymentsController {
 
       PaymentDAO
         ['updatePayments'](_id, _userId, _payments, _attachment)
-        .then(payments => res.status(201).json(payments))
+        .then(payment => res.status(201).json(payment))
         .catch(error => res.status(400).json(error));
   }
 }

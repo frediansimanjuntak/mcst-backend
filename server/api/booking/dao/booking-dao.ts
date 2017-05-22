@@ -36,6 +36,20 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+bookingSchema.static('getOwn', (userId:string, development:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"development": development, "created_by": userId};
+
+        Booking
+          .find(_query)
+          .populate("created_by development facility payment" )
+          .exec((err, bookings) => {
+              err ? reject(err)
+                  : resolve(bookings);
+          });
+    });
+});
+
 bookingSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function(){

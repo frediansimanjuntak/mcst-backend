@@ -20,6 +20,16 @@ export class BookingController {
         .catch(error => res.status(400).json(error));
   }
 
+  static getOwn(req: express.Request, res: express.Response):void {
+      let _developmentId = req["user"].default_development;
+      let _userId = req["user"]._id;
+
+      BookingDAO
+        ['getOwn'](_userId, _developmentId)
+        .then(bookings => res.status(200).json(bookings))
+        .catch(error => res.status(400).json(error));
+  }
+
   static createBooking(req: express.Request, res: express.Response):void {
       let _booking = req.body;
       let _attachment = req["files"];

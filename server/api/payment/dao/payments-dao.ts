@@ -8,13 +8,12 @@ import {AWSService} from '../../../global/aws.service';
 paymentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         Payments
           .find(_query)
           .populate("development payment_proof sender receiver")
-          .exec((err, Paymentss) => {
+          .exec((err, payments) => {
               err ? reject(err)
-                  : resolve(Paymentss);
+                  : resolve(payments);
           });
     });
 });
@@ -24,13 +23,25 @@ paymentSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         } 
-
         Payments
           .findById(id)
           .populate("development payment_proof development payment_proof sender receiver")
-          .exec((err, Paymentss) => {
+          .exec((err, payments) => {
               err ? reject(err)
-                  : resolve(Paymentss);
+                  : resolve(payments);
+          });
+    });
+});
+
+paymentSchema.static('getByOwnPaymentReceiver', (userId:string, developmentId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let _query = {"development": developmentId, "receiver":userId};
+        Payments
+          .find(_query)
+          .populate("development payment_proof development payment_proof sender receiver")
+          .exec((err, payments) => {
+              err ? reject(err)
+                  : resolve(payments);
           });
     });
 });

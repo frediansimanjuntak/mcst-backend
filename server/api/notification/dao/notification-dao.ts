@@ -16,13 +16,12 @@ notificationSchema.static('getAll', (development:string):Promise<any> => {
     });
 });
 
-notificationSchema.static('getOwnNotification', (userId:string):Promise<any> => {
+notificationSchema.static('getOwnNotification', (userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!GlobalService.validateObjectId(userId)) {
         return reject(new TypeError('User ID is not a valid ObjectId.'));
       }
-
-      let _query = {user: userId};
+      let _query = {"development": developmentId, "user": userId};
       Notifications
         .find(_query)
         .exec((err, notifications) => {
@@ -32,13 +31,12 @@ notificationSchema.static('getOwnNotification', (userId:string):Promise<any> => 
     });
 });
 
-notificationSchema.static('getOwnUnreadNotification', (userId:string):Promise<any> => {
+notificationSchema.static('getOwnUnreadNotification', (userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!GlobalService.validateObjectId(userId)) {
         return reject(new TypeError('User ID is not a valid ObjectId.'));
       }
-
-      let _query = { user: userId, read_at: { $exists: false } };
+      let _query = {"development": developmentId, "user": userId, read_at: { $exists: false }};
       Notifications
         .find(_query)
         .exec((err, notifications) => {
