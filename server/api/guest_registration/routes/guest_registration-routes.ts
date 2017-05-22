@@ -10,6 +10,10 @@ export class GuestRoutes {
         .route('/guest_registrations')
         .get(auth.isAuthenticated(), GuestController.getAll)
         .post(auth.isAuthenticated(), GuestController.createGuest);
+      
+      router
+        .route('/guest_registrations/me')
+        .get(auth.isAuthenticated(), GuestController.getOwnGuest);
 
       router
         .route('/guest_registrations/:id')
