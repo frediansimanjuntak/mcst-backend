@@ -17,6 +17,10 @@ export class PaymentsRoutes {
         .delete(auth.isAuthenticated(), PaymentsController.deletePayments);
 
       router
+        .route('/payment/receiver/me')
+        .get(auth.isAuthenticated(), PaymentsController.getByOwnPaymentReceiver);
+
+      router
         .route('/payment/update/:id')
         .post(auth.isAuthenticated(), PaymentsController.updatePayments);
     }
