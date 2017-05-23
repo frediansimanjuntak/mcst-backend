@@ -57,7 +57,8 @@ userSchema.static('me', (userId:string):Promise<any> => {
               if(users.default_property.property){
                 let propertyID = users.default_property.property;
                 Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
-                  resolve({"user": users, "property_data": res});
+                  let unit = "Unit #" + res.address.unit_no + "-" + res.address.unit_no_2; 
+                  resolve({"user": users, "property_data": res, "unit": unit});
                 })
                 .catch((err) => {
                   reject(err);
