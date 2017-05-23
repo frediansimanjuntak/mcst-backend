@@ -28,7 +28,26 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
 
         Booking
           .findById(id)
-          .populate("created_by development facility payment" )
+          .populate("created_by development facility" )
+          .populate([{
+            path: 'payment',
+            model: 'Payments',
+            populate: [{
+              path: 'sender',
+              model: 'User',
+              select:('username _id email')
+            },            
+            {
+              path: 'receiver',
+              model: 'User',
+              select:('username _id email')
+            },
+            {
+              path: 'payment_proof',
+              model: 'Attachment'
+              // select:('url')
+            }]
+          }])
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
