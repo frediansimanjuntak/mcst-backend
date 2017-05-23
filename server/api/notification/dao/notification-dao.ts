@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import notificationSchema from '../model/notification-model';
 import {GlobalService} from '../../../global/global.service';
+import PaymentReminder from '../../payment_reminder/dao/payment_reminder-dao';
 
 notificationSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -54,14 +55,28 @@ notificationSchema.static('getOwnPaymentNotification', (userId:string, developme
       if (!GlobalService.validateObjectId(userId)) {
         return reject(new TypeError('User ID is not a valid ObjectId.'));
       }
-      let _query = {"development": developmentId, "user": userId, "type": "Payment Reminder"};
-      Notifications
-        .find(_query)
-        .populate("user development created_by")
-        .exec((err, notifications) => {
-          err ? reject(err)
-              : resolve(notifications);
-        });
+      var pipeline = [{
+        $match: {
+          "development": developmentId,
+           "user": userId,
+           "type": "Payment Reminder"
+          }
+        },
+        {
+          $lookup:
+          {
+            from: "paymentreminders",
+            localField: "reference_number",
+            foreignField: "reference_no",
+            as: "payment_reminder"
+          }
+        }];      
+        
+        Notifications
+        .aggregate(pipeline, (err, notif)=>{
+            err ? reject(err)
+                : resolve(notif);
+        })
     });
 });
 
