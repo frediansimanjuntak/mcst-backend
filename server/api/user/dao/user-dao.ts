@@ -489,6 +489,8 @@ userSchema.static('updateUser', (id:string, data:Object):Promise<any> => {
         User
           .findById(id, (err, user)=>{
             user.username = body.username;
+            user.salulation = body.salulation;
+            user.name = body.name;
             user.email = body.email;
             user.phone = body.phone;
             user.save((err, saved) => {
