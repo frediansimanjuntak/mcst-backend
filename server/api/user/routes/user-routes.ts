@@ -55,6 +55,14 @@ export class UserRoutes {
       router
         .route('/users/super_admin')
         .post(auth.isAuthenticated(), UserController.createUserSuperAdmin);
+      
+      router
+        .route('/users/notification/token_add/:id')
+        .post(auth.isAuthenticated(), UserController.addTokenNotif);
+      
+      router
+        .route('/users/notification/token_delete/:id')
+        .post(auth.isAuthenticated(), UserController.deleteTokenNotif);
 
       //for global user without certain rules
       router

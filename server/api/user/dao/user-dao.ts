@@ -908,6 +908,67 @@ userSchema.static('email', (data:Object, type:string):Promise<any> => {
   });
 });
 
+
+userSchema.static('addTokenNotif', (id:string, data:Object):Promise<any> => {
+  return new Promise((resolve:Function, reject:Function) => {
+    let body:any = data;
+    User
+      .find({"_id": id, "token_notif": {$in: [body.token]}})
+      .exec((err, users) => {
+        if (err) {
+          reject(err);
+        }
+        else if (users) {
+          if (users.length > 0) {
+            reject({message: "Token Already Exist"});
+          }
+          else {
+            User
+              .findByIdAndUpdate(id, {
+                $push: {
+                  "token_notif": body.token
+                }
+              })
+              .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+              })
+          }
+        }
+      })
+  });
+});
+
+userSchema.static('deleteTokenNotif', (id:string, data:Object):Promise<any> => {
+  return new Promise((resolve:Function, reject:Function) => {
+    let body:any = data;
+    User
+      .find({"_id": id, "token_notif": {$in: [body.token]}})
+      .exec((err, users) => {
+        if (err) {
+          reject(err);
+        }
+        else if (users) {
+          if (users.length > 0) {
+            User
+              .findByIdAndUpdate(id, {
+                $pull: {
+                  "token_notif": body.token
+                }
+              })
+              .exec((err, updated) => {
+                err ? reject(err)
+                    : resolve(updated);
+              })
+          }
+          else {            
+            reject({message: "Token Not Already Exist"});
+          }
+        }
+      })
+  });
+});
+
 let User = mongoose.model('User', userSchema);
 
 export default User;
