@@ -33,7 +33,6 @@ export class FacilityController {
       let _facility = req.body;
       let _userId= req["user"]._id;
       let _developmentId= req["user"].default_development;
-      console.log(_developmentId)
 
       FacilityDAO
         ['createFacility'](_facility, _userId, _developmentId)

@@ -19,7 +19,6 @@ userSchema.static('index', ():Promise<any> => {
 userSchema.static('userAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
-
         User
           .find(_query)
           .exec((err, users) => {
@@ -32,7 +31,6 @@ userSchema.static('userAll', ():Promise<any> => {
 userSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"default_development": development};
-
         User
           .find(_query, '-salt -password')
           .exec((err, users) => {
@@ -44,17 +42,16 @@ userSchema.static('getAll', (development:string):Promise<any> => {
 
 userSchema.static('me', (userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-
         User
           .findById(userId, '-salt -password')
           .populate("default_development user_group vehicles")
           .exec((err, users) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(users){
+            if (users) {
               let developmentID = users.default_development._id;
-              if(users.default_property.property){
+              if (users.default_property.property) {
                 let propertyID = users.default_property.property;
                 Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
                   let unit = "Unit #" + res.address.unit_no + "-" + res.address.unit_no_2; 
@@ -65,7 +62,7 @@ userSchema.static('me', (userId:string):Promise<any> => {
                   console.log(err);
                 })
               }
-              else{
+              else {
                 resolve({"user": users});
               }
             }
@@ -78,7 +75,6 @@ userSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         User
           .findById(id, '-salt -password')
           .populate("default_development user_group vehicles")
@@ -94,7 +90,6 @@ userSchema.static('getDetailUser', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         User
           .findById(id)
           .select("details")
@@ -110,9 +105,7 @@ userSchema.static('updatePropertyOwner', (idDevelopment:string, idProperty:strin
         if (!_.isString(idDevelopment && idProperty)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         let ObjectID = mongoose.Types.ObjectId;  
-
         Development
           .update({"_id": idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idProperty)}}},
               {
@@ -137,9 +130,7 @@ userSchema.static('updatePropertyTenant', (idDevelopment:string, idProperty:stri
         if (!_.isString(idDevelopment && idProperty)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         let ObjectID = mongoose.Types.ObjectId;  
-
         Development
           .update({"_id": idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(idProperty)}}},{
             $push:{
@@ -166,14 +157,12 @@ userSchema.static('createUser', (user:Object, developmentId:string):Promise<any>
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
         }
-
         var ObjectID = mongoose.Types.ObjectId;  
         let body:any = user;
         let IDdevelopment;
         let password = Math.random().toString(36).substr(2, 6).toUpperCase(); 
         let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
         let role;
-        console.log(body);
         var _user = new User(user);
         _user.default_development = developmentId;
         _user.default_property.development = developmentId;
@@ -238,10 +227,7 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
         let defaultProperty = body.default_property.property;
         let remarks = body.remarks;
         let updateObj = {$push: {}, $set: {}};
-
         if(body.type == 'landlord'){
-          // updateObj.$push["owned_property.$.development"] = idDevelopment;
-          // updateObj.$push["owned_property.$.property"] = idProperty;
           updateObj.$push["owned_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyOwner(idDevelopment, idProperty, idUser, remarks); 
         }
@@ -255,8 +241,6 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
           updateObj.$set["default_property"] = ({"development": idDevelopment, "role": role, "property": defaultProperty})
           updateObj.$set["default_development"] = idDevelopment;
         }
-
-        console.log(updateObj);
         User
           .findByIdAndUpdate(idUser, updateObj)
           .exec((err, updated) => {
@@ -302,9 +286,7 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         let body:any = development;
-
         User
           .findById(id, (err, userr) => {   
             if (userr.owned_property != null){
@@ -370,7 +352,6 @@ userSchema.static('resendVerificationUser', (userId:string, user:Object):Promise
     return new Promise((resolve:Function, reject:Function) => {
         let body:any = user;
         let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
-
         User
           .findById(userId)
           .exec((err, res) => {
@@ -491,6 +472,7 @@ userSchema.static('updateUser', (id:string, data:Object):Promise<any> => {
           .findById(id, (err, user)=>{
             user.username = body.username;
             user.salulation = body.salulation;
+            user.gender = body.gender;
             user.name = body.name;
             user.email = body.email;
             user.phone = body.phone;
@@ -521,21 +503,18 @@ userSchema.static('updateUsers', (id:string, user:Object):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         let body:any = user;
         let userObj = {$set: {}};
-        for(var param in body) {
+        for (var param in body) {
           userObj.$set[param] = body[param];
         }
-
         User
           .findByIdAndUpdate(id, userObj)
           .exec((err, updated) => {
               err ? reject(err)
                   : resolve(updated);
           });
-
-        if(body.password){
+        if (body.password) {
           User
             .findById(id, (err, user)=>{
               user.password = body.password;
@@ -553,10 +532,9 @@ userSchema.static('activationUser', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         User
-          .findByIdAndUpdate(id,{
-            $set:{"active": true}
+          .findByIdAndUpdate(id, {
+            $set: {"active": true}
           })
           .exec((err, deleted) => {
               err ? reject(err)
@@ -572,8 +550,8 @@ userSchema.static('unActiveUser', (id:string):Promise<any> => {
         }
 
         User
-          .findByIdAndUpdate(id,{
-            $set:{"active": false}
+          .findByIdAndUpdate(id, {
+            $set: {"active": false}
           })
           .exec((err, deleted) => {
               err ? reject(err)
@@ -589,7 +567,7 @@ userSchema.static('settingDetailUser', (id:string, user:Object):Promise<any> => 
         }
 
         let userObj = {$set: {}};
-        for(var param in user) {
+        for (var param in user) {
           userObj.$set['details.'+param] = user[param];
          }
         User
@@ -606,7 +584,6 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         let body:any = user;
         User
           .findByIdAndUpdate(id, {
@@ -629,24 +606,22 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
 
 userSchema.static('getAllSocialProfile', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-
         var ObjectID = mongoose.Types.ObjectId;
-        let _query = {};
-        
+        let _query = {};        
         User
           .find(_query)
           .populate("default_property.development")
           .exec((err, users) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(users){              
-              if(users.length == 0){
+            if (users) {              
+              if (users.length == 0) {
                 resolve({message: "no data"})
               }
-              if(users.length >= 1){
+              if (users.length >= 1) {
                 let dataArr = [];
-                for(var i = 0; i < users.length; i++){
+                for (var i = 0; i < users.length; i++) {
                   let phone;
                   let email;
                   let property;
@@ -667,28 +642,28 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                   let userId = userData._id;
                   let name = userData.name;
                   let socialProfile = userData.social_profile;
-                  if(userData.default_property.property){
+                  if (userData.default_property.property) {
                     defaultProperty = userData.default_property.property;
                   }
-                  if(userData.default_property.development){
+                  if (userData.default_property.development) {
                     defaultDevelopment = userData.default_property.development;
                     defaultPropertyDevId = userData.default_property.development._id;
                     defaultPropertyDev = defaultDevelopment.properties;
                     defaultPropertyDevName = defaultDevelopment.name;
-                    if(defaultProperty){
-                      for(var j = 0; j < defaultPropertyDev.length; j++){
+                    if (defaultProperty) {
+                      for (var j = 0; j < defaultPropertyDev.length; j++) {
                         let defaultDevPropId = defaultPropertyDev[j]._id.toString();
-                        if(defaultDevPropId == defaultProperty){
+                        if (defaultDevPropId == defaultProperty) {
                           property = defaultPropertyDev[j];
                           vehicles = property.registered_vehicle;
                           unit_no = property.address.unit_no;
                           unit_no_2 = property.address.unit_no_2;
                           block = property.address.block_no;
-                          if(vehicles.length != 0){
-                            for (var k = 0; k < vehicles.length; k++){
+                          if (vehicles.length != 0) {
+                            for (var k = 0; k < vehicles.length; k++) {
                               let vehicle = vehicles[k];
                               let owner = vehicle.owner;
-                              if(owner == userId){
+                              if (owner == userId) {
                                 licenseVehicle = vehicle.license_plate;
                               }
                             }
@@ -697,14 +672,14 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                       }
                     } 
                   }               
-                  if(privacy.phone == false){
+                  if (privacy.phone == false) {
                     phone = userData.phone;
                   }
-                  if(privacy.email == false){
+                  if (privacy.email == false) {
                     email = userData.email;
                   }           
-                  if(privacy.unit == false){
-                    if(unit_no && unit_no_2){
+                  if (privacy.unit == false) {
+                    if (unit_no && unit_no_2) {
                       unit = "Unit #" + unit_no + "-" + unit_no_2; 
                       address = defaultPropertyDevName + " blk " + block + " #" + unit_no + "-" + unit_no_2;               
                     }                
@@ -744,10 +719,10 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
           .findById(userId)
           .populate("default_property.development")
           .exec((err, users) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(users){
+            if (users) {
               let phone;
               let email;
               let privacy = users.private;
@@ -766,22 +741,22 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
               let socialProfile = users.social_profile;
               let defaultProperty = users.default_property.property;
               let defaultDevelopment = users.default_property.development;
-              if(defaultDevelopment){
+              if (defaultDevelopment) {
                 defaultPropertyDev = defaultDevelopment.properties;
                 defaultPropertyDevName = defaultDevelopment.name;
                 defaultPropertyDevId = defaultDevelopment._id;
-                for(var i = 0; i < defaultPropertyDev.length; i++){
-                   if(defaultPropertyDev[i]._id == defaultProperty){
+                for (var i = 0; i < defaultPropertyDev.length; i++) {
+                   if (defaultPropertyDev[i]._id == defaultProperty) {
                      property = defaultPropertyDev[i];
                      unit_no = property.address.unit_no;
                      unit_no_2 = property.address.unit_no_2;
                      block = property.address.block_no;
                      vehicles = property.registered_vehicle;
-                     if(vehicles.length != 0){
-                        for (var k = 0; k < vehicles.length; k++){
+                     if (vehicles.length != 0) {
+                        for (var k = 0; k < vehicles.length; k++) {
                           let vehicle = vehicles[k];
                           let owner = vehicle.owner.toString();
-                          if(owner == userId){
+                          if (owner == userId) {
                             licenseVehicle = vehicle.license_plate;
                           }
                         }
@@ -789,19 +764,18 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
                    }
                 }
               }                 
-              if(privacy.phone == false){
+              if (privacy.phone == false) {
                 phone = users.phone;
               }
-              if(privacy.email == false){
+              if (privacy.email == false) {
                 email = users.email;
               }
-              if(privacy.unit == false){
-                if(unit_no && unit_no_2){
+              if (privacy.unit == false) {
+                if (unit_no && unit_no_2) {
                   unit = "Unit #" + unit_no + "-" + unit_no_2; 
                   address = defaultPropertyDevName + " Block " + block + " #" + unit_no + "-" + unit_no_2;               
                 }                
-              }             
-
+              }
               let data = {
                 "default_development": defaultPropertyDevId,
                 "default_property": defaultProperty,
@@ -832,23 +806,22 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
         let private_phone;
         let private_email;
         let private_unit;
-
-        if(body.showPhoneNumber == true){
+        if (body.showPhoneNumber == true) {
           private_phone = false;
         }
-        if(body.showPhoneNumber == false){
+        if (body.showPhoneNumber == false) {
           private_phone = true;
         }
-        if(body.showEmail == true){
+        if (body.showEmail == true) {
           private_email = false;
         }
-        if(body.showEmail == false){
+        if (body.showEmail == false) {
           private_email = true;
         }
-        if(body.showUnit == true){
+        if (body.showUnit == true) {
           private_unit = false;
         }
-        if(body.showUnit == false){
+        if (body.showUnit == false) {
           private_unit = true;
         }
         
@@ -866,11 +839,11 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
             }
         })
         .exec((err, updated) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(updated){
-              if(body.hobbies){
+            if (updated) {
+              if (body.hobbies) {
                 Hobbies.createHobbies(body);
               }
               resolve({message: "updated"});
@@ -891,21 +864,21 @@ userSchema.static('refreshToken', (authorization:string):Promise<any> => {
         let token = authorization.substring(7);
         User.decodeToken(token).then((res) => {
           let userId = res._id;
-          if(res.exp){
+          if (res.exp) {
             User
             .findById(userId)
             .exec((err, user) => {
-              if(err){
+              if (err) {
                 reject(err);
               }
-              if(user){
+              if (user) {
                 let remember = "true"
                 var newToken = signToken(user._id, user.role, user.default_development, remember);
                 resolve({token: newToken})
               }
             })
           }
-          else{
+          else {
             reject({message:"token not expired"})
           }          
         })
@@ -917,18 +890,17 @@ userSchema.static('refreshToken', (authorization:string):Promise<any> => {
 
 userSchema.static('email', (data:Object, type:string):Promise<any> => {
   return new Promise((resolve:Function, reject:Function) => {
-
-    if(type == 'signUp'){
+    if (type == 'signUp') {
       mail.signUp(data).then(res => {
         resolve(res);
       });
     }
-    if(type == 'resendVerificationCode'){
+    if (type == 'resendVerificationCode') {
       mail.resendVerificationCode(data).then(res => {
         resolve(res);
       });
     }
-    if(type == 'verifiedCode'){
+    if (type == 'verifiedCode') {
       mail.verifiedCode(data).then(res => {
         resolve(res);
       });

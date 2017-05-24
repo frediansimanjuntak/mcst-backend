@@ -263,7 +263,7 @@ developmentSchema.static('getByIdDevProperties', (idDevelopment:string, idProper
         var ObjectID = mongoose.Types.ObjectId;
         Development 
             .findById(idDevelopment)
-            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident") 
+            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident properties.vehicles") 
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idProperties)}}})                
             .exec((err, res) => {
                 if (err) {
@@ -286,7 +286,7 @@ developmentSchema.static('getByIdProperties', (name_url:string, idproperties:str
         var ObjectID = mongoose.Types.ObjectId;
         Development 
             .findOne({"name_url": name_url})
-            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident") 
+            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident properties.vehicles") 
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})                
             .exec((err, properties) => {
                 err ? reject(err)
