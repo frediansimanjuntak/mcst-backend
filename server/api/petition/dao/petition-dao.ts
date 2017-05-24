@@ -11,7 +11,6 @@ import {AWSService} from '../../../global/aws.service';
 petitionSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         Petition
           .find(_query)
           .populate("development attachment")
@@ -42,7 +41,6 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Petition
           .findById(id)
           .populate("development attachment")
@@ -61,14 +59,14 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
             }
           })
           .exec((err, petitions) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(petitions){
+            if (petitions) {
               let user = petitions.created_by;
               let developmentID = user.default_development._id;
               let developmentName = user.default_development.name;
-              if(user.default_property.property){
+              if (user.default_property.property) {
                 let propertyID = user.default_property.property;
                 Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
                   let data = {
@@ -82,7 +80,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
                   reject(err);
                 })
               }
-              else{
+              else {
                 resolve(petitions);
               }
             }
@@ -93,7 +91,6 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
 petitionSchema.static('getOwn', (userId:string, development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development, "created_by": userId};
-
         Petition
           .find(_query)
           .populate("development attachment")
@@ -121,20 +118,20 @@ petitionSchema.static('getOwn', (userId:string, development:string):Promise<any>
 
 petitionSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        var generateCode = function(){
-          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+        var generateCode = function() {
+          let randomCode = Math.floor(Math.random() * 9000000000) + 1000000000;
           let _query = {"registration_no": randomCode};
           Petition
             .find(_query)
             .exec((err, petition) => {
-              if(err){
+              if (err) {
                 reject(err);
               }
-              if(petition){
-                if(petition.length != 0){
+              if (petition) {
+                if (petition.length != 0) {
                   generateCode();
                 }
-                if(petition.length == 0){
+                if (petition.length == 0) {
                   resolve(randomCode);
                 }
               }
@@ -152,10 +149,9 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
         let body:any = petition;
         let file:any = attachment;
         let extra;
-        if(body.petition_type == "new tenant"){
+        if (body.petition_type == "new tenant") {
           extra = body.tenant;
         }
-
         Petition.generateCode().then((code) => {
           var _petition = new Petition(petition);
           _petition.reference_no = code;
@@ -163,60 +159,58 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
           _petition.extra = extra;
           _petition.development = developmentId;        
           _petition.save((err, petitions) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(petitions){
-              if(petitions.petition_type != "new tenant"){
-                let data = {
-                  "property": body.property,
-                  "company": body.company,
-                  "title": body.petition_type,
-                  "contract_type": body.petition_type,
-                  "reference_type": "petition",
-                  "reference_id": petitions._id,
-                  "start_time": body.start_time,
-                  "end_time": body.end_time,
-                  "created_by": userId,
-                  "remark": body.remark,
-                  "new_company": body.new_company,
-                  "sign": body.sign
-                }
-                Contract.createContract(data, userId, developmentId, file.attachment).then((result) =>{
-                  petitions.contract = result._id;
-                  petitions.save((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                  });
-                })
-                .catch(err=>{
-                  reject(err);
-                })
+            if (petitions) {
+              if (petitions.petition_type != "new tenant") {
+                Petition.createContractPetition(petition, userId.toString(), petitions._id.toString(), developmentId.toString(), attachment);
               }
-              else{
-                if(file.attachment){
-                   Attachment.createAttachment(file.attachment, userId)
-                    .then(res => {
-                      let idAttachment = res.idAtt;
-                      petitions.attachment = idAttachment;
-                      petitions.save((err, saved) => {
-                        if(err){
-                          reject(err);
-                        }
-                      });              
-                    })
-                    .catch(err=>{
-                      reject(err);
-                    })
-                }                   
-                resolve(petitions); 
-              }   
+              let _query = {"_id": petitions._id};
+              Petition.addAttachmentPetition(attachment, _query, userId.toString());                  
+              resolve(petitions);                
             }
           }); 
         })        
         .catch((err) => {
           reject(err);
         })                    
+    });
+});
+
+petitionSchema.static('createContractPetition', (petition:Object, userId:string, petitionId:string, developmentId:string, attachment:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      let body:any = petition;
+      let file:any = attachment;
+      let data = {
+        "property": body.property,
+        "company": body.company,
+        "title": body.petition_type,
+        "contract_type": body.petition_type,
+        "reference_type": "petition",
+        "reference_id": petitionId,
+        "start_time": body.start_time,
+        "end_time": body.end_time,
+        "created_by": userId,
+        "remark": body.remark,
+        "new_company": body.new_company,
+        "sign": body.sign
+      }
+      Contract.createContract(data, userId, developmentId, file.attachment).then((result) => {
+        Petition
+          .findByIdAndUpdate(petitionId, {
+            $set: {
+              "contract": result._id
+            }
+          })
+          .exec((err, updated) => {
+            err ? reject(err)
+                : resolve(updated);
+          })       
+      })
+      .catch(err=>{
+        reject(err);
+      })
     });
 });
 
@@ -239,51 +233,25 @@ petitionSchema.static('updatePetition', (id:string, userId:string, petition:Obje
         if (!_.isObject(petition)) {
           return reject(new TypeError('Petition is not a valid object.'));
         }
-
         let petitionObj = {$set: {}};
-        for(var param in petition) {
+        for (var param in petition) {
           petitionObj.$set[param] = petition[param];
         }
-
         let ObjectID = mongoose.Types.ObjectId; 
         let _query = {"_id": id};
-
-        var files = [].concat(attachment);
-        var idAttachment = [];
-
-        if(attachment != null){
-          Attachment.createAttachment(attachment, userId)
-            .then(res => {
-              var idAttachment=res.idAtt;
-
-              Petition
-                .update(_query,{
-                  $set: {
-                    "attachment": idAttachment
-                  }
-                })
-                .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                 });
-            })
-            .catch(err=>{
-              resolve({message: "attachment error"});
-            })                            
-        } 
-        
+        Petition.addAttachmentPetition(attachment, _query, userId.toString());    
         Petition
           .update(_query, petitionObj)
           .exec((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-            }); 
+              err ? reject(err)
+                  : resolve(saved);
+          }); 
     });
 });
 
 petitionSchema.static('archieve', (arrayId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let body:any = arrayId
+        let body:any = arrayId;
         Petition
           .update({"_id": {$in: body.ids}}, {
             $set: {
@@ -291,15 +259,15 @@ petitionSchema.static('archieve', (arrayId:string):Promise<any> => {
             }
           }, {multi: true})
           .exec((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
+              err ? reject(err)
+                  : resolve(saved);
           });
     });
 });
 
 petitionSchema.static('unarchieve', (arrayId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {      
-      let body:any = arrayId
+      let body:any = arrayId;
       Petition
         .update({"_id": {$in: body.ids}}, {
           $set: {
@@ -310,6 +278,34 @@ petitionSchema.static('unarchieve', (arrayId:string):Promise<any> => {
               err ? reject(err)
                   : resolve(saved);
         });
+    });
+});
+
+petitionSchema.static('addAttachmentPetition', (attachment:Object, query:Object, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {      
+       let file:any = attachment;
+       if (file.attachment) {
+          Attachment.createAttachment(file.attachment, userId)
+            .then((res) => {
+              let idAttachment = res.idAtt;
+              Petition
+                .update(query, {
+                  $set: {
+                    "attachment": idAttachment
+                  }
+                })
+                .exec((err, saved) => {
+                    err ? reject(err)
+                        : resolve(saved);
+                });            
+            })
+            .catch((err) => {
+              reject(err);
+            })
+      }
+      else {
+        resolve({message: "No Attachment Files"});
+      }
     });
 });
 

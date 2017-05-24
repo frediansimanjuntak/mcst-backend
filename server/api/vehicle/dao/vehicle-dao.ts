@@ -25,7 +25,6 @@ vehicleSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Vehicles
           .findById(id)
           .populate("development owner created_by document")
@@ -41,7 +40,6 @@ vehicleSchema.static('getByProperty', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Vehicles
           .find({"property": id})
           .populate("development owner created_by document")
@@ -57,7 +55,6 @@ vehicleSchema.static('getByLicensePlate', (license:string):Promise<any> => {
         if (!_.isString(license)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Vehicles
           .findOne({"license_plate": license})
           .populate("development owner created_by document")
@@ -73,7 +70,6 @@ vehicleSchema.static('getByOwner', (owner:string):Promise<any> => {
         if (!_.isString(owner)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Vehicles
           .find({"owner": owner})
           .populate("development owner created_by document")
@@ -86,7 +82,7 @@ vehicleSchema.static('getByOwner', (owner:string):Promise<any> => {
 
 vehicleSchema.static('getOwnVehicle', (developmentId:string, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"owner": userId, "development": developmentId};
+        let _query = {$or: [{"owner": userId}, {"created_by": userId}], "development": developmentId};
         Vehicles
           .find(_query)
           .populate("development owner created_by document")
@@ -102,43 +98,43 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
       if (!_.isObject(vehicle)) {  
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
-      let files:any = attachment;
-      let document = files.document;
-      var _vehicle = new Vehicles(vehicle);
-      _vehicle.created_by = userId;
-      _vehicle.development = developmentId;
-      _vehicle.save((err, saved) => {
-        if(err){
-          reject(err);
-        }
-        if(saved){
-          let data = {
-            "idDevelopment": saved.development,
-            "idProperty": saved.property,
-            "idVehicle": saved._id,
-            "idUser": saved.owner
+      let body:any = vehicle;
+      Vehicles
+        .find({"license_plate": body.license_plate})
+        .exec((err, veh) => {
+          if (err){
+            reject(err);
           }
-          Vehicles.addVehicleToProperty(data);
-          Vehicles.addVehicleToUser(data);
-          if(document){
-            Attachment.createAttachment(document, userId)
-              .then(res => {
-                var idAttachment = res.idAtt;
-                saved.document = idAttachment;
-                saved.save((err, result) => {
-                  err ? reject(err)
-                      : resolve(result);
-                })
-              })
-              .catch(err=>{
-                resolve({message: "attachment error", err});
-              })
+          else if (veh) {
+            if (veh.length == 0) {
+              var _vehicle = new Vehicles(vehicle);
+              _vehicle.created_by = userId;
+              _vehicle.development = developmentId;
+              _vehicle.save((err, saved) => {
+                if (err) {
+                  reject(err);
+                }
+                if (saved) {
+                  let data = {
+                    "idDevelopment": saved.development,
+                    "idProperty": saved.property,
+                    "idVehicle": saved._id,
+                    "idUser": saved.owner
+                  }
+                  let _query = {"_id": saved._id};    
+                  Vehicles.addVehicleToProperty(data);
+                  Vehicles.addVehicleToUser(data);                 
+                  Vehicles.addAttachmentVehicle(attachment, _query, userId.toString());          
+                  resolve(saved);
+                }
+              });
+            }
+            else {
+              resolve({message: "This Vehicles is Already"});
+            }
           }
-          else{
-            resolve(saved);
-          }
-        }
-      });        
+        })
+              
     });
 });
 
@@ -158,9 +154,8 @@ vehicleSchema.static('addVehicleToUser', (data:Object):Promise<any> => {
           }
         })
         .exec((err, updated) => {
-          console.log(updated);
-            err ? reject(err)
-                : resolve(updated);
+          err ? reject(err)
+              : resolve(updated);
         });       
     });
 });
@@ -170,10 +165,8 @@ vehicleSchema.static('addVehicleToProperty', (data:Object):Promise<any> => {
       if (!_.isObject(data)) {  
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
-
       let ObjectID = mongoose.Types.ObjectId;   
       let body:any = data;
-
       Development
         .update({"_id": body.idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(body.idProperty)}}}, {
           $push: {
@@ -197,10 +190,10 @@ vehicleSchema.static('deleteVehicle', (id:string):Promise<any> => {
         Vehicles
           .findById(id)
           .exec((err, vehicle) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(vehicle){
+            if (vehicle) {
               let data = {
                 "idDevelopment": vehicle.development,
                 "idProperty": vehicle.property,
@@ -216,7 +209,7 @@ vehicleSchema.static('deleteVehicle', (id:string):Promise<any> => {
                       : resolve({message: "Delete Success"});
               });
             }
-            else{
+            else {
               resolve({message: "No data to delete"});
             }
           })        
@@ -228,10 +221,8 @@ vehicleSchema.static('deleteVehicleToUser', (data:Object):Promise<any> => {
       if (!_.isObject(data)) {  
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
-
       let ObjectID = mongoose.Types.ObjectId;   
       let body:any = data;
-
       User
         .update({"_id": body.idUser}, {
           $pull: {
@@ -251,10 +242,8 @@ vehicleSchema.static('deleteVehicleToProperty', (data:Object):Promise<any> => {
       if (!_.isObject(data)) {  
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
-
       let ObjectID = mongoose.Types.ObjectId;   
       let body:any = data;
-
       Development
         .update({"_id": body.idDevelopment, "properties": {$elemMatch: {"_id": new ObjectID(body.idProperty)}}}, {
           $pull: {
@@ -275,45 +264,48 @@ vehicleSchema.static('updateVehicle', (id:string, userId:string, vehicle:Object,
         if (!_.isObject(vehicle)) {
           return reject(new TypeError('Lost and Found is not a valid object.'));
         }
-
         let vehicleObj = {$set: {}};
-        for(var param in vehicle) {
+        for (var param in vehicle) {
           vehicleObj.$set[param] = vehicle[param];
         }
-
         let ObjectID = mongoose.Types.ObjectId; 
-        let _query={"_id": id};
-
-        let file:any = attachment;
-        var files = [].concat(attachment);
-        var idAttachment = [];
-
-        if(file != null){
-          Attachment.createAttachment(attachment, userId).then(res => {
-            var idAttachment = res.idAtt;
-
-            Vehicles
-              .update(_query,{
-                $set: {
-                  "photo": idAttachment
-                }
-              })
-              .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-               });
-          })
-          .catch(err=>{
-            resolve({message: "attachment error"});
-          })              
-        } 
-        
+        let _query = {"_id": id};           
+        Vehicles.addAttachmentVehicle(attachment, _query, userId.toString());
         Vehicles
           .update(_query, vehicleObj)
           .exec((err, saved) => {
               err ? reject(err)
                   : resolve(saved);
           });        
+    });
+});
+
+vehicleSchema.static('addAttachmentVehicle', (attachment:Object, query:Object, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      let files:any = attachment;
+      console.log(files);
+      if (files) {
+        let documentAtt = files.document;
+        Attachment.createAttachment(documentAtt, userId).then(res => {
+          let idAttachment = res.idAtt;
+          Vehicles
+            .update(query,{
+              $set: {
+                "document": idAttachment
+              }
+            })
+            .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });
+        })
+        .catch(err=>{
+          resolve(err);
+        })              
+      } 
+      else {
+        resolve({message: "No Attachment Files"});
+      }
     });
 });
 

@@ -12,7 +12,6 @@ export class UserController {
   }
 
   static userAll(req: express.Request, res: express.Response):void {
-
       UserDAO
         ['userAll']()
         .then(users => res.status(200).json(users))
@@ -21,7 +20,6 @@ export class UserController {
 
   static getAll(req: express.Request, res: express.Response):void {
       let _developmentId = req["user"].default_development;
-
       UserDAO
         ['getAll'](_developmentId)
         .then(users => res.status(200).json(users))
@@ -29,8 +27,7 @@ export class UserController {
   }
 
   static me(req: express.Request, res: express.Response):void {
-      let _userId = req["user"]._id;
-      
+      let _userId = req["user"]._id;      
       UserDAO
         ['me'](_userId)
         .then(users => res.status(200).json(users))
@@ -48,7 +45,6 @@ export class UserController {
   static createUser(req: express.Request, res: express.Response):void {
       let _user = req.body;
       let _developmentId = req["user"].default_development;
-
       UserDAO
         ['createUser'](_user, _developmentId)
         .then(user => res.status(201).json(user))
@@ -57,7 +53,6 @@ export class UserController {
 
   static createUserSuperAdmin(req: express.Request, res: express.Response):void {
       let _user = req.body;
-
       UserDAO
         ['createUserSuperAdmin'](_user)
         .then(user => res.status(201).json(user))
@@ -66,7 +61,6 @@ export class UserController {
 
   static createUsers(req: express.Request, res: express.Response):void {
       let _user = req.body;
-
       UserDAO
         ['createUsers'](_user)
         .then(user => res.status(201).json(user))
@@ -75,7 +69,6 @@ export class UserController {
 
   static InputUserInLandlordOrTenant(req: express.Request, res: express.Response):void {
       let _user = req.body;
-
       UserDAO
         ['InputUserInLandlordOrTenant'](_user)
         .then(user => res.status(201).json(user))
@@ -85,7 +78,6 @@ export class UserController {
   static deleteUser(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _development = req.body;
-
       UserDAO
         ['deleteUser'](_id, _development)
         .then(() => res.status(200).end())
@@ -95,7 +87,6 @@ export class UserController {
   static resendVerificationUser(req: express.Request, res: express.Response):void {
       let _userId = req["user"]._id;
       let _body = req.body;
-
       UserDAO
         ['resendVerificationUser'](_userId, _body)
         .then(user => res.status(201).json(user))
@@ -105,7 +96,6 @@ export class UserController {
   static verifiedUser(req: express.Request, res: express.Response):void {
       let _userId = req["user"]._id;
       let _body = req.body; 
-
       UserDAO
         ['verifiedUser'](_userId, _body)
         .then(user => res.status(201).json(user))
@@ -115,7 +105,6 @@ export class UserController {
   static updateUser(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _user = req.body;
-
       UserDAO
         ['updateUser'](_id, _user)
         .then(user => res.status(201).json(user))
@@ -125,7 +114,6 @@ export class UserController {
   static updateUsers(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _user = req.body;
-
       UserDAO
         ['updateUser'](_id, _user)
         .then(user => res.status(201).json(user))
@@ -134,7 +122,6 @@ export class UserController {
 
   static activationUser(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       UserDAO
         ['activationUser'](_id)
         .then(user => res.status(201).json(user))
@@ -143,7 +130,6 @@ export class UserController {
 
   static unActiveUser(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       UserDAO
         ['unActiveUser'](_id)
         .then(user => res.status(201).json(user))
@@ -152,7 +138,6 @@ export class UserController {
 
   static decodeToken(req: express.Request, res: express.Response):void {
       let _data = req.body;
-
       UserDAO
         ['decodeToken'](_data)
         .then(user => res.status(201).json(user))
@@ -161,7 +146,6 @@ export class UserController {
 
   static refreshToken(req: express.Request, res: express.Response):void {
       let _authorization = req.headers.authorization;
-
       UserDAO
         ['refreshToken'](_authorization)
         .then(user => res.status(201).json(user))
