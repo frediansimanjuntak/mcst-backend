@@ -41,16 +41,16 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
         let body:any = data;
         let hobbies = body.hobbies;
 
-        for(var i = 0; i <hobbies.length; i++){
+        for(var i = 0; i <hobbies.length; i++) {
           let hobby = hobbies[i];
           Hobbies
             .find({"name": hobby})
             .exec((err, res) => {
-              if(err){
+              if (err) {
                 reject(err);
               }
-              if(res){
-                if(res.length == 0){
+              if (res) {
+                if (res.length == 0) {
                   var _hobby = new Hobbies();
                   _hobby.name = hobby;
                   _hobby.slug = GlobalService.slugify(hobby)
@@ -59,7 +59,7 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
                         : resolve(saved);
                   });
                 }
-                if(res.length >= 1){
+                if (res.length >= 1) {
                   resolve({message: "Already data"})
                 }
               }

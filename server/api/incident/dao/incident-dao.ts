@@ -53,21 +53,21 @@ incidentSchema.static('getOwnIncident', (userId:string, developmentId:string):Pr
 
 incidentSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        var generateCode = function(){
+        var generateCode = function() {
           let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
           console.log(randomCode);
           let _query = {"reference_no": randomCode};
           Incident
             .find(_query)
             .exec((err, incident) => {
-              if(err){
+              if (err) {
                 reject(err);
               }
-              if(incident){
-                if(incident.length != 0){
+              if (incident) {
+                if (incident.length > 0) {
                   generateCode();
                 }
-                if(incident.length == 0){
+                else {
                   resolve(randomCode);
                 }
               }
@@ -82,36 +82,20 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
         if (!_.isObject(incident)) {
           return reject(new TypeError('Incident is not a valid object.'));
         }
-
         let files:any = attachment;
         let attachments = files.attachment;
-        console.log(attachment);
         Incident.generateCode().then((code) => {
           var _incident = new Incident(incident);
           _incident.reference_no = code;
           _incident.created_by = userId;
           _incident.development = developmentId;
           _incident.save((err, incident) => {
-            if(err){
+            if (err) {
               reject(err);
             }
-            if(incident){
-              if(attachments){
-                Attachment.createAttachment(attachments, userId)
-                .then((res) => {
-                  var idAttachment = res.idAtt;
-                  console.log(idAttachment);
-                  incident.attachment = idAttachment;
-                  incident.save((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-                        console.log(saved);
-                  });
-                })
-                .catch((err) => {
-                  resolve({message: "attachment error"});
-                }) 
-              }
+            if (incident) {
+              let _query = {"_id": incident._id};
+              Incident.addAttachmentLostfound(attachment, _query, userId.toString()); 
               resolve(incident);
             }
           });
@@ -127,7 +111,6 @@ incidentSchema.static('deleteIncident', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Incident
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -142,42 +125,13 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
         if (!_.isObject(incident)) {
           return reject(new TypeError('Incident is not a valid object.'));
         }
-
-        let file:any = attachment
-        let attachmentfile = file.attachment;
-
-        let incidentObj = {$set: {}};
-        for(var param in incident) {
-          incidentObj.$set[param] = incident[param];
-        }
-
         let ObjectID = mongoose.Types.ObjectId; 
         let _query = {"_id": id};
-
-        var files = [].concat(attachmentfile);
-        var idAttachment = [];
-
-        if(attachmentfile != null){
-          Attachment.createAttachment(attachmentfile, userId)
-            .then(res => {
-              var idAttachment = res.idAtt;
-
-              Incident
-                .update(_query,{
-                  $set: {
-                    "attachment": idAttachment
-                  }
-                })
-                .exec((err, saved) => {
-                      err ? reject(err)
-                          : resolve(saved);
-                        });
-            })
-            .catch(err=>{
-              resolve({message: "attachment error"});
-            })                  
-        } 
-        
+        let incidentObj = {$set: {}};
+        for (var param in incident) {
+          incidentObj.$set[param] = incident[param];
+        }        
+        Incident.addAttachmentLostfound(attachment, _query, userId.toString());       
         Incident
           .update(_query, incidentObj)
           .exec((err, saved) => {
@@ -191,8 +145,7 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
-        }    
-
+        }
         Incident
           .findById(id)
           .where("status").equals("pending")
@@ -213,7 +166,6 @@ incidentSchema.static('starred', (id:string, starred_by:string):Promise<any> => 
       if (!_.isObject(starred_by)) {
         return reject(new TypeError('Starred By is not a valid object.'));
       }
-
       Incident
         .findByIdAndUpdate(id,     
           {
@@ -231,7 +183,6 @@ incidentSchema.static('unstarred', (id:string, starred_by:string):Promise<any> =
       if (!_.isObject(starred_by)) {
         return reject(new TypeError('Starred By is not a valid object.'));
       }
-
       Incident
         .findByIdAndUpdate(id,     
           {
@@ -250,7 +201,6 @@ incidentSchema.static('resolve', (id:string, userId:string, incident:string):Pro
             return reject(new TypeError('Id is not a valid string.'));
       }
       let body:any = incident;
-
       Incident
         .findByIdAndUpdate(id,     
           {
@@ -273,7 +223,6 @@ incidentSchema.static('archieve', (id:string):Promise<any> => {
       if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
       }
-
       Incident
         .findByIdAndUpdate(id,     
           {
@@ -292,7 +241,6 @@ incidentSchema.static('unarchieve', (id:string):Promise<any> => {
       if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
       }
-
       Incident
         .findByIdAndUpdate(id,     
           {
@@ -302,6 +250,34 @@ incidentSchema.static('unarchieve', (id:string):Promise<any> => {
               err ? reject(err)
                   : resolve(saved);
         });
+    });
+});
+
+incidentSchema.static('addAttachmentIncident', (attachment:Object, query:Object, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {      
+       let file:any = attachment;
+       if (file.attachment) {
+          Attachment.createAttachment(file.attachment, userId)
+            .then((res) => {
+              let idAttachment = res.idAtt;
+              Incident
+                .update(query, {
+                  $set: {
+                    "attachment": idAttachment
+                  }
+                })
+                .exec((err, saved) => {
+                    err ? reject(err)
+                        : resolve(saved);
+                });            
+            })
+            .catch((err) => {
+              reject(err);
+            })
+      }
+      else {
+        resolve({message: "No Attachment Files"});
+      }
     });
 });
 
