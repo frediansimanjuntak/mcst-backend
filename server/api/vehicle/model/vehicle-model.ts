@@ -1,5 +1,3 @@
-// import * as mongoose from 'mongoose';
-
 import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
@@ -30,11 +28,11 @@ var vehicleSchema = new mongoose.Schema({
 	remarks: {type: String}		
 });	
 
-vehicleSchema.pre('remove',(next)=>{
+vehicleSchema.pre('remove', (next) => {
 	var vehicle = this;
-	attachment.find({_id:{$in: vehicle.document}},(err, attachments)=>{
-		for(var i = 0; i <attachments.length; i++){
-			if(attachments[i].name) AWSService.delete(attachments[i].name);
+	attachment.find({_id: {$in: vehicle.document}}, (err, attachments) => {
+		for (var i = 0; i < attachments.length; i++) {
+			if (attachments[i].name) AWSService.delete(attachments[i].name);
 			attachments[i].name.remove();
 		}
 	});
