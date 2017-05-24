@@ -1,5 +1,7 @@
 import * as mongoose from 'mongoose';
 var Schema = mongoose.Schema;
+import attachment from '../../attachment/dao/attachment-dao';
+import {AWSService} from '../../../global/aws.service';
 
 var lostfoundSchema = new mongoose.Schema({
 	serial_number: {type: String, trim: true},
@@ -21,6 +23,16 @@ var lostfoundSchema = new mongoose.Schema({
     	ref: 'User'
 	},
 	created_at: {type: Date, default: Date.now}
+});
+
+lostfoundSchema.pre('remove', (next) => {
+	var lostFound = this;
+	attachment.find({_id: {$in: lostFound.attachment}}, (err, attachments) => {
+		for (var i = 0; i < attachments.length; i++) {
+			if (attachments[i].name) AWSService.delete(attachments[i].name);
+			attachments[i].name.remove();
+		}
+	});
 });
 
 export default lostfoundSchema;

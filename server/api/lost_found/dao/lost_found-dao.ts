@@ -8,7 +8,6 @@ import {AWSService} from '../../../global/aws.service';
 lostfoundSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         Lost_found
           .find(_query)
           .populate("development created_by photo")
@@ -24,7 +23,6 @@ lostfoundSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Lost_found
           .findById(id)
           .populate("development created_by photo")
@@ -48,28 +46,53 @@ lostfoundSchema.static('getOwnLostFound', (userId:string, developmentId:string):
     });
 });
 
+lostfoundSchema.static('generateCode', ():Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var generateCode = function() {
+          let randomCode = Math.floor(Math.random() * 9000000000) + 1000000000;
+          let _query = {"serial_number": randomCode};
+          Lost_found
+            .find(_query)
+            .exec((err, petition) => {
+              if (err) {
+                reject(err);
+              }
+              else if (petition) {
+                if (petition.length > 0) {
+                  generateCode();
+                }
+                else {
+                  resolve(randomCode);
+                }
+              }
+            })
+        }
+        generateCode();
+    });
+});
+
 lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(lostfound)) {  
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
-
-        Attachment.createAttachment(attachment, userId).then(res => {
-        var idAttachment = res.idAtt;
-        let serial = Math.ceil(Math.random()*10000000);
-
+      Lost_found.generateCode().then((code) => {
         var _lostfound = new Lost_found(lostfound);
         _lostfound.created_by = userId;
-        _lostfound.serial_number = serial;
+        _lostfound.serial_number = code;
         _lostfound.development = developmentId;
-        _lostfound.photo = idAttachment;
         _lostfound.save((err, saved) => {
-          err ? reject(err)
-              : resolve(saved);
+            if (err) {
+                reject(err);
+            }
+            else if (saved) {
+                let _query = {"_id": saved._id};
+                Lost_found.addAttachmentLostfound(attachment, _query, userId.toString());  
+            }
         });
       })
       .catch(err=>{
-        resolve({message: "attachment error"});
+        resolve(err);
       })
     });
 });
@@ -79,7 +102,6 @@ lostfoundSchema.static('deleteLostfound', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Lost_found
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -94,39 +116,13 @@ lostfoundSchema.static('updateLostfound', (id:string, userId:string, lostfound:O
         if (!_.isObject(lostfound)) {
           return reject(new TypeError('Lost and Found is not a valid object.'));
         }
-
-        let lostFoundObj = {$set: {}};
-        for(var param in lostfound) {
-          lostFoundObj.$set[param] = lostfound[param];
-        }
-
         let ObjectID = mongoose.Types.ObjectId; 
-        let _query={"_id": id};
-
-        let file:any = attachment;
-        var files = [].concat(attachment);
-        var idAttachment = [];
-
-        if(file != null){
-          Attachment.createAttachment(attachment, userId).then(res => {
-            var idAttachment = res.idAtt;
-
-            Lost_found
-              .update(_query,{
-                $set: {
-                  "photo": idAttachment
-                }
-              })
-              .exec((err, saved) => {
-                    err ? reject(err)
-                        : resolve(saved);
-               });
-          })
-          .catch(err=>{
-            resolve({message: "attachment error"});
-          })              
-        } 
-        
+        let _query = {"_id": id};
+        let lostFoundObj = {$set: {}};
+        for (var param in lostfound) {
+          lostFoundObj.$set[param] = lostfound[param];
+        }                
+        Lost_found.addAttachmentLostfound(attachment, _query, userId.toString());        
         Lost_found
           .update(_query, lostFoundObj)
           .exec((err, saved) => {
@@ -142,10 +138,9 @@ lostfoundSchema.static('archieveLostfound', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Lost_found
         .findByIdAndUpdate(id, {
-            $set:{
+            $set: {
               "archieve": true
             }
         })
@@ -153,6 +148,34 @@ lostfoundSchema.static('archieveLostfound', (id:string):Promise<any> => {
               err ? reject(err)
                   : resolve(updated);
           });
+    });
+});
+
+lostfoundSchema.static('addAttachmentLostfound', (attachment:Object, query:Object, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {      
+       let file:any = attachment;
+       if (file.photo) {
+          Attachment.createAttachment(file.photo, userId)
+            .then((res) => {
+              let idAttachment = res.idAtt;
+              Lost_found
+                .update(query, {
+                  $set: {
+                    "photo": idAttachment
+                  }
+                })
+                .exec((err, saved) => {
+                    err ? reject(err)
+                        : resolve(saved);
+                });            
+            })
+            .catch((err) => {
+              reject(err);
+            })
+      }
+      else {
+        resolve({message: "No Attachment Files"});
+      }
     });
 });
 

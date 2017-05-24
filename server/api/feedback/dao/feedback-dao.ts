@@ -110,7 +110,7 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
           Feedback
             .findByIdAndUpdate(id, {
               $set: {
-                "replies": body.reply,
+                "reply": body.reply,
                 "reply_by": userId,
                 "reply_at": new Date()
               }

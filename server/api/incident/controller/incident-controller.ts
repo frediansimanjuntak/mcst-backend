@@ -4,7 +4,6 @@ import IncidentDAO from '../dao/incident-dao';
 export class IncidentController {
   static getAll(req: express.Request, res: express.Response):void {
       let _developmentId = req["user"].default_development;
-
       IncidentDAO
         ['getAll'](_developmentId)
         .then(incidents => res.status(200).json(incidents))
@@ -13,7 +12,6 @@ export class IncidentController {
 
   static getById(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       IncidentDAO
         ['getById'](_id)
         .then(incidents => res.status(200).json(incidents))
@@ -23,7 +21,6 @@ export class IncidentController {
   static getOwnIncident(req: express.Request, res: express.Response):void {
       let _developmentId = req["user"].default_development;
       let _userId = req["user"]._id;
-
       IncidentDAO
         ['getOwnIncident'](_userId, _developmentId)
         .then(incidents => res.status(200).json(incidents))
@@ -34,8 +31,7 @@ export class IncidentController {
       let _incident = req.body;
       let _attachment = req["files"];
       let _userId = req["user"]._id;
-      let _developmentId = req["user"].default_development;
-      
+      let _developmentId = req["user"].default_development;      
       IncidentDAO
         ['createIncident'](_incident, _userId, _developmentId, _attachment)
         .then(incident => res.status(201).json(incident))
@@ -44,7 +40,6 @@ export class IncidentController {
 
   static deleteIncident(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       IncidentDAO
         ['deleteIncident'](_id)
         .then(() => res.status(200).ebnd())
@@ -53,7 +48,6 @@ export class IncidentController {
 
   static statusIncident(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       IncidentDAO
         ['statusIncident'](_id)
         .then(incident => res.status(201).json(incident))
@@ -65,7 +59,6 @@ export class IncidentController {
       let _incident = req.body;
       let _attachment = req["files"];
       let _userId = req["user"]._id;
-
       IncidentDAO
         ['updateIncident'](_id,_userId, _incident, _attachment)
         .then(incident => res.status(201).json(incident))
@@ -75,7 +68,6 @@ export class IncidentController {
   static starred(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _starred_by = req["user"]._id;
-
       IncidentDAO
         ['starred'](_id, _starred_by)
         .then(incident => res.status(201).json(incident))
@@ -84,8 +76,7 @@ export class IncidentController {
 
   static unstarred(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-      let _starred_by = req["user"]._id
-
+      let _starred_by = req["user"]._id;
       IncidentDAO
         ['unstarred'](_id, _starred_by)
         .then(incident => res.status(201).json(incident))
@@ -96,7 +87,6 @@ export class IncidentController {
       let _id = req.params.id;
       let _userId = req["user"]._id;
       let _incident = req.body;
-
       IncidentDAO
         ['resolve'](_id, _userId, _incident)
         .then(incident => res.status(201).json(incident))
@@ -105,7 +95,6 @@ export class IncidentController {
 
   static archieve(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       IncidentDAO
         ['archieve'](_id)
         .then(incident => res.status(201).json(incident))
@@ -114,7 +103,6 @@ export class IncidentController {
 
   static unarchieve(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       IncidentDAO
         ['unarchieve'](_id)
         .then(incident => res.status(201).json(incident))
