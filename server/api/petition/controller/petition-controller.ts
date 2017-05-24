@@ -4,7 +4,6 @@ import PetitionDAO from '../dao/petition-dao';
 export class PetitionController {
   static getAll(req: express.Request, res: express.Response):void {
       let _developmentId = req["user"].default_development;
-
       PetitionDAO
         ['getAll'](_developmentId)
         .then(petitions => res.status(200).json(petitions))
@@ -13,7 +12,6 @@ export class PetitionController {
 
   static getById(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       PetitionDAO
         ['getById'](_id)
         .then(petitions => res.status(200).json(petitions))
@@ -23,7 +21,6 @@ export class PetitionController {
   static getOwn(req: express.Request, res: express.Response):void {
       let _developmentId = req["user"].default_development;
       let _userId = req["user"]._id;
-
       PetitionDAO
         ['getOwn'](_userId, _developmentId)
         .then(petitions => res.status(200).json(petitions))
@@ -35,7 +32,6 @@ export class PetitionController {
       let _attachment = req["files"];
       let _userId = req["user"]._id;
       let _developmentId= req["user"].default_development;
-
       PetitionDAO
         ['createPetition'](_petition, _userId, _developmentId, _attachment)
         .then(petition => res.status(201).json(petition))
@@ -44,7 +40,6 @@ export class PetitionController {
 
   static deletePetition(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
-
       PetitionDAO
         ['deletePetition'](_id)
         .then(() => res.status(200).end())
@@ -54,9 +49,8 @@ export class PetitionController {
   static updatePetition(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _petition = req.body;
-      let _attachment = req["files"].attachment;
+      let _attachment = req["files"];
       let _userId= req["user"]._id;
-
       PetitionDAO
         ['updatePetition'](_id, _userId, _petition, _attachment)
         .then(_petition => res.status(201).json(_petition))
@@ -65,7 +59,6 @@ export class PetitionController {
 
   static archieve(req: express.Request, res: express.Response):void {
       let _arrayId = req.body;
-
       PetitionDAO
         ['archieve']( _arrayId)
         .then(_userid => res.status(201).json(_userid))
@@ -74,7 +67,6 @@ export class PetitionController {
 
   static unarchieve(req: express.Request, res: express.Response):void {    
       let _arrayId = req.body;
-
       PetitionDAO
         ['unarchieve'](_arrayId)
         .then(_userid => res.status(201).json(_userid))

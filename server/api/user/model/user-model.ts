@@ -2,7 +2,6 @@
 
 import * as express from 'express';
 import * as mongoose from 'mongoose';
-// import * as crypto from 'crypto';
 var crypto = require('crypto')
 
 var Schema = mongoose.Schema;
@@ -11,6 +10,7 @@ var UserSchema = new mongoose.Schema({
     username: {type: String, lowercase: true, unique: true, required: true, trim: true},
     name: {type: String},
     salulation: {type: String},
+    gender: {type: String},
     email: {type: String, lowercase: true, unique: true, trim: true},
     password: {type: String},  
     salt: {type: String}, 

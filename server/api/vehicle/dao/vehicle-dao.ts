@@ -304,7 +304,7 @@ vehicleSchema.static('addAttachmentVehicle', (attachment:Object, query:Object, u
         })              
       } 
       else {
-        resolve({message: "No Attachment Files"})
+        resolve({message: "No Attachment Files"});
       }
     });
 });
