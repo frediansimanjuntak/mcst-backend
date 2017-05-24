@@ -151,4 +151,22 @@ export class UserController {
         .then(user => res.status(201).json(user))
         .catch(error => res.status(400).json(error));
   }
+
+  static addTokenNotif(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+      let _data = req.body;
+      UserDAO
+        ['addTokenNotif'](_id, _data)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
+
+  static deleteTokenNotif(req: express.Request, res: express.Response):void {
+      let _id = req.params.id;
+      let _data = req.body;
+      UserDAO
+        ['deleteTokenNotif'](_id, _data)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
 }

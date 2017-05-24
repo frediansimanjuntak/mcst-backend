@@ -6,7 +6,6 @@ import feedbackSchema from '../model/feedback-model';
 feedbackSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         Feedback
           .find(_query)
           .populate("development reply_by created_by")
@@ -20,7 +19,6 @@ feedbackSchema.static('getAll', (development:string):Promise<any> => {
 feedbackSchema.static('getAllPublish', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"status": "publish"};
-
         Feedback
           .find(_query)
           .populate("development reply_by created_by")
@@ -34,7 +32,6 @@ feedbackSchema.static('getAllPublish', ():Promise<any> => {
 feedbackSchema.static('getAllUnPublish', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"status": "unpublish"};
-
         Feedback
           .find(_query)
           .populate("development reply_by created_by")
@@ -50,7 +47,6 @@ feedbackSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Feedback
           .findById(id)
           .populate("development reply_by created_by")
@@ -66,7 +62,6 @@ feedbackSchema.static('createFeedback', (feedback:Object, userId:string, develop
       if (!_.isObject(feedback)) {  
         return reject(new TypeError('Feedback is not a valid object.'));
       }
-
       var _feedback = new Feedback(feedback);
           _feedback.created_by = userId;
           _feedback.development = developmentId;
@@ -82,7 +77,6 @@ feedbackSchema.static('deleteFeedback', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Feedback
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -97,7 +91,6 @@ feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Feedback
           .findByIdAndUpdate(id, feedback)
           .exec((err, updated) => {
@@ -113,11 +106,11 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
             return reject(new TypeError('Id is not a valid string.'));
         }
         let body:any = reply;
-        if(body.replies){
+        if (body.reply) {
           Feedback
             .findByIdAndUpdate(id, {
               $set: {
-                "replies": body.replies,
+                "replies": body.reply,
                 "reply_by": userId,
                 "reply_at": new Date()
               }
@@ -127,7 +120,7 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
                   : resolve(updated);
             });
         }
-        else{
+        else {
           reject({message: "no data to reply"});
         }
         
@@ -139,7 +132,6 @@ feedbackSchema.static('publishFeedback', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Feedback
           .findByIdAndUpdate(id, {
             $set: {"status": "publish"}
@@ -156,7 +148,6 @@ feedbackSchema.static('archieveFeedback', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Feedback
         .findByIdAndUpdate(id, {
           $set: {"archieve": true}

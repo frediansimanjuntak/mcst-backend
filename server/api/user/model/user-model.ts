@@ -101,6 +101,7 @@ var UserSchema = new mongoose.Schema({
       type: Schema.Types.ObjectId,
       ref: 'UserGroup'
     },  
+    token_notif:[{type: String}],
     created_at: {type: Date, default: Date.now}
 });
 
