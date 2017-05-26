@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import developmentSchema from '../model/development-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import User from '../../user/dao/user-dao';
+import Notifications from '../../notification/dao/notification-dao';
 import {AWSService} from '../../../global/aws.service';
 import {GlobalService} from '../../../global/global.service';
 
@@ -226,18 +227,68 @@ developmentSchema.static('releaseNewsletter',(name_url:string, userId:string, id
         var released = true;
         var released_by = userId; 
         var release_at = Date.now(); 
+        let _query = {"name_url": name_url, "newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}};
         Development
-            .update({"name_url": name_url, "newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}}, { 
+            .update(_query, { 
                 $set: {
                     "newsletter.$.released": released,
                     "newsletter.$.released_by": released_by,
                     "newsletter.$.release_at": release_at
-                }            
+                }          
             })
             .exec((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
+                if (err) {
+                    reject(err);
+                }
+                if (saved) {
+                    Development.createNotification(userId, name_url, idnewsletter);
+                    resolve(saved);
+                }
             });
+    });
+});
+
+developmentSchema.static('createNotification',(sender:string, name_url:string, idnewsletter:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        var ObjectID = mongoose.Types.ObjectId;
+        Development
+            .findOne({"name_url": name_url})
+            .select({"newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}})
+            .exec((err, dev) => {
+                if (err) {
+                    reject(err);
+                }
+                if (dev) {
+                    _.each(dev.newsletter, (newsletter) => {
+                        User
+                            .find({"default_development": dev._id, "role": "user"})
+                            .select("_id username email default_property default_development token_notif")
+                            .exec((err, users) => {
+                                if (err) {
+                                    reject(err);
+                                }
+                                else if (users) {
+                                    for(var i = 0; i < users.length; i++){
+                                        let user = users[i];
+                                        let message = newsletter.title + ", " + newsletter.type + " has release";
+                                        let data = {
+                                            "user": user._id,
+                                            "type": newsletter.type, 
+                                            "development": user.default_development,
+                                            "property": user.default_property.property,
+                                            "message": message,
+                                            "reference_title": newsletter.title,
+                                            "reference_number": newsletter.idNewsletter,
+                                            "reference_id": newsletter.idNewsletter
+                                        };
+                                        Notifications.createNotification(sender, data);                                                                             
+                                    }
+                                }
+                            })
+                    })
+                    resolve(dev);
+                }
+            })        
     });
 });
 
