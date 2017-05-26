@@ -2,8 +2,10 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import notificationSchema from '../model/notification-model';
-import {GlobalService} from '../../../global/global.service';
 import PaymentReminder from '../../payment_reminder/dao/payment_reminder-dao';
+import User from '../../user/dao/user-dao';
+import {GlobalService} from '../../../global/global.service';
+import {FCMService} from '../../../global/fcm.service';
 
 notificationSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -70,12 +72,38 @@ notificationSchema.static('getOwnPaymentNotification', (userId:string, developme
             foreignField: "reference_no",
             as: "payment_reminder"
           }
-        }];      
-        
+        }];
         Notifications
         .aggregate(pipeline, (err, notif)=>{
             err ? reject(err)
                 : resolve(notif);
+        })
+    });
+});
+
+notificationSchema.static('messageFCM', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      Notifications
+        .findById(id)
+        .exec((err, notif) => {
+          if (err) {
+            reject(err);
+          }
+          else if (notif) {
+            let idUser = notif.user;
+            User
+              .findById(idUser)
+              .exec((err, users) => {
+                if (err) {
+                  reject(err);
+                }
+                if (users) {
+                  if (users.token_notif.length > 0) {
+                      FCMService.sendMessage(users.token_notif, notif.type, notif.message);
+                  }  
+                }
+              })
+          }
         })
     });
 });
@@ -85,13 +113,17 @@ notificationSchema.static('createNotification', (idUser:string, notification:Obj
       if (!_.isObject(notification)) {
         return reject(new TypeError('Notification is not a valid object.'));
       }
-
       let _notification = new Notifications(notification);
-          _notification.created_by = idUser;
-          _notification.save((err, saved) => {
-            err ? reject(err)
-                : resolve(saved);
-          });
+      _notification.created_by = idUser;
+      _notification.save((err, saved) => {
+        if (err) {
+          reject(err);
+        }
+        else if (saved) {
+          Notifications.messageFCM(saved._id);
+          resolve(saved);
+        }
+      });
     });
 });
 

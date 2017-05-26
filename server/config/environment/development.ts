@@ -20,6 +20,10 @@ export default {
     apiKey: 'key-82295c366bc190610da171f7c83b2a2a',
     domain: 'sandbox505d981851714539987a1dd93d687e51.mailgun.org'
   },
+  fcm: {
+    serverKey: 'AAAAsjdz4OQ:APA91bE1MOpHPZLCDax4iA6jhXE7rYIIkInJJIHy8Rv6hihpCGqAmYvQdZhVw0QMEmztF6TDxtqThIoBGvizbXDDf6cC_yrJqsqHHGpcXPdWMouXHjE6Xy37dsIcZcryG25-eBQVEdgj',
+    legacyServerKey: 'key=AIzaSyBV0EVh9EfSwMaUZX-O21NVHe92EUjii24'
+  },
 
   // Seed database on startup
   seedDB: true
