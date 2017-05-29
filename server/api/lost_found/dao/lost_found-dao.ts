@@ -11,6 +11,7 @@ lostfoundSchema.static('getAll', (development:string):Promise<any> => {
         Lost_found
           .find(_query)
           .populate("development created_by photo")
+          .sort({"created_at": -1})
           .exec((err, lostfounds) => {
               err ? reject(err)
                   : resolve(lostfounds);
@@ -39,6 +40,7 @@ lostfoundSchema.static('getOwnLostFound', (userId:string, developmentId:string):
         Lost_found
           .find(_query)
           .populate("development created_by photo")
+          .sort({"created_at": -1})
           .exec((err, lostfounds) => {
               err ? reject(err)
                   : resolve(lostfounds);

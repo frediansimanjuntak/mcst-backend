@@ -93,6 +93,7 @@ developmentSchema.static('getNewsletter', (name_url:string):Promise<any> => {
             .findOne({"name_url": name_url})
             .select("newsletter")
             .populate("newsletter.attachment  newsletter.release_by newsletter.created_by")
+            .sort({"newsletter.created_at": -1})
             .exec((err, newsletters) => {
                 err ? reject(err)
                     : resolve(newsletters.newsletter);

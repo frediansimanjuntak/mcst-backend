@@ -13,6 +13,7 @@ notificationSchema.static('getAll', (development:string):Promise<any> => {
       Notifications
         .find(_query)
         .populate("user development created_by")
+        .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject(err)
               : resolve(notifications);
@@ -29,6 +30,7 @@ notificationSchema.static('getOwnNotification', (userId:string, developmentId:st
       Notifications
         .find(_query)
         .populate("user development created_by")
+        .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject(err)
               : resolve(notifications);
@@ -45,6 +47,7 @@ notificationSchema.static('getOwnUnreadNotification', (userId:string, developmen
       Notifications
         .find(_query)
         .populate("user development created_by")
+        .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject(err)
               : resolve(notifications);

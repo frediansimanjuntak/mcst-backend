@@ -12,6 +12,7 @@ pollSchema.static('getAll', (development:string):Promise<any> => {
         Poll
           .find(_query)
           .populate("development created_by votes.voted_by")
+          .sort({"created_at": -1})
           .exec((err, polls) => {
               err ? reject(err)
                   : resolve(polls);

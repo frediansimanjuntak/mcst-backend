@@ -13,6 +13,7 @@ incidentSchema.static('getAll', (development:string):Promise<any> => {
         Incident
           .find(_query)
           .populate("development attachment starred_by created_by contract")
+          .sort({"created_at": -1})
           .exec((err, incidents) => {
               err ? reject(err)
                   : resolve(incidents);

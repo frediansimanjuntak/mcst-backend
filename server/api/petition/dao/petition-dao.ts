@@ -29,6 +29,7 @@ petitionSchema.static('getAll', (development:string):Promise<any> => {
               model: 'Development'
             }
           })
+          .sort({"created_at": -1})
           .exec((err, petitions) => {
               err ? reject(err)
                   : resolve(petitions);
