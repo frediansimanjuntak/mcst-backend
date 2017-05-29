@@ -81,7 +81,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
                 })
               }
               else {
-                resolve(petitions);
+                resolve({"petitions": petitions});
               }
             }
           });
