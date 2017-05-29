@@ -5,6 +5,7 @@ import incidentSchema from '../model/incident-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import Notification from '../../notification/dao/notification-dao';
 import {AWSService} from '../../../global/aws.service';
+import {GlobalService} from '../../../global/global.service';
 
 incidentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -55,7 +56,7 @@ incidentSchema.static('getOwnIncident', (userId:string, developmentId:string):Pr
 incidentSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function() {
-          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+          let randomCode = GlobalService.randomCode();
           console.log(randomCode);
           let _query = {"reference_no": randomCode};
           Incident
@@ -80,25 +81,31 @@ incidentSchema.static('generateCode', ():Promise<any> => {
 
 incidentSchema.static('createIncident', (incident:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        Incident.generateCode().then((code) => {
-          var _incident = new Incident(incident);
-          _incident.reference_no = code;
-          _incident.created_by = userId;
-          _incident.development = developmentId;
-          _incident.save((err, incident) => {
-            if (err) {
-              reject({message: err.message});
-            }
-            if (incident) {
-              let _query = {"_id": incident._id};
-              Incident.addAttachmentIncident(attachment, _query, userId.toString()); 
-              resolve(incident);
-            }
-          });
-        })
-        .catch((err)=> {
-          reject({message: err.message});
-        })             
+        let body:any = incident;
+        if(!body.incident_type){
+          reject({message: "incident type empty"})
+        }
+        else {
+          Incident.generateCode().then((code) => {
+            var _incident = new Incident(incident);
+            _incident.reference_no = code;
+            _incident.created_by = userId;
+            _incident.development = developmentId;
+            _incident.save((err, incident) => {
+              if (err) {
+                reject({message: err.message});
+              }
+              if (incident) {
+                let _query = {"_id": incident._id};
+                Incident.addAttachmentIncident(attachment, _query, userId.toString()); 
+                resolve(incident);
+              }
+            });
+          })
+          .catch((err)=> {
+            reject({message: err.message});
+          }) 
+        }                    
     });
 });
 

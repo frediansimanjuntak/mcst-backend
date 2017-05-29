@@ -9,7 +9,6 @@ import {AWSService} from '../../../global/aws.service';
 companySchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
-
         Company
           .find(_query)
           .populate("company_logo chief employee created_by")
@@ -24,7 +23,6 @@ companySchema.static('getAll', ():Promise<any> => {
 companySchema.static('getAllNameCompany', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
-
         Company
           .find(_query)
           .select("name")
@@ -40,7 +38,6 @@ companySchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Company
           .findById(id)
           .populate("company_logo chief employee created_by")
@@ -84,7 +81,6 @@ companySchema.static('deleteCompany', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Company
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -99,27 +95,30 @@ companySchema.static('updateCompany', (id:string, userId:string, company:Object,
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        if (!_.isObject(company)) {
-          return reject(new TypeError('Company is not a valid object.'));
-        }
-        if (!_.isObject(attachment)) {
-          return reject(new TypeError('Attachment is not a valid.'));
-        }
-
-        let file:any = attachment;
-
         let companyObj = {$set: {}};
-        for(var param in company) {
+        for (var param in company) {
           companyObj.$set[param] = companyObj[param];
-        }
+        } 
+        let _query = {"_id": id};     
+        Company.attachmentCompany(_query, userId.toString(), attachment);
+        Company
+          .update(_query, companyObj)
+          .exec((err, saved) => {  
+                err ? reject({message: err.message})
+                    : resolve(saved);
+          });
+    });
+});
 
-        if(file != null){
-          Attachment.createAttachment(attachment, userId)
+companySchema.static('attachmentCompany', (query:Object, userId:string, attachment:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let files:any = attachment;
+        if (files.attachment) {
+          Attachment.createAttachment(files.attachment, userId)
             .then(res => {
-              var idAttachment=res.idAtt;
-
+              var idAttachment = res.idAtt;
               Company
-                .findByIdAndUpdate(id, {
+                .update(query, {
                   $push:{
                     "company_logo": idAttachment
                   }
@@ -132,14 +131,10 @@ companySchema.static('updateCompany', (id:string, userId:string, company:Object,
             .catch(err=>{
                 resolve({message: "attachment error"});
             })              
-        }              
-
-        Company
-          .findByIdAndUpdate(id, companyObj)
-          .exec((err, saved) => {  
-                err ? reject({message: err.message})
-                    : resolve(saved);
-          });
+        }
+        else {
+          resolve({message: "No Attachment Files"});
+        }     
     });
 });
 
@@ -148,7 +143,6 @@ companySchema.static('addEmployeeCompany', (id:string, employee:Object):Promise<
         if (!_.isObject(employee)) {
           return reject(new TypeError('Company Employee is not a valid object.'));
         }
-
         Company
           .findByIdAndUpdate(id,{
             $push: {
@@ -167,9 +161,8 @@ companySchema.static('removeEmployeeCompany', (id:string, employee:Object):Promi
         if (!_.isObject(employee)) {
           return reject(new TypeError('Company Employee is not a valid object.'));
         }
-
         Company
-          .findByIdAndUpdate(id,{
+          .findByIdAndUpdate(id, {
             $pull: {
               "employee": employee
             }
@@ -186,9 +179,7 @@ companySchema.static('activationCompany', (id:string, company:Object):Promise<an
         if (!_.isObject(company)) {
           return reject(new TypeError('Company Activation is not a valid object.'));
         }
-
         let body:any = company;
-
         Company
           .findByIdAndUpdate(id,{
             $set: {

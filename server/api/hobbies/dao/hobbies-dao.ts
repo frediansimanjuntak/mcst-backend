@@ -7,7 +7,6 @@ import {GlobalService} from '../../../global/global.service';
 hobbiesSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
-
         Hobbies
           .find(_query)
           .exec((err, hobbies) => {
@@ -22,7 +21,6 @@ hobbiesSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Hobbies
           .findById(id)
           .exec((err, hobbies) => {
@@ -37,11 +35,9 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
         if (!_.isObject(data)) {
           return reject(new TypeError('Access Control is not a valid object.'));
         }
-
         let body:any = data;
         let hobbies = body.hobbies;
-
-        for(var i = 0; i <hobbies.length; i++) {
+        for(var i = 0; i < hobbies.length; i++) {
           let hobby = hobbies[i];
           Hobbies
             .find({"name": hobby})
@@ -49,7 +45,7 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
               if (err) {
                 reject({message: err.message});
               }
-              if (res) {
+              else if (res) {
                 if (res.length == 0) {
                   var _hobby = new Hobbies();
                   _hobby.name = hobby;
@@ -59,7 +55,7 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
                         : resolve(saved);
                   });
                 }
-                if (res.length >= 1) {
+                else {
                   resolve({message: "Already data"})
                 }
               }
@@ -72,7 +68,6 @@ hobbiesSchema.static('deleteHobbies', (data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let body:any = data;
         let hobby = body.hobby;
-
         Hobbies
           .findOneAndRemove({"name": hobby})
           .exec((err, deleted) => {
@@ -89,8 +84,7 @@ hobbiesSchema.static('updateHobbies', (id:string, data:Object):Promise<any> => {
         }
         let body:any = data;
         let hobby = body.hobby;
-        let slug = GlobalService.slugify(hobby)
-
+        let slug = GlobalService.slugify(hobby);
         Hobbies
           .update({"_id": id}, {
             $set: {

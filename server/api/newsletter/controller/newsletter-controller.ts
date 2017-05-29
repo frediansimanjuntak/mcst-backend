@@ -43,25 +43,25 @@ export class NewsletterController {
         .catch(error => res.status(400).json(error));   }
 
   static deleteNewsletter(req: express.Request, res: express.Response):void {
-    let _name_url = req.params.name_url;
-    let _idnewsletter = req.params.idnewsletter;
+      let _name_url = req.params.name_url;
+      let _idnewsletter = req.params.idnewsletter;
 
-    DevelopmentDAO
-      ['deleteNewsletter'](_name_url, _idnewsletter)
-      .then(() => res.status(200).end())
-      .catch(error => res.status(400).json(error));
+      DevelopmentDAO
+        ['deleteNewsletter'](_name_url, _idnewsletter)
+        .then(() => res.status(200).end())
+        .catch(error => res.status(400).json(error));
   }
 
   static updateNewsletter(req: express.Request, res: express.Response):void {
-    let _name_url = req.params.name_url;
-    let _idnewsletter = req.params.idnewsletter;
-    let _attachment = req["files"];  
-    let _userId = req["user"]._id; 
-    let _newsletter= req.body;
+      let _name_url = req.params.name_url;
+      let _idnewsletter = req.params.idnewsletter;
+      let _attachment = req["files"];  
+      let _userId = req["user"]._id; 
+      let _newsletter= req.body;
 
-    DevelopmentDAO
-      ['updateNewsletter'](_name_url, _idnewsletter, _userId, _newsletter, _attachment)
-      .then(newsletter => res.status(201).json(newsletter))
-      .catch(error => res.status(400).json(error));
+      DevelopmentDAO
+        ['updateNewsletter'](_name_url, _idnewsletter, _userId, _newsletter, _attachment)
+        .then(newsletter => res.status(201).json(newsletter))
+        .catch(error => res.status(400).json(error));
   }
 }

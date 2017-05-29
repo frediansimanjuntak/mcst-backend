@@ -56,7 +56,7 @@ export class ContractNoticeController {
       let _id = req.params.id;
       let _idcontractnotice = req.params.idcontractnotice;
       let _contractnotice = req.body;    
-      let _attachment = req["files"].attachment;
+      let _attachment = req["files"];
       let _userId = req["user"]._id;
 
       ContractDAO

@@ -258,7 +258,6 @@ vehicleSchema.static('deleteVehicleToProperty', (data:Object):Promise<any> => {
     });
 });
 
-
 vehicleSchema.static('updateVehicle', (id:string, userId:string, vehicle:Object, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(vehicle)) {

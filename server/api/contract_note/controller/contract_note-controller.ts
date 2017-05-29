@@ -55,7 +55,7 @@ export class ContractNoteController {
       let _id = req.params.id;
       let _idcontractnote = req.params.idcontractnote;
       let _contractnote = req.body;    
-      let _attachment = req["files"].attachment;
+      let _attachment = req["files"];
       let _userId = req["user"]._id;
 
       ContractDAO

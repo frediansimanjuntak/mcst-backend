@@ -7,6 +7,7 @@ import Notifications from '../../notification/dao/notification-dao';
 import Payments from '../../payment/dao/payments-dao';
 import Vehicles from '../../vehicle/dao/vehicle-dao';
 import User from '../../vehicle/dao/vehicle-dao';
+import {GlobalService} from '../../../global/global.service';
 
 paymentReminderSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -39,20 +40,20 @@ paymentReminderSchema.static('getById', (id:string):Promise<any> => {
 
 paymentReminderSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        var generateCode = function(){
-          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+        var generateCode = function() {
+          let randomCode = GlobalService.randomCode();
           let _query = {"reference_no": randomCode};
           PaymentReminder
             .find(_query)
             .exec((err, contract) => {
-              if(err){
+              if (err) {
                 reject({message: err.message});
               }
-              if(contract){
-                if(contract.length != 0){
+              else if (contract) {
+                if (contract.length > 0) {
                   generateCode();
                 }
-                if(contract.length == 0){
+                else {
                   resolve(randomCode);
                 }
               }
@@ -67,17 +68,16 @@ paymentReminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
         if (!_.isObject(paymentreminder)) {  
           return reject(new TypeError('Payment Reminder is not a valid object.'));
         }
-
         PaymentReminder.generateCode().then((code) => {
           var _paymentreminder = new PaymentReminder(paymentreminder);
           _paymentreminder.created_by = userId;
           _paymentreminder.reference_no = code;
           _paymentreminder.development = developmentId;
           _paymentreminder.save((err, saved) => {
-            if(err){
+            if (err) {
               reject({message: err.message});
             }
-            if(saved){
+            if (saved) {
               let developmentId = saved.development;
               let notifLists = saved.notification_list;
               let referenceNo = saved.reference_no;
@@ -118,16 +118,16 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
         let dataAll = [];
         let dataVehicle = [];
         let datas = [];
-        for(var a = 0; a < bodies.length; a++){
+        for (var a = 0; a < bodies.length; a++) {
           let body = bodies[a];
-          if(body.appliesTo == "all"){
+          if (body.appliesTo == "all") {
             let pays = {
               "charge": body.charge,
               "amount": body.amount,
             }
             dataAll.push(pays);
           }
-          if(body.appliesTo == "Resident with vehicle"){
+          if (body.appliesTo == "Resident with vehicle") {
             let pays = {
               "charge": body.charge,
               "amount": body.amount,
@@ -140,14 +140,13 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
             }
           datas.push(paysAll);
         }
-
         Development
           .findById(developmentId)
           .exec((err, developments) => {
-            if(err){
+            if (err) {
               reject({message: err.message})
             }
-            if(developments){
+            if (developments) {
               let properties = developments.properties;
               let propertyOwners = _.map(properties, (property) => {
                 let propOwn = {
@@ -159,10 +158,10 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                Vehicles
                 .find({})
                 .exec((err, vehicles) => {
-                  if(err){
+                  if (err) {
                     reject({message: err.message});
                   }
-                  if(vehicles){
+                  if (vehicles) {
                     let vehicleOwners = _.map(vehicles, (vehicle) => {
                       let vehicleOwn = {
                         "owner": vehicle.owner,
@@ -171,20 +170,20 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                       return vehicleOwn;
                     })
                                         
-                    for(var c = 0; c < propertyOwners.length; c++){
+                    for (var c = 0; c < propertyOwners.length; c++) {
                       let propertyOwn = propertyOwners[c];
                       let owners = [];
-                      if(propertyOwn.owner != null){
-                        for(var d = 0; d < vehicleOwners. length; d++){
+                      if (propertyOwn.owner != null) {
+                        for (var d = 0; d < vehicleOwners. length; d++) {
                           let vehicleOwn = vehicleOwners[d];
                           let file;
-                          if(propertyOwn.owner == vehicleOwn.owner){
+                          if (propertyOwn.owner == vehicleOwn.owner) {
                             owners.push(propertyOwn);     
                             vehicleOwners.splice(d,1);                       
                           }
                         }
-                        if(owners.length > 0){
-                          for(var e = 0; e < owners.length; e++){
+                        if (owners.length > 0) {
+                          for (var e = 0; e < owners.length; e++) {
                             let owner = owners[e];
                             let file = {
                               "development": developmentId,
@@ -199,7 +198,7 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                             Notifications.createNotification(userId, file);
                           }
                         }
-                        else{
+                        else {
                             let file = {
                               "development": developmentId,
                               "property": propertyOwn.prop_id,
@@ -214,8 +213,8 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                         }
                       }
                     }
-                    if(vehicleOwners.length > 0){
-                      for(var f = 0; f < vehicleOwners.length; f++){
+                    if (vehicleOwners.length > 0) {
+                      for (var f = 0; f < vehicleOwners.length; f++) {
                         let vehOwner = vehicleOwners[f];
                         let file = {
                           "development": developmentId,
@@ -241,21 +240,20 @@ paymentReminderSchema.static('updateUserLandlordPaymentReminder', (userId:string
     return new Promise((resolve:Function, reject:Function) => {
         let bodies:any = datas;
         let attachment:any;
-
-        for(var i = 0; i < bodies.length; i++){
+        for (var i = 0; i < bodies.length; i++) {
           let body = bodies[i];
-          if(body.appliesTo == "all"){
+          if (body.appliesTo == "all") {
             Development
               .findById(developmentId)
               .exec((err, developments) => {
-                if(err){
+                if (err) {
                   reject({message: err.message})
                 }
-                if(developments){
+                if (developments) {
                   let properties = developments.properties;
                   _.each(properties, (result) => {
                     let propertyId = result._id;
-                    if(result.landlord.data.resident){
+                    if (result.landlord.data.resident) {
                       let landlordId = result.landlord.data.resident;
                       let paymentData = {
                         "development": developmentId,
@@ -284,16 +282,16 @@ paymentReminderSchema.static('updateVehiclePaymentReminder', (userId:string, dat
     return new Promise((resolve:Function, reject:Function) => {
         let bodies:any = datas;
         let attachment:any;
-        for(var j = 0; j < bodies.length; j++){
+        for (var j = 0; j < bodies.length; j++) {
           let body = bodies[j];
-          if(body.appliesTo == "Resident with vehicle"){
+          if (body.appliesTo == "Resident with vehicle") {
             Vehicles
               .find({})
               .exec((err, vehicles) => {
-                if(err){
+                if (err) {
                   reject({message: err.message});
                 }
-                if(vehicles){
+                if (vehicles) {
                   _.each(vehicles, (result) => {
                     let vehicle = result;
                     let property = vehicle.property;
@@ -326,7 +324,6 @@ paymentReminderSchema.static('deletePaymentReminder', (id:string):Promise<any> =
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         PaymentReminder
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -341,7 +338,6 @@ paymentReminderSchema.static('updatePaymentReminder', (id:string, paymentreminde
         if (!_.isObject(paymentreminder)) {
           return reject(new TypeError('Payment Reminder is not a valid object.'));
         }
-
         PaymentReminder
           .findByIdAndUpdate(id, paymentreminder)
           .exec((err, updated) => {
@@ -356,7 +352,6 @@ paymentReminderSchema.static('publishPaymentReminder', (id:string):Promise<any> 
         if (!_.isString(id)) {
           return reject(new TypeError('Id is not a valid string.'));
         }
-
         PaymentReminder
           .findByIdAndUpdate(id,{
             $set: {publish: "true"}

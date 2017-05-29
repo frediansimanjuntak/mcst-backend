@@ -5,6 +5,7 @@ import bookingSchema from '../model/booking-model';
 import Payments from '../../payment/dao/payments-dao';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
+import {GlobalService} from '../../../global/global.service';
 
 bookingSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -45,7 +46,6 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
             {
               path: 'payment_proof',
               model: 'Attachment'
-              // select:('url')
             }]
           }])
           .exec((err, bookings) => {
@@ -71,8 +71,7 @@ bookingSchema.static('getOwn', (userId:string, development:string):Promise<any> 
 bookingSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function() {
-          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
-          console.log(randomCode);
+          let randomCode = GlobalService.randomCode();
           let _query = {"reference_no": randomCode};
           Booking
             .find(_query)
@@ -81,10 +80,10 @@ bookingSchema.static('generateCode', ():Promise<any> => {
                 reject({message: err.message});
               }
               if (bookings) {
-                if (bookings.length != 0) {
+                if (bookings.length > 0) {
                   generateCode();
                 }
-                if (bookings.length == 0) {
+                else {
                   resolve(randomCode);
                 }
               }
@@ -99,7 +98,6 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
         let idAttachment;
         let file:any = attachment;
         let paymentProof = file.payment_proof;
-
         Payments.createPayments(booking, userId, developmentId, attachment).then((res) => {
           let paymentId = res._id;
           let status;
@@ -155,7 +153,6 @@ bookingSchema.static('deleteBooking', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Booking
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -170,7 +167,6 @@ bookingSchema.static('updateBooking', (id:string, booking:Object):Promise<any> =
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Booking
           .findByIdAndUpdate(id, booking)
           .exec((err, updated) => {

@@ -115,7 +115,7 @@ developmentSchema.static('getByIdNewsletter', (name_url:string, idnewsletter:str
                 if (err) {
                     reject({message: err.message});
                 }
-                if (newsletters) {
+                else if (newsletters) {
                     _.each(newsletters.newsletter, (result) => {
                         resolve(result);
                     })
@@ -128,7 +128,6 @@ developmentSchema.static('createNewsletter', (name_url:string, newsletter:Object
     return new Promise((resolve:Function, reject:Function) => {
         let body:any = newsletter;
         let files:any = attachment;
-
         Attachment.createAttachment(files.attachment, userId)
             .then((res) => {
                 var idAttachment = res.idAtt;

@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import lostfoundSchema from '../model/lost_found-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
+import {GlobalService} from '../../../global/global.service';
 
 lostfoundSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -51,7 +52,7 @@ lostfoundSchema.static('getOwnLostFound', (userId:string, developmentId:string):
 lostfoundSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function() {
-          let randomCode = Math.floor(Math.random() * 9000000000) + 1000000000;
+          let randomCode = GlobalService.randomCode();
           let _query = {"serial_number": randomCode};
           Lost_found
             .find(_query)
@@ -134,7 +135,6 @@ lostfoundSchema.static('updateLostfound', (id:string, userId:string, lostfound:O
             });        
     });
 });
-
 
 lostfoundSchema.static('archieveLostfound', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
