@@ -88,6 +88,7 @@ lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, deve
             else if (saved) {
                 let _query = {"_id": saved._id};
                 Lost_found.addAttachmentLostfound(attachment, _query, userId.toString());  
+                resolve(saved);
             }
         });
       })
