@@ -95,7 +95,7 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
             }
             if (incident) {
               let _query = {"_id": incident._id};
-              Incident.addAttachmentLostfound(attachment, _query, userId.toString()); 
+              Incident.addAttachmentIncident(attachment, _query, userId.toString()); 
               resolve(incident);
             }
           });
@@ -131,7 +131,7 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
         for (var param in incident) {
           incidentObj.$set[param] = incident[param];
         }        
-        Incident.addAttachmentLostfound(attachment, _query, userId.toString());       
+        Incident.addAttachmentIncident(attachment, _query, userId.toString());       
         Incident
           .update(_query, incidentObj)
           .exec((err, saved) => {
