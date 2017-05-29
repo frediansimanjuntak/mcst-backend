@@ -53,4 +53,9 @@ export class GlobalService {
     let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
     return code;
   }
+
+  static randomCode(){
+    let randomCode = Math.floor(Math.random() * 9000000000) + 1000000000;
+    return randomCode;
+  }
 }

@@ -10,7 +10,6 @@ var DateOnly = require('mongoose-dateonly')(mongoose);
 announcementSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         Announcement
           .find(_query)
           .populate("development publish_by created_by")
@@ -27,7 +26,6 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Announcement
           .findById(id)
           .populate("development publish_by created_by")
@@ -66,10 +64,8 @@ announcementSchema.static('messageFCM', (id:string):Promise<any> => {
 });
 
 announcementSchema.static('createAnnouncement', (announcement:Object, userId:string, developmentId:string):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        
+    return new Promise((resolve:Function, reject:Function) => {        
         let body:any = announcement;        
-
         var _announcement = new Announcement(announcement);
         _announcement.created_by = userId;
         _announcement.development = developmentId;
@@ -85,7 +81,6 @@ announcementSchema.static('deleteAnnouncement', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Announcement
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -100,7 +95,6 @@ announcementSchema.static('updateAnnouncement', (id:string, announcement:Object)
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Announcement
           .findByIdAndUpdate(id, announcement)
           .exec((err, updated) => {
@@ -115,10 +109,8 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, anno
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         let body:any = announcement
         let date = new Date();
-
         Announcement
           .findById(id)
           .where('publish').equals(false)

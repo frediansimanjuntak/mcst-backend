@@ -7,6 +7,7 @@ import Company from '../../company/dao/company-dao';
 import Contract from '../../contract/dao/contract-dao';
 import Development from '../../development/dao/development-dao';
 import {AWSService} from '../../../global/aws.service';
+import {GlobalService} from '../../../global/global.service';
 
 petitionSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -120,7 +121,7 @@ petitionSchema.static('getOwn', (userId:string, development:string):Promise<any>
 petitionSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var generateCode = function() {
-          let randomCode = Math.floor(Math.random() * 9000000000) + 1000000000;
+          let randomCode = GlobalService.randomCode();
           let _query = {"registration_no": randomCode};
           Petition
             .find(_query)
@@ -128,11 +129,11 @@ petitionSchema.static('generateCode', ():Promise<any> => {
               if (err) {
                 reject({message: err.message});
               }
-              if (petition) {
-                if (petition.length != 0) {
+              else if (petition) {
+                if (petition.length > 0) {
                   generateCode();
                 }
-                if (petition.length == 0) {
+                else {
                   resolve(randomCode);
                 }
               }
@@ -163,7 +164,7 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
             if (err) {
               reject({message: err.message});
             }
-            if (petitions) {
+            else if (petitions) {
               if (petitions.petition_type != "new tenant") {
                 Petition.createContractPetition(petition, userId.toString(), petitions._id.toString(), developmentId.toString(), attachment);
               }

@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import paymentSchema from '../model/payments-model';
 import Attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
+import {GlobalService} from '../../../global/global.service';
 
 paymentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -48,20 +49,20 @@ paymentSchema.static('getByOwnPaymentReceiver', (userId:string, developmentId:st
 
 paymentSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        var generate = function(){
-          let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
+        var generate = function() {
+          let randomCode = GlobalService.randomCode();
           let _query = {"serial_no": randomCode};
           Payments
             .find(_query)
             .exec((err, payment) => {
-              if(err){
+              if (err) {
                 reject({message: err.message});
               }
-              if(payment){
-                if(payment.length != 0){
+              else if (payment) {
+                if (payment.length > 0) {
                   generate();
                 }
-                if(payment.length == 0){
+                else {
                   resolve(randomCode);
                 }
               }
@@ -84,25 +85,14 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
         _payment.serial_no = code;
         _payment.development = developmentId;
         _payment.save((err, payment) => {
-          if(err){
+          if (err) {
             reject({message: err.message});
           }
-          if(payment){
+          if (payment) {
             let paymentId = payment._id;
-            if(attachment){
-              let paymentProof = files.payment_proof;
-              Attachment.createAttachment(paymentProof, userId).then(res => {
-                var idAttachment = res.idAtt;
-                payment.payment_proof = idAttachment;
-                payment.status = "paid";
-                payment.save((err, saved) => {
-                  err ? reject({message: err.message})
-                      : resolve(saved);
-                })              
-              })
-              .catch(err=>{
-                resolve({message: "attachment error", err});
-              })
+            if (attachment) {
+              let _query = {"_id": paymentId};
+              Payments.addAttachmentPayments(attachment, userId.toString(), _query); 
             }
             resolve(payment);
           }
@@ -135,25 +125,32 @@ paymentSchema.static('updatePayments', (id:string, userId:string, payment:Object
         if (!_.isObject(payment)) {
           return reject(new TypeError('Incident is not a valid object.'));
         }
-
-        let files:any = attachment;
-        let paymentProof = files.payment_proof;
-
         let paymentObj = {$set: {}};
-        for(var param in payment) {
+        for (var param in payment) {
           paymentObj.$set[param] = payment[param];
         }
-
         let ObjectID = mongoose.Types.ObjectId; 
         let _query = {"_id": id};
+        Payments.addAttachmentPayments(attachment, userId.toString(), _query);    
+        Payments
+          .update(_query, paymentObj)
+          .exec((err, saved) => {
+                err ? reject({message: err.message})
+                    : resolve(saved);
+            });
+    });
+});
 
-        if(paymentProof){
+paymentSchema.static('addAttachmentPayments', (query:Object, userId:string, attachment:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let files:any = attachment;
+        let paymentProof = files.payment_proof;
+        if (paymentProof) {
           Attachment.createAttachment(paymentProof, userId)
             .then(res => {
-              var idAttachment=res.idAtt;
-
+              var idAttachment = res.idAtt;
               Payments
-                .update(_query,{
+                .update(query,{
                   $set: {
                     "payment_proof": idAttachment,
                     "status": "paid"
@@ -167,14 +164,10 @@ paymentSchema.static('updatePayments', (id:string, userId:string, payment:Object
             .catch(err=>{
               resolve({message: "attachment error"});
             })                            
+        }
+        else {
+          resolve({message: "No Attachment Files"});
         } 
-        
-        Payments
-          .update(_query, paymentObj)
-          .exec((err, saved) => {
-                err ? reject({message: err.message})
-                    : resolve(saved);
-            });
     });
 });
 

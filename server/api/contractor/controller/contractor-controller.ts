@@ -41,7 +41,7 @@ export class ContractorController {
       let _id = req.params.id;
       let _userId = req["user"]._id;
       let _contractor = req.body;
-      let _attachment= req["files"].attachment;
+      let _attachment= req["files"];
 
       ContractorDAO
         ['updateContractor'](_id, _userId, _contractor, _attachment)

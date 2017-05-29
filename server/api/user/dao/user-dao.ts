@@ -162,8 +162,8 @@ userSchema.static('signUp', (user:Object, developmentId:string):Promise<any> => 
         var ObjectID = mongoose.Types.ObjectId;  
         let body:any = user;
         let IDdevelopment;
-        let password = Math.random().toString(36).substr(2, 6).toUpperCase(); 
-        let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
+        let password = GlobalService.autoPasswordUser();
+        let code = GlobalService.verivicationCode();
         let role;
         var _user = new User(user);
         _user.default_development = developmentId;
