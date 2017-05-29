@@ -13,7 +13,7 @@ contractorSchema.static('getAll', ():Promise<any> => {
         Contractor
           .find(_query)
           .exec((err, contractors) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contractors);
           });
     });
@@ -29,7 +29,7 @@ contractorSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("company created_by")
           .exec((err, contractors) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contractors);
           });
     });
@@ -49,7 +49,7 @@ contractorSchema.static('createContractor', (contractor:Object, userId:string):P
           _contractor.created_by = userId;
           _contractor.save((err, saved) => {
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(saved){
               Company
@@ -59,7 +59,7 @@ contractorSchema.static('createContractor', (contractor:Object, userId:string):P
                   }
                 })
                 .exec((err, updated) => {
-                  err ? reject(err)
+                  err ? reject({message: err.message})
                       : resolve(updated);
                 })
             }
@@ -70,7 +70,7 @@ contractorSchema.static('createContractor', (contractor:Object, userId:string):P
             .findById(companyId)
             .exec((err, res) => {
               if(err){
-                reject(err);
+                reject({message: err.message});
               }
               if(res){
                 if(res.chief){
@@ -81,7 +81,7 @@ contractorSchema.static('createContractor', (contractor:Object, userId:string):P
                   _contractor.created_by = userId;
                   _contractor.save((err, saved) => {
                     if(err){
-                      reject(err);
+                      reject({message: err.message});
                     }
                     if(saved){
                       Company
@@ -91,7 +91,7 @@ contractorSchema.static('createContractor', (contractor:Object, userId:string):P
                           }
                         })
                         .exec((err, updated) => {
-                          err ? reject(err)
+                          err ? reject({message: err.message})
                               : resolve(updated);
                         })
                     }
@@ -113,7 +113,7 @@ contractorSchema.static('deleteContractor', (id:string):Promise<any> => {
           .findById(id)
           .exec((err, res) => {
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(res){
               let role = res.role;
@@ -126,7 +126,7 @@ contractorSchema.static('deleteContractor', (id:string):Promise<any> => {
                     }
                   })
                   .exec((err, updated) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(updated);
                   })
               }
@@ -138,14 +138,14 @@ contractorSchema.static('deleteContractor', (id:string):Promise<any> => {
                     }
                   })
                   .exec((err, updated) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(updated);
                   })
               }
               Contractor
                 .findByIdAndRemove(id)
                 .exec((err, deleted) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve({message: "Delete Success"});
                 });
             }
@@ -178,7 +178,7 @@ contractorSchema.static('updateContractor', (id:string, userId:string, contracto
                   }
                 })
                 .exec((err, saved) => {
-                  err ? reject(err)
+                  err ? reject({message: err.message})
                       : resolve(saved);
                 });
             })
@@ -190,7 +190,7 @@ contractorSchema.static('updateContractor', (id:string, userId:string, contracto
         Contractor
           .findByIdAndUpdate(id, contractorObj)
           .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
           });
     });
@@ -209,7 +209,7 @@ contractorSchema.static('activateContractor', (id:string, active:Object):Promise
               }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -228,7 +228,7 @@ contractorSchema.static('deactivateContractor', (id:string, active:Object):Promi
               }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });

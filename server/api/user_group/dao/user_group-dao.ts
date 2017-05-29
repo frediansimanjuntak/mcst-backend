@@ -12,7 +12,7 @@ userGroupSchema.static('getAll', ():Promise<any> => {
           .find(_query)
           .populate("development chief created_by users")
           .exec((err, user_groups) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(user_groups);
           });
     });
@@ -24,7 +24,7 @@ userGroupSchema.static('getById', (id: string):Promise<any> => {
           .findById(id)
           .populate("development chief created_by users")
           .exec((err, user_groups) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(user_groups);
           });
     });
@@ -36,7 +36,7 @@ userGroupSchema.static('getOwn', (userid: string):Promise<any> => {
           .findOne({"chief": userid})
           .populate("development chief created_by users")
           .exec((err, user_groups) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(user_groups);
           });
     });
@@ -54,7 +54,7 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
         .findOne({"chief" : body.chief})
         .exec((err, res) => {
           if(err){
-            reject(err);
+            reject({message: err.message});
           }
           if(res){
             reject({message: "Chief is Allready"});
@@ -65,7 +65,7 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
             _user_group.created_by = userId;
             _user_group.save((err, saved) => {
               if(err){
-                reject(err);
+                reject({message: err.message});
               }
               if(saved){
                 let userGroupId = saved._id;
@@ -81,7 +81,7 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
                             }
                           }, {upsert: true})
                       .exec((err, saved) => {
-                            err ? reject(err)
+                            err ? reject({message: err.message})
                                 : resolve(saved);
                         });
                   })
@@ -117,7 +117,7 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
                     }
                   }, {upsert: true})
                   .exec((err, saved) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(saved);
                       });
               }
@@ -128,7 +128,7 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
         UserGroup
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -146,7 +146,7 @@ userGroupSchema.static('updateUserGroup', (id:string, userGroup:Object):Promise<
         UserGroup
           .findByIdAndUpdate(id, userGroup)
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -166,7 +166,7 @@ userGroupSchema.static('addUser', (id:string, users:Object):Promise<any> => {
               $push:{"users": users}
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -184,7 +184,7 @@ userGroupSchema.static('deleteUser', (id:string, users:Object):Promise<any> => {
               $pull:{"users": body.user}
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
 

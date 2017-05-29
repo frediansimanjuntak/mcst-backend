@@ -15,7 +15,7 @@ paymentReminderSchema.static('getAll', (development:string):Promise<any> => {
         PaymentReminder
           .find(_query)
           .exec((err, guests) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(guests);
           });
     });
@@ -31,7 +31,7 @@ paymentReminderSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development created_by")
           .exec((err, feedbacks) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(feedbacks);
           });
     });
@@ -46,7 +46,7 @@ paymentReminderSchema.static('generateCode', ():Promise<any> => {
             .find(_query)
             .exec((err, contract) => {
               if(err){
-                reject(err);
+                reject({message: err.message});
               }
               if(contract){
                 if(contract.length != 0){
@@ -75,7 +75,7 @@ paymentReminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
           _paymentreminder.development = developmentId;
           _paymentreminder.save((err, saved) => {
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(saved){
               let developmentId = saved.development;
@@ -107,7 +107,7 @@ paymentReminderSchema.static('createPaymentReminder', (paymentreminder:Object, u
           })
         })
         .catch((err) => {
-          reject(err);
+          reject({message: err.message});
         })        
     });
 });
@@ -145,7 +145,7 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
           .findById(developmentId)
           .exec((err, developments) => {
             if(err){
-              reject(err)
+              reject({message: err.message})
             }
             if(developments){
               let properties = developments.properties;
@@ -160,7 +160,7 @@ paymentReminderSchema.static('notifPayment', (data:Object, developmentId:string,
                 .find({})
                 .exec((err, vehicles) => {
                   if(err){
-                    reject(err);
+                    reject({message: err.message});
                   }
                   if(vehicles){
                     let vehicleOwners = _.map(vehicles, (vehicle) => {
@@ -249,7 +249,7 @@ paymentReminderSchema.static('updateUserLandlordPaymentReminder', (userId:string
               .findById(developmentId)
               .exec((err, developments) => {
                 if(err){
-                  reject(err)
+                  reject({message: err.message})
                 }
                 if(developments){
                   let properties = developments.properties;
@@ -291,7 +291,7 @@ paymentReminderSchema.static('updateVehiclePaymentReminder', (userId:string, dat
               .find({})
               .exec((err, vehicles) => {
                 if(err){
-                  reject(err);
+                  reject({message: err.message});
                 }
                 if(vehicles){
                   _.each(vehicles, (result) => {
@@ -330,7 +330,7 @@ paymentReminderSchema.static('deletePaymentReminder', (id:string):Promise<any> =
         PaymentReminder
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "Delete Success"});
           });
     });
@@ -345,7 +345,7 @@ paymentReminderSchema.static('updatePaymentReminder', (id:string, paymentreminde
         PaymentReminder
           .findByIdAndUpdate(id, paymentreminder)
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -362,7 +362,7 @@ paymentReminderSchema.static('publishPaymentReminder', (id:string):Promise<any> 
             $set: {publish: "true"}
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });

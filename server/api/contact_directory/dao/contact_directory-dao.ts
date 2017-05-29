@@ -10,7 +10,7 @@ contactDirectorySchema.static('getAll', (developmentId:string):Promise<any> => {
           .find(_query)
           .sort({"created_at": -1})
           .exec((err, contacts) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contacts);
           });
     });
@@ -25,7 +25,7 @@ contactDirectorySchema.static('getById', (id:string, developmentId:string):Promi
         ContactDirectory
           .findOne(_query)
           .exec((err, contact) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contact);
           });
     });
@@ -39,7 +39,7 @@ contactDirectorySchema.static('createContactDirectory', (data:Object, developmen
         var _contact = new ContactDirectory(data);
         _contact.development = developmentId;
         _contact.save((err, saved) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(saved);
         });
     });
@@ -53,7 +53,7 @@ contactDirectorySchema.static('deleteContactDirectory', (id:string):Promise<any>
         ContactDirectory
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -67,7 +67,7 @@ contactDirectorySchema.static('updateContactDirectory', (id:string, data:Object)
         ContactDirectory
           .findByIdAndUpdate(id, data)
           .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });

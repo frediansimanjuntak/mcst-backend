@@ -10,7 +10,7 @@ feedbackSchema.static('getAll', (development:string):Promise<any> => {
           .find(_query)
           .populate("development reply_by created_by")
           .exec((err, guests) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(guests);
           });
     });
@@ -23,7 +23,7 @@ feedbackSchema.static('getAllPublish', ():Promise<any> => {
           .find(_query)
           .populate("development reply_by created_by")
           .exec((err, guests) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(guests);
           });
     });
@@ -36,7 +36,7 @@ feedbackSchema.static('getAllUnPublish', ():Promise<any> => {
           .find(_query)
           .populate("development reply_by created_by")
           .exec((err, guests) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(guests);
           });
     });
@@ -51,7 +51,7 @@ feedbackSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development reply_by created_by")
           .exec((err, feedbacks) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(feedbacks);
           });
     });
@@ -66,7 +66,7 @@ feedbackSchema.static('createFeedback', (feedback:Object, userId:string, develop
           _feedback.created_by = userId;
           _feedback.development = developmentId;
           _feedback.save((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);
           });
     });
@@ -80,7 +80,7 @@ feedbackSchema.static('deleteFeedback', (id:string):Promise<any> => {
         Feedback
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "Delete Success"});
           });
     });
@@ -94,7 +94,7 @@ feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any
         Feedback
           .findByIdAndUpdate(id, feedback)
           .exec((err, updated) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(updated);
           });
     });
@@ -116,7 +116,7 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
               }
             })
             .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
             });
         }
@@ -137,7 +137,7 @@ feedbackSchema.static('publishFeedback', (id:string):Promise<any> => {
             $set: {"status": "publish"}
           })
           .exec((err, updated) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(updated);
           });
     });
@@ -153,7 +153,7 @@ feedbackSchema.static('archieveFeedback', (id:string):Promise<any> => {
           $set: {"archieve": true}
         })
         .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });

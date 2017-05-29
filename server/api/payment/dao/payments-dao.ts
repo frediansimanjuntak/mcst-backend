@@ -12,7 +12,7 @@ paymentSchema.static('getAll', (development:string):Promise<any> => {
           .find(_query)
           .populate("development payment_proof sender receiver")
           .exec((err, payments) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(payments);
           });
     });
@@ -27,7 +27,7 @@ paymentSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development payment_proof development payment_proof sender receiver")
           .exec((err, payments) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(payments);
           });
     });
@@ -40,7 +40,7 @@ paymentSchema.static('getByOwnPaymentReceiver', (userId:string, developmentId:st
           .find(_query)
           .populate("development payment_proof development payment_proof sender receiver")
           .exec((err, payments) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(payments);
           });
     });
@@ -55,7 +55,7 @@ paymentSchema.static('generateCode', ():Promise<any> => {
             .find(_query)
             .exec((err, payment) => {
               if(err){
-                reject(err);
+                reject({message: err.message});
               }
               if(payment){
                 if(payment.length != 0){
@@ -85,7 +85,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
         _payment.development = developmentId;
         _payment.save((err, payment) => {
           if(err){
-            reject(err);
+            reject({message: err.message});
           }
           if(payment){
             let paymentId = payment._id;
@@ -96,7 +96,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
                 payment.payment_proof = idAttachment;
                 payment.status = "paid";
                 payment.save((err, saved) => {
-                  err ? reject(err)
+                  err ? reject({message: err.message})
                       : resolve(saved);
                 })              
               })
@@ -109,7 +109,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
         });
       })
       .catch((err) => {
-        reject(err);
+        reject({message: err.message});
       })
                 
     });
@@ -124,7 +124,7 @@ paymentSchema.static('deletePayments', (id:string, ):Promise<any> => {
         Payments
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -160,7 +160,7 @@ paymentSchema.static('updatePayments', (id:string, userId:string, payment:Object
                   }
                 })
                 .exec((err, saved) => {
-                      err ? reject(err)
+                      err ? reject({message: err.message})
                           : resolve(saved);
                  });
             })
@@ -172,7 +172,7 @@ paymentSchema.static('updatePayments', (id:string, userId:string, payment:Object
         Payments
           .update(_query, paymentObj)
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });

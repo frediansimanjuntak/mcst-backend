@@ -10,7 +10,7 @@ accesscontrolSchema.static('getAll', (development:string):Promise<any> => {
         AccessControl
           .find(_query)
           .exec((err, accesscontrols) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(accesscontrols);
           });
     });
@@ -25,7 +25,7 @@ accesscontrolSchema.static('getById', (id:string):Promise<any> => {
         AccessControl
           .findById(id)
           .exec((err, accesscontrols) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(accesscontrols);
           });
     });
@@ -40,7 +40,7 @@ accesscontrolSchema.static('createAccessControl', (accesscontrol:Object):Promise
         var _accesscontrol = new AccessControl(accesscontrol);
 
         _accesscontrol.save((err, saved) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(saved);
         });
     });
@@ -55,7 +55,7 @@ accesscontrolSchema.static('deleteAccessControl', (id:string):Promise<any> => {
         AccessControl
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -70,7 +70,7 @@ accesscontrolSchema.static('updateAccessControl', (id:string, accesscontrol:Obje
         AccessControl
           .findByIdAndUpdate(id, accesscontrol)
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });

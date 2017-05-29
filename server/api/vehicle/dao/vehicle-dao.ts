@@ -14,7 +14,7 @@ vehicleSchema.static('getAll', ():Promise<any> => {
           .find(_query)
           .populate("development owner created_by document")
           .exec((err, vehicles) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(vehicles);
           });
     });
@@ -29,7 +29,7 @@ vehicleSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development owner created_by document")
           .exec((err, vehicle) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(vehicle);
           });
     });
@@ -44,7 +44,7 @@ vehicleSchema.static('getByProperty', (id:string):Promise<any> => {
           .find({"property": id})
           .populate("development owner created_by document")
           .exec((err, vehicle) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(vehicle);
           });
     });
@@ -59,7 +59,7 @@ vehicleSchema.static('getByLicensePlate', (license:string):Promise<any> => {
           .findOne({"license_plate": license})
           .populate("development owner created_by document")
           .exec((err, vehicle) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(vehicle);
           });
     });
@@ -74,7 +74,7 @@ vehicleSchema.static('getByOwner', (owner:string):Promise<any> => {
           .find({"owner": owner})
           .populate("development owner created_by document")
           .exec((err, vehicles) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(vehicles);
           });
     });
@@ -87,7 +87,7 @@ vehicleSchema.static('getOwnVehicle', (developmentId:string, userId:string):Prom
           .find(_query)
           .populate("development owner created_by document")
           .exec((err, vehicles) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(vehicles);
           });
     });
@@ -103,7 +103,7 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
         .find({"license_plate": body.license_plate})
         .exec((err, veh) => {
           if (err){
-            reject(err);
+            reject({message: err.message});
           }
           else if (veh) {
             if (veh.length == 0) {
@@ -112,7 +112,7 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
               _vehicle.development = developmentId;
               _vehicle.save((err, saved) => {
                 if (err) {
-                  reject(err);
+                  reject({message: err.message});
                 }
                 if (saved) {
                   let data = {
@@ -154,7 +154,7 @@ vehicleSchema.static('addVehicleToUser', (data:Object):Promise<any> => {
           }
         })
         .exec((err, updated) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(updated);
         });       
     });
@@ -175,7 +175,7 @@ vehicleSchema.static('addVehicleToProperty', (data:Object):Promise<any> => {
         })
         .exec((err, updated) => {
           console.log(updated);
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(updated);
         });       
     });
@@ -191,7 +191,7 @@ vehicleSchema.static('deleteVehicle', (id:string):Promise<any> => {
           .findById(id)
           .exec((err, vehicle) => {
             if (err) {
-              reject(err);
+              reject({message: err.message});
             }
             if (vehicle) {
               let data = {
@@ -205,7 +205,7 @@ vehicleSchema.static('deleteVehicle', (id:string):Promise<any> => {
               Vehicles
               .findByIdAndRemove(id)
               .exec((err, deleted) => {
-                  err ? reject(err)
+                  err ? reject({message: err.message})
                       : resolve({message: "Delete Success"});
               });
             }
@@ -231,7 +231,7 @@ vehicleSchema.static('deleteVehicleToUser', (data:Object):Promise<any> => {
         })
         .exec((err, updated) => {
           console.log(updated);
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(updated);
         });       
     });
@@ -252,7 +252,7 @@ vehicleSchema.static('deleteVehicleToProperty', (data:Object):Promise<any> => {
         })
         .exec((err, updated) => {
           console.log(updated);
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(updated);
         });       
     });
@@ -274,7 +274,7 @@ vehicleSchema.static('updateVehicle', (id:string, userId:string, vehicle:Object,
         Vehicles
           .update(_query, vehicleObj)
           .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
           });        
     });
@@ -295,7 +295,7 @@ vehicleSchema.static('addAttachmentVehicle', (attachment:Object, query:Object, u
               }
             })
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
         })

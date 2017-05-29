@@ -17,7 +17,7 @@ contractSchema.static('getAll', (development:string):Promise<any> => {
           .populate("development company attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
           .sort({"created_at": -1})
           .exec((err, contracts) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contracts);
           });
     });
@@ -33,7 +33,7 @@ contractSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development company attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
           .exec((err, contracts) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contracts);
           });
     });
@@ -52,7 +52,7 @@ contractSchema.static('changeIncidentStatus', (id:string, idContract:string):Pro
             }
           })
           .exec((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);
           });
     });
@@ -70,7 +70,7 @@ contractSchema.static('addContractInPetition', (id:string, idContract:string):Pr
             }
           })
           .exec((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);
           });
     });
@@ -85,7 +85,7 @@ contractSchema.static('generateCode', ():Promise<any> => {
             .find(_query)
             .exec((err, contract) => {
               if(err){
-                reject(err);
+                reject({message: err.message});
               }
               if(contract){
                 if(contract.length != 0){
@@ -116,7 +116,7 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
           _contract.confirmation.costumer.date = new Date();
           _contract.save((err, contract) => {
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(contract){
               if(body.new_company){
@@ -125,12 +125,12 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                   contract.company = idCompany;
                   contract.save((err, saved) => {
                     if(err){
-                      reject(err);
+                      reject({message: err.message});
                     }
                   })
                 })
                 .catch((err) => {
-                  reject(err);
+                  reject({message: err.message});
                 })
               }
               if(contract.reference_type == "incident"){
@@ -145,12 +145,12 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
                   contract.attachment = idAttachment;
                   contract.save((err, saved) => {
                     if(err){
-                      reject(err);
+                      reject({message: err.message});
                     }
                   })
                 })
                 .catch((err) => {
-                  reject(err);
+                  reject({message: err.message});
                 })
               }
               resolve(contract);
@@ -158,7 +158,7 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
           });
         })
         .catch((err) => {
-          reject(err);
+          reject({message: err.message});
         })                                  
     });
 });
@@ -172,7 +172,7 @@ contractSchema.static('deleteContract', (id:string):Promise<any> => {
         Contract
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "Delete Success"});
           });
     });
@@ -204,7 +204,7 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
                     }
                   })
                 .exec((err, saved) => {
-                      err ? reject(err)
+                      err ? reject({message: err.message})
                           : resolve(saved);
                  });
             })
@@ -216,7 +216,7 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
         Contract
           .update(_query, contractObj)
           .exec((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);             
           });
     });
@@ -231,7 +231,7 @@ contractSchema.static('getAllContractSchedule', (id:string):Promise<any> => {
         Contract
           .findById(id)
           .exec((err, contracts) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contracts.schedule);
           });
     });
@@ -255,7 +255,7 @@ contractSchema.static('getByIdContractSchedule', (id:string, idcontractschedule:
             }
           })
           .exec((err, contracts) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contracts);
           });
     });
@@ -272,7 +272,7 @@ contractSchema.static('createContractSchedule', (id:string, contractschedule:Obj
             $push : {"schedule": contractschedule}
           })
           .exec((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);
           });
     });
@@ -293,7 +293,7 @@ contractSchema.static('deleteContractSchedule', (id:string, idcontractschedule:s
             }
           })
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "Delete Success"});
           });
     });
@@ -315,7 +315,7 @@ contractSchema.static('updateContractSchedule', (id:string, userId:string, contr
         Contract
           .update(_query, contractscheduleObj)
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
           });
     });
@@ -332,7 +332,7 @@ contractSchema.static('getAllContractNote', ():Promise<any> => {
           .select("contract_note")
           .populate("contract_note.attachment contract_note.posted_by")
           .exec((err, contractnotes) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contractnotes);
           });
     });
@@ -351,7 +351,7 @@ contractSchema.static('getContractNote', (id:string):Promise<any> => {
           .select("contract_note")
           .populate("contract_note.attachment contract_note.posted_by")
           .exec((err, contractnotes) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contractnotes);
           });
     });
@@ -376,12 +376,12 @@ contractSchema.static('getByIdContractNote', (id:string, idcontractnote:string):
           })
           .exec((err, contractnotes) => {
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(contractnotes){
                 _.each(contractnotes.contract_note, (err, result) => {
                   if(err){
-                    reject(err);
+                    reject({message: err.message});
                   }
                   if(result){
                     resolve(result);
@@ -423,7 +423,7 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
                 }
               })
               .exec((err, saved)=>{
-                  err ? reject(err)
+                  err ? reject({message: err.message})
                       : resolve(saved);
               }); 
               if(body.status == "closed" && referenceId){
@@ -435,7 +435,7 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
                       }
                     })
                     .exec((err, saved) => {
-                        err ? reject(err)
+                        err ? reject({message: err.message})
                             : resolve(saved);
                     });
               }         
@@ -461,7 +461,7 @@ contractSchema.static('deleteContractNote', (id:string, idcontractnote:string ):
             }
           })
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "Delete Success"});
           });
     });
@@ -498,7 +498,7 @@ contractSchema.static('updateContractNote', (id:string, idcontractnote:string, u
                   }
                 })
                 .exec((err, saved) => {
-                      err ? reject(err)
+                      err ? reject({message: err.message})
                           : resolve(saved);
                  });
             })
@@ -510,7 +510,7 @@ contractSchema.static('updateContractNote', (id:string, idcontractnote:string, u
         Contract            
           .update(_query, {contractnoteObj, $set: {"updated_at": new Date()}})
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
 
@@ -526,7 +526,7 @@ contractSchema.static('getAllContractNotice', ():Promise<any> => {
           .find(_query)
           .select("contract_notice")
           .exec((err, contractnotices) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contractnotices);
           });
     });
@@ -543,7 +543,7 @@ contractSchema.static('getContractNotice', (id:string):Promise<any> => {
           .findOne(_query)
           .select("contract_notice")
           .exec((err, contractnotices) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(contractnotices);
           });
     });
@@ -572,7 +572,7 @@ contractSchema.static('getByIdContractNotice', (id:string, idcontractnotice:stri
           .populate("contract_notice.attachment")
           .exec((err, contractnotices) => {
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(contractnotices){
                 resolve(contractnotices);
@@ -609,7 +609,7 @@ contractSchema.static('createContractNotice', (id:string, userId:string, contrac
                 $set: {"updated_at": new Date()}
               })
               .exec((err, saved)=>{
-                  err ? reject(err)
+                  err ? reject({message: err.message})
                       : resolve(saved);
               });
           })
@@ -634,7 +634,7 @@ contractSchema.static('deleteContractNotice', (id:string, idcontractnotice:strin
             }
           })
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -669,7 +669,7 @@ contractSchema.static('updateContractNotice', (id:string, idcontractnotice:strin
                   }
                 })
                 .exec((err, saved) => {
-                      err ? reject(err)
+                      err ? reject({message: err.message})
                           : resolve(saved);
                 });
             })
@@ -682,7 +682,7 @@ contractSchema.static('updateContractNotice', (id:string, idcontractnotice:strin
           .findById(id)
           .update(_query, {contractnoticeObj, $set:{"updated_at": new Date()}})
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });
@@ -706,7 +706,7 @@ contractSchema.static('publishContractNotice', (id:string, idcontractnotice:stri
               }
           })
           .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });

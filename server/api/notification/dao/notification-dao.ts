@@ -15,7 +15,7 @@ notificationSchema.static('getAll', (development:string):Promise<any> => {
         .populate("user development created_by")
         .sort({"created_at": -1})
         .exec((err, notifications) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(notifications);
         });
     });
@@ -32,7 +32,7 @@ notificationSchema.static('getOwnNotification', (userId:string, developmentId:st
         .populate("user development created_by")
         .sort({"created_at": -1})
         .exec((err, notifications) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(notifications);
         });
     });
@@ -49,7 +49,7 @@ notificationSchema.static('getOwnUnreadNotification', (userId:string, developmen
         .populate("user development created_by")
         .sort({"created_at": -1})
         .exec((err, notifications) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(notifications);
         });
     });
@@ -75,10 +75,13 @@ notificationSchema.static('getOwnPaymentNotification', (userId:string, developme
             foreignField: "reference_no",
             as: "payment_reminder"
           }
-        }];
+        },
+        { 
+          $sort : { "created_at" : -1} 
+      }];
         Notifications
         .aggregate(pipeline, (err, notif)=>{
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(notif);
         })
     });
@@ -90,7 +93,7 @@ notificationSchema.static('messageFCM', (id:string):Promise<any> => {
         .findById(id)
         .exec((err, notif) => {
           if (err) {
-            reject(err);
+            reject({message: err.message});
           }
           else if (notif) {
             let idUser = notif.user;
@@ -98,7 +101,7 @@ notificationSchema.static('messageFCM', (id:string):Promise<any> => {
               .findById(idUser)
               .exec((err, users) => {
                 if (err) {
-                  reject(err);
+                  reject({message: err.message});
                 }
                 if (users) {
                   if (users.token_notif.length > 0) {
@@ -120,7 +123,7 @@ notificationSchema.static('createNotification', (idUser:string, notification:Obj
       _notification.created_by = idUser;
       _notification.save((err, saved) => {
         if (err) {
-          reject(err);
+          reject({message: err.message});
         }
         else if (saved) {
           Notifications.messageFCM(saved._id);
@@ -139,11 +142,11 @@ notificationSchema.static('deleteNotification', (id:string, ):Promise<any> => {
           .findById(id)
           .exec((err, notification) => {
             if (err)
-              reject(err)
+              reject({message: err.message})
             if (notification)
               notification.remove((err:any) => {
                 if (err)
-                  reject(err)
+                  reject({message: err.message})
                 resolve({ message: "success" });
               });
             else
@@ -165,7 +168,7 @@ notificationSchema.static('readNotification', (userId:string, arrayId:string[]):
           }
         }, {multi: true})
         .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });
@@ -181,7 +184,7 @@ notificationSchema.static('updateNotification', (id:string, notification:Object)
         Notifications
         .findByIdAndUpdate(id, notification)
         .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });
@@ -199,7 +202,7 @@ notificationSchema.static('markRead', (id:string):Promise<any> => {
           }
         })
         .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });

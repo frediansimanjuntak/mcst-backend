@@ -14,7 +14,7 @@ pollSchema.static('getAll', (development:string):Promise<any> => {
           .populate("development created_by votes.voted_by")
           .sort({"created_at": -1})
           .exec((err, polls) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(polls);
           });
     });
@@ -30,7 +30,7 @@ pollSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development created_by votes.voted_by")
           .exec((err, polls) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(polls);
           });
     });
@@ -46,7 +46,7 @@ pollSchema.static('createPoll', (poll:Object, userId:string, developmentId:strin
         _poll.created_by = userId;
         _poll.development = developmentId;
         _poll.save((err, saved) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(saved);
         });
     });
@@ -61,7 +61,7 @@ pollSchema.static('deletePoll', (id:string, ):Promise<any> => {
         Poll
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -76,7 +76,7 @@ pollSchema.static('updatePoll', (id:string, poll:Object):Promise<any> => {
         Poll
         .findByIdAndUpdate(id, poll)
         .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });
@@ -102,7 +102,7 @@ pollSchema.static('addVotePoll', (id:string, userId:string, poll:Object):Promise
             }
           })
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
           });
     });
@@ -122,7 +122,7 @@ pollSchema.static('startPoll', (id:string):Promise<any> => {
             }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -138,7 +138,7 @@ pollSchema.static('stopPoll', (id:string):Promise<any> => {
           .findById(id)
           .exec((err, polls) => {
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(polls){
               if(polls.status == "active"){
@@ -152,7 +152,7 @@ pollSchema.static('stopPoll', (id:string):Promise<any> => {
                     })
                   .exec((err, updated) => {
                     if(err){
-                      reject(err);
+                      reject({message: err.message});
                     }    
                     else
                     {
@@ -198,7 +198,7 @@ pollSchema.static('outcomePoll', (id:string):Promise<any> => {
         Poll
         .aggregate(pipeline, (err, res)=>{
             if(err){
-              reject(err);
+              reject({message: err.message});
             }
             if(res){
               if(res != null){
@@ -231,7 +231,7 @@ pollSchema.static('stopAllPollToday', ():Promise<any> => {
         .find({"end_time": {$lte: today}})
         .exec((err, polls) => {
           if(err){
-            reject(err);
+            reject({message: err.message});
           }
           if(polls){
             for(var i = 0; i < polls.length; i++){
@@ -245,7 +245,7 @@ pollSchema.static('stopAllPollToday', ():Promise<any> => {
                   polls[i].outcome = "empty vote";
                   polls[i].save((err, updated) => {
                       if(err){
-                        reject(err);
+                        reject({message: err.message});
                       }    
                       else
                       {
@@ -264,7 +264,7 @@ pollSchema.static('stopAllPollToday', ():Promise<any> => {
                       })
                     .exec((err, updated) => {
                       if(err){
-                        reject(err);
+                        reject({message: err.message});
                       }    
                       else
                       {

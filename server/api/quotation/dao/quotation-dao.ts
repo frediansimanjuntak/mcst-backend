@@ -12,7 +12,7 @@ quotationSchema.static('getAll', (development:string):Promise<any> => {
         Quotation
           .find(_query)
           .exec((err, quotations) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(quotations);
           });
     });
@@ -27,7 +27,7 @@ quotationSchema.static('getById', (id:string):Promise<any> => {
         Quotation
           .findById(id)
           .exec((err, quotations) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(quotations);
           });
     });
@@ -47,7 +47,7 @@ quotationSchema.static('createQuotation', (quotation:Object, userId:string, deve
               _quotation.development= developmentId;
               _quotation.created_by = userId;
               _quotation.save((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
               });
         })
@@ -66,7 +66,7 @@ quotationSchema.static('deleteQuotation', (id:string):Promise<any> => {
         Quotation
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "Delete Success"});
           });
     });
@@ -97,7 +97,7 @@ quotationSchema.static('updateQuotation', (id:string, userId:string, quotation:O
                     }
                   })
                   .exec((err, saved) => {
-                        err ? reject(err)
+                        err ? reject({message: err.message})
                             : resolve(saved);
                    });
               })
@@ -109,7 +109,7 @@ quotationSchema.static('updateQuotation', (id:string, userId:string, quotation:O
           Quotation
             .update(_query,quotationObj)
             .exec((err, saved) => {
-                  err ? reject(err)
+                  err ? reject({message: err.message})
                       : resolve(saved);
             });
     });

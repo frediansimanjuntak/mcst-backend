@@ -15,7 +15,7 @@ incidentSchema.static('getAll', (development:string):Promise<any> => {
           .populate("development attachment starred_by created_by contract")
           .sort({"created_at": -1})
           .exec((err, incidents) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(incidents);
           });
     });
@@ -31,7 +31,7 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development attachment starred_by created_by contract")
           .exec((err, incidents) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(incidents);
           });
     });
@@ -46,7 +46,7 @@ incidentSchema.static('getOwnIncident', (userId:string, developmentId:string):Pr
           .find(_query)
           .populate("development attachment starred_by created_by contract")
           .exec((err, incidents) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(incidents);
           });
     });
@@ -62,7 +62,7 @@ incidentSchema.static('generateCode', ():Promise<any> => {
             .find(_query)
             .exec((err, incident) => {
               if (err) {
-                reject(err);
+                reject({message: err.message});
               }
               if (incident) {
                 if (incident.length > 0) {
@@ -87,7 +87,7 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
           _incident.development = developmentId;
           _incident.save((err, incident) => {
             if (err) {
-              reject(err);
+              reject({message: err.message});
             }
             if (incident) {
               let _query = {"_id": incident._id};
@@ -97,7 +97,7 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
           });
         })
         .catch((err)=> {
-          reject(err);
+          reject({message: err.message});
         })             
     });
 });
@@ -110,7 +110,7 @@ incidentSchema.static('deleteIncident', (id:string):Promise<any> => {
         Incident
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -131,7 +131,7 @@ incidentSchema.static('updateIncident', (id:string, userId:string, incident:Obje
         Incident
           .update(_query, incidentObj)
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             }); 
     });
@@ -151,7 +151,7 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
             }
           })     
           .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
                 });           
     });
@@ -168,7 +168,7 @@ incidentSchema.static('starred', (id:string, starred_by:string):Promise<any> => 
             $push: {"starred_by": starred_by}
           })
         .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
                 });
     });
@@ -185,7 +185,7 @@ incidentSchema.static('unstarred', (id:string, starred_by:string):Promise<any> =
             $pull: {"starred_by": starred_by}
           })
         .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
         });
     });
@@ -208,7 +208,7 @@ incidentSchema.static('resolve', (id:string, userId:string, incident:string):Pro
             }
           })
         .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
         });
     });
@@ -225,7 +225,7 @@ incidentSchema.static('archieve', (id:string):Promise<any> => {
             $set: {"archieve": true}
           })
         .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
         });
     });
@@ -243,7 +243,7 @@ incidentSchema.static('unarchieve', (id:string):Promise<any> => {
             $set: {"archieve": false}
           })
         .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
         });
     });
@@ -263,12 +263,12 @@ incidentSchema.static('addAttachmentIncident', (attachment:Object, query:Object,
                   }
                 })
                 .exec((err, saved) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(saved);
                 });            
             })
             .catch((err) => {
-              reject(err);
+              reject({message: err.message});
             })
       }
       else {
