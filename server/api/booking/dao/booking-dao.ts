@@ -12,7 +12,8 @@ bookingSchema.static('getAll', (development:string):Promise<any> => {
 
         Booking
           .find(_query)
-          .populate("created_by development facility payment" )
+          .populate("created_by development facility payment")
+          .sort({"created_at": -1})
           .exec((err, bookings) => {
               err ? reject(err)
                   : resolve(bookings);
@@ -25,7 +26,6 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Booking
           .findById(id)
           .populate("created_by development facility" )

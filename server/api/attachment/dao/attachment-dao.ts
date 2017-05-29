@@ -11,6 +11,7 @@ attachmentSchema.static('getAll', (development:string):Promise<any> => {
 
         Attachment
           .find(_query)
+          .sort({"created_at": -1})
           .exec((err, attachments) => {
               err ? reject(err)
                   : resolve(attachments);
