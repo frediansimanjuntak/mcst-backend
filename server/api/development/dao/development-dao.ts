@@ -125,16 +125,15 @@ developmentSchema.static('getByIdNewsletter', (name_url:string, idnewsletter:str
 
 developmentSchema.static('createNewsletter', (name_url:string, newsletter:Object, userId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(name_url)) {
-            return reject(new TypeError('Development Name is not a valid string.'));
-        }
         let body:any = newsletter;
-        Attachment.createAttachment(attachment, userId)
+        let files:any = attachment;
+
+        Attachment.createAttachment(files.attachment, userId)
             .then((res) => {
                 var idAttachment = res.idAtt;
                 Development
                     .findOneAndUpdate({"name_url": name_url}, {
-                        $push:{
+                        $push: {
                             "newsletter": {
                                 "title": body.title,
                                 "description": body.description,
@@ -182,20 +181,32 @@ developmentSchema.static('updateNewsletter', (name_url:string, idnewsletter:stri
         if (!_.isObject(newsletter)) {
             return reject(new TypeError('Properties is not a valid object.'));
         }   
+        
+        let ObjectID = mongoose.Types.ObjectId; 
         let newsletterObj = {$set: {}};
         for (var param in newsletter) {
             newsletterObj.$set['newsletter.$.' + param] = newsletter[param];
         }
-        let ObjectID = mongoose.Types.ObjectId; 
         let _query = {"name_url": name_url, "newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}};
-        let file:any = attachment;
-        if (file != null) {
-            Attachment.createAttachment(attachment, userId)
-                .then((res) => {
-                    var idAttachment=res.idAtt;
+        Development.addAttachmentNewsletter(_query, userId.toString(), attachment);
+        Development
+            .update(_query, newsletterObj)
+            .exec((err, saved) => {
+                err ? reject(err)
+                    : resolve(saved);
+            });
+    });
+});
 
+developmentSchema.static('addAttachmentNewsletter', (query:Object, userId:string, attachment:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let files:any = attachment;
+        if (files.attachment) {
+            Attachment.createAttachment(files.attachment, userId)
+                .then((res) => {
+                    var idAttachment = res.idAtt;
                     Development
-                        .update(_query,{
+                        .update(query, {
                             $set: {
                                 "newsletter.$.attachment": idAttachment
                             }
@@ -208,13 +219,10 @@ developmentSchema.static('updateNewsletter', (name_url:string, idnewsletter:stri
                 .catch((err) => {
                     resolve({message: "attachment error"});
                 })                  
-        } 
-        Development
-            .update(_query, newsletterObj)
-            .exec((err, saved) => {
-                err ? reject(err)
-                    : resolve(saved);
-            });
+        }       
+        else {
+            resolve({message: "No Attachment Files"});
+        }  
     });
 });
 

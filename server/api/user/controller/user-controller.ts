@@ -42,11 +42,11 @@ export class UserController {
         .catch(error => res.status(400).json(error));
   }
 
-  static createUser(req: express.Request, res: express.Response):void {
+  static signUp(req: express.Request, res: express.Response):void {
       let _user = req.body;
       let _developmentId = req["user"].default_development;
       UserDAO
-        ['createUser'](_user, _developmentId)
+        ['signUp'](_user, _developmentId)
         .then(user => res.status(201).json(user))
         .catch(error => res.status(400).json(error));
   }
@@ -61,8 +61,11 @@ export class UserController {
 
   static createUsers(req: express.Request, res: express.Response):void {
       let _user = req.body;
+      let _developmentId = req["user"].default_development;
+      let _role = req["user"].role;
+      let _userId = req["user"]._id;
       UserDAO
-        ['createUsers'](_user)
+        ['createUsers'](_user, _developmentId, _role, _userId)
         .then(user => res.status(201).json(user))
         .catch(error => res.status(400).json(error));
   }

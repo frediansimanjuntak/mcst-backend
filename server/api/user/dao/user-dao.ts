@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import development = require("./../../../config/environment/development")
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import userSchema from '../model/user-model';
@@ -8,6 +9,7 @@ import UserGroup from '../../user_group/dao/user_group-dao';
 import * as auth from '../../../auth/auth-service';
 import {mail} from '../../../email/email';
 import {signToken} from '../../../auth/auth-service';
+import {GlobalService} from '../../../global/global.service';
 var jwtDecode = require('jwt-decode');
 
 userSchema.static('index', ():Promise<any> => {
@@ -152,7 +154,7 @@ userSchema.static('updatePropertyTenant', (idDevelopment:string, idProperty:stri
     });
 });
 
-userSchema.static('createUser', (user:Object, developmentId:string):Promise<any> => {
+userSchema.static('signUp', (user:Object, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isObject(user)) {
           return reject(new TypeError('User is not a valid object.'));
@@ -246,19 +248,66 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
           .exec((err, updated) => {
             err ? reject(err)
                 : resolve(updated);
-                console.log(err);
           })         
     });
 });
 
-userSchema.static('createUsers', (user:Object):Promise<any> => {
+userSchema.static('createUsers', (user:Object, development:string, role:string, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
         return reject(new TypeError('User is not a valid object.'));
       }
+      let body:any = user;
+      let roleUser;
+      if (role == "superadmin"){ 
+        if (body.role == "admin" || body.role == "user") {
+          roleUser = body.role;
+        }
+        else {
+          reject({message: "Can not add people other than admin and user role"})
+        }
+      }
+      else if (role == "admin") {
+        if (body.role == "user") {
+          roleUser = body.role;
+        }
+        else {
+          reject({message: "Can not add people other than user role"})
+        }
+      }
+      else if (role == "master") {
+        roleUser = body.role;
+      }
+      else {
+        reject({message: "Can not add user"})
+      }
+      let password = GlobalService.autoPasswordUser();
+      let verifiedCode = GlobalService.verivicationCode();
+
       var _user = new User(user);
+      _user.default_development = development;
+      _user.role = roleUser;
+      _user.password = password;
+      _user.verification.code = verifiedCode;
+      _user.created_by = userId;
       _user.active = true
       _user.save((err, saved) => {
+        if (err) {
+          reject(err);
+        }
+        else if (saved) {
+          let data = {
+            "emailTo": saved.email,
+            "fullname": saved.details.first_name +" "+ saved.details.last_name,
+            "username": saved.username,
+            "verifyCode": saved.verification.code,
+            "password": password,
+            "from": "mcst-admin@mcst.sg.com",
+            "link": "http://mcst-web.shrimpventures.com/login"
+          } 
+          let typeMail = "signUp";
+          User.email(data, typeMail);
+        }
         err ? reject(err)
             : resolve(saved);
         });

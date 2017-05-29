@@ -13,21 +13,15 @@ export class AutoPost {
     new CronJob('01-10 08 1-31 * *', function() {
       /* runs once at the specified date. */
 
-      let today = new Date();
-      Announcement
-        .update({"auto_post_on": {$lte: today}},{
-          $set: {
-            "publish": true,
-            "publish_at": today
-          }
-        }, {multi: true}, (err, res)=>{
-          if(err){
-            console.log('error');
-          } 
-          else
-          {
-            console.log(res);
-          }
+      let data = {
+        today: new Date()
+      }
+      Announcement.autoPublishAnnouncement(data)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log('error');
         })
       }, function () {
         /* This function is executed when the job stops */
@@ -36,6 +30,28 @@ export class AutoPost {
       true,
       'Asia/Jakarta'
     );
+    //   Announcement
+    //     .update({"auto_post_on": {$lte: today}},{
+    //       $set: {
+    //         "publish": true,
+    //         "publish_at": today
+    //       }
+    //     }, {multi: true}, (err, res)=>{
+    //       if(err){
+    //         console.log('error');
+    //       } 
+    //       else
+    //       {
+    //         console.log(res);
+    //       }
+    //     })
+    //   }, function () {
+    //     /* This function is executed when the job stops */
+    //     console.log('success!')
+    //   },
+    //   true,
+    //   'Asia/Jakarta'
+    // );
   }
 
   static autoPostValidAnnouncement():void{

@@ -9,7 +9,7 @@ export class UserRoutes {
       router
         .route('/users')
         .get(auth.isAuthenticated(), UserController.getAll)
-        .post(auth.isAuthenticated(), UserController.createUser);
+        .post(auth.isAuthenticated(), UserController.createUsers);
 
       router
         .route('/users/:id')
@@ -63,6 +63,10 @@ export class UserRoutes {
       router
         .route('/users/notification/token_delete/:id')
         .post(auth.isAuthenticated(), UserController.deleteTokenNotif);
+      
+      router
+        .route('/sign_up')
+        .post(auth.isAuthenticated(), UserController.signUp);
 
       //for global user without certain rules
       router

@@ -43,4 +43,14 @@ export class GlobalService {
       .replace(/^-+/, '')          // Trim - from start of text
       .replace(/-+$/, '');         // Trim - from end of text
   }
+
+  static autoPasswordUser() {
+    let password = Math.random().toString(36).substr(2, 6).toUpperCase(); 
+    return password;
+  }
+
+  static verivicationCode() {
+    let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
+    return code;
+  }
 }
