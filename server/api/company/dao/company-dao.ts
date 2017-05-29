@@ -13,6 +13,7 @@ companySchema.static('getAll', ():Promise<any> => {
         Company
           .find(_query)
           .populate("company_logo chief employee created_by")
+          .sort({"created_at": -1})
           .exec((err, companies) => {
               err ? reject(err)
                   : resolve(companies);

@@ -79,11 +79,6 @@ incidentSchema.static('generateCode', ():Promise<any> => {
 
 incidentSchema.static('createIncident', (incident:Object, userId:string, developmentId:string, attachment:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(incident)) {
-          return reject(new TypeError('Incident is not a valid object.'));
-        }
-        let files:any = attachment;
-        let attachments = files.attachment;
         Incident.generateCode().then((code) => {
           var _incident = new Incident(incident);
           _incident.reference_no = code;

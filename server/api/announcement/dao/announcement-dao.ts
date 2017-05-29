@@ -14,6 +14,7 @@ announcementSchema.static('getAll', (development:string):Promise<any> => {
         Announcement
           .find(_query)
           .populate("development publish_by created_by")
+          .sort({"created_at": -1})
           .exec((err, announcements) => {
               err ? reject(err)
                   : resolve(announcements);
