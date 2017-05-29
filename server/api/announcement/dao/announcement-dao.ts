@@ -2,6 +2,8 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import announcementSchema from '../model/announcement-model';
+import {FCMService} from '../../../global/fcm.service';
+import User from '../../user/dao/user-dao';
 
 var DateOnly = require('mongoose-dateonly')(mongoose);
 
@@ -35,6 +37,33 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
     });
 });
 
+announcementSchema.static('messageFCM', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      Announcement
+        .findById(id)
+        .exec((err, announcement) => {
+          if (err) {
+            reject(err);
+          }
+          else if (announcement) {
+            let idUser = announcement.user;
+            User
+              .findById(idUser)
+              .exec((err, users) => {
+                if (err) {
+                  reject(err);
+                }
+                if (users) {
+                  if (users.token_notif.length > 0) {
+                      FCMService.sendMessage(users.token_notif, "announcement", announcement.title);
+                  }  
+                }
+              })
+          }
+        })
+    });
+});
+
 announcementSchema.static('createAnnouncement', (announcement:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         
@@ -50,7 +79,7 @@ announcementSchema.static('createAnnouncement', (announcement:Object, userId:str
     });
 });
 
-announcementSchema.static('deleteAnnouncement', (id:string, ):Promise<any> => {
+announcementSchema.static('deleteAnnouncement', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
@@ -102,9 +131,59 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, anno
             }
           })
           .exec((err, updated) => {
-                err ? reject(err)
-                    : resolve(updated);
+              if (err) {
+                  reject(err);
+              }
+              else {
+                  Announcement.messageFCM(id);
+                  resolve(updated);
+              }
           });
+    });
+});
+
+announcementSchema.static('autoPublishAnnouncement', (data:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        let body:any = data
+        let _query = {"auto_post_on": {$lte: body.today}};
+        Announcement
+            .update(_query, {
+                $set: {
+                    "publish": true,
+                    "publish_at": body.today
+                }
+            }, {multi: true})
+            .exec((err, updated) => {
+                if (err) {
+                    reject(err);
+                }
+                else if (updated) {
+                    Announcement.getIdAnnouncementForFCM(_query);
+                    resolve(updated);
+                }
+                else {
+                   resolve({message: "No Announcements to update"});
+                }
+            })
+    });
+});
+
+announcementSchema.static('getIdAnnouncementForFCM', (query:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        Announcement
+            .find(query)
+            .exec((err, announcements) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    for (var i = 0; i < announcements.length; i++) {
+                        let announcement = announcements[i];
+                        Announcement.messageFCM(announcement._id);
+                    }                    
+                    resolve(announcements);
+                }
+            })
     });
 });
 
