@@ -11,7 +11,7 @@ guestSchema.static('getAll', (development:string):Promise<any> => {
           .find(_query)
           .populate("development created_by checkin_by checkout_by contract")
           .exec((err, guests) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(guests);
           });
     });
@@ -27,7 +27,7 @@ guestSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development created_by checkin_by checkout_by contract")
           .exec((err, guests) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(guests);
           });
     });
@@ -41,7 +41,7 @@ guestSchema.static('getOwnGuest', (userId:string, developmentId:string):Promise<
           .find(_query)
           .populate("development created_by checkin_by checkout_by contract")
           .exec((err, guests) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(guests);
           });
     });
@@ -56,7 +56,7 @@ guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:st
           _guest.created_by = userId;
           _guest.development = developmentId;
           _guest.save((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);
               });
     });
@@ -71,7 +71,7 @@ guestSchema.static('deleteGuest', (id:string):Promise<any> => {
         Guest
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
                 });
     });
@@ -86,7 +86,7 @@ guestSchema.static('updateGuest', (id:string, guest:Object):Promise<any> => {
         Guest
           .findByIdAndUpdate(id, guest)
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
                   });
     });
@@ -107,7 +107,7 @@ guestSchema.static('checkInGuest', (id:string, userId:string):Promise<any> => {
             }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
                   });
     });
@@ -128,7 +128,7 @@ guestSchema.static('checkOutGuest', (id:string, userId:string):Promise<any> => {
           }
         })
         .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });

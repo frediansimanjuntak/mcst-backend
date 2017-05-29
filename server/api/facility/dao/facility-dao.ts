@@ -10,7 +10,7 @@ facilitySchema.static('getAll', (development:string):Promise<any> => {
         Facility
           .find(_query)
           .exec((err, facilities) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(facilities);
           });
     });
@@ -26,7 +26,7 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("created_by development")
           .exec((err, facilities) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(facilities);
           });
     });
@@ -42,7 +42,7 @@ facilitySchema.static('getByName', (name:string):Promise<any> => {
           .findOne({"name": name})
           .populate("created_by development")
           .exec((err, facilities) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(facilities);
           });
     });
@@ -58,7 +58,7 @@ facilitySchema.static('createFacility', (facility:Object, userId:string, develop
         _facility.development = developmentId;
         _facility.created_by = userId;
         _facility.save((err, saved) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(saved);
         });
     });
@@ -73,7 +73,7 @@ facilitySchema.static('deleteFacility', (id:string):Promise<any> => {
         Facility
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "Delete Success"});
           });
     });
@@ -88,7 +88,7 @@ facilitySchema.static('updateFacility', (id:string, facility:Object):Promise<any
         Facility
           .findByIdAndUpdate(id, facility)
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -105,7 +105,7 @@ facilitySchema.static('getSchedule', (id:string):Promise<any> => {
           .findById(id)
           .select("schedule")
           .exec((err, facilities) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(facilities);
           });
     });
@@ -129,7 +129,7 @@ facilitySchema.static('getByIdSchedule', (id:string, idschedule:string):Promise<
             }
           })
           .exec((err, schedules) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(schedules);
           });
     });
@@ -148,7 +148,7 @@ facilitySchema.static('createSchedule', (id:string, schedule:Object):Promise<any
             }
           })
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
           });
     });
@@ -170,7 +170,7 @@ facilitySchema.static('updateSchedule', (id:string, idschedule:string, schedule:
         Facility
           .update({"_id":id, "schedule": {$elemMatch: {"_id": new ObjectID(idschedule)}}}, scheduleObj)
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
           });
     });
@@ -191,7 +191,7 @@ facilitySchema.static('deleteSchedule', (id:string, idschedule:string ):Promise<
             }
           })
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -209,7 +209,7 @@ facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):
             $push: {"maintenance": facility}
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });

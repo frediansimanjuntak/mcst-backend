@@ -11,8 +11,9 @@ lostfoundSchema.static('getAll', (development:string):Promise<any> => {
         Lost_found
           .find(_query)
           .populate("development created_by photo")
+          .sort({"created_at": -1})
           .exec((err, lostfounds) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(lostfounds);
           });
     });
@@ -27,7 +28,7 @@ lostfoundSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development created_by photo")
           .exec((err, lostfounds) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(lostfounds);
           });
     });
@@ -39,8 +40,9 @@ lostfoundSchema.static('getOwnLostFound', (userId:string, developmentId:string):
         Lost_found
           .find(_query)
           .populate("development created_by photo")
+          .sort({"created_at": -1})
           .exec((err, lostfounds) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(lostfounds);
           });
     });
@@ -55,7 +57,7 @@ lostfoundSchema.static('generateCode', ():Promise<any> => {
             .find(_query)
             .exec((err, petition) => {
               if (err) {
-                reject(err);
+                reject({message: err.message});
               }
               else if (petition) {
                 if (petition.length > 0) {
@@ -83,7 +85,7 @@ lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, deve
         _lostfound.development = developmentId;
         _lostfound.save((err, saved) => {
             if (err) {
-                reject(err);
+                reject({message: err.message});
             }
             else if (saved) {
                 let _query = {"_id": saved._id};
@@ -106,7 +108,7 @@ lostfoundSchema.static('deleteLostfound', (id:string):Promise<any> => {
         Lost_found
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -127,7 +129,7 @@ lostfoundSchema.static('updateLostfound', (id:string, userId:string, lostfound:O
         Lost_found
           .update(_query, lostFoundObj)
           .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });        
     });
@@ -146,7 +148,7 @@ lostfoundSchema.static('archieveLostfound', (id:string):Promise<any> => {
             }
         })
         .exec((err, updated) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(updated);
           });
     });
@@ -166,12 +168,12 @@ lostfoundSchema.static('addAttachmentLostfound', (attachment:Object, query:Objec
                   }
                 })
                 .exec((err, saved) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(saved);
                 });            
             })
             .catch((err) => {
-              reject(err);
+              reject({message: err.message});
             })
       }
       else {

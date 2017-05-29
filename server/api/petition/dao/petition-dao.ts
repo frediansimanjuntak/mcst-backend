@@ -29,8 +29,9 @@ petitionSchema.static('getAll', (development:string):Promise<any> => {
               model: 'Development'
             }
           })
+          .sort({"created_at": -1})
           .exec((err, petitions) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(petitions);
           });
     });
@@ -60,7 +61,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
           })
           .exec((err, petitions) => {
             if (err) {
-              reject(err);
+              reject({message: err.message});
             }
             if (petitions) {
               let user = petitions.created_by;
@@ -77,7 +78,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
                   resolve({petitions, "user_details": data});
                 })
                 .catch((err) => {
-                  reject(err);
+                  reject({message: err.message});
                 })
               }
               else {
@@ -110,7 +111,7 @@ petitionSchema.static('getOwn', (userId:string, development:string):Promise<any>
             }
           })
           .exec((err, bookings) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(bookings);
           });
     });
@@ -125,7 +126,7 @@ petitionSchema.static('generateCode', ():Promise<any> => {
             .find(_query)
             .exec((err, petition) => {
               if (err) {
-                reject(err);
+                reject({message: err.message});
               }
               if (petition) {
                 if (petition.length != 0) {
@@ -160,7 +161,7 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
           _petition.development = developmentId;        
           _petition.save((err, petitions) => {
             if (err) {
-              reject(err);
+              reject({message: err.message});
             }
             if (petitions) {
               if (petitions.petition_type != "new tenant") {
@@ -173,7 +174,7 @@ petitionSchema.static('createPetition', (petition:Object, userId:string, develop
           }); 
         })        
         .catch((err) => {
-          reject(err);
+          reject({message: err.message});
         })                    
     });
 });
@@ -204,12 +205,12 @@ petitionSchema.static('createContractPetition', (petition:Object, userId:string,
             }
           })
           .exec((err, updated) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(updated);
           })       
       })
       .catch(err=>{
-        reject(err);
+        reject({message: err.message});
       })
     });
 });
@@ -222,7 +223,7 @@ petitionSchema.static('deletePetition', (id:string, ):Promise<any> => {
         Petition
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -243,7 +244,7 @@ petitionSchema.static('updatePetition', (id:string, userId:string, petition:Obje
         Petition
           .update(_query, petitionObj)
           .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
           }); 
     });
@@ -259,7 +260,7 @@ petitionSchema.static('archieve', (arrayId:string):Promise<any> => {
             }
           }, {multi: true})
           .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
           });
     });
@@ -275,7 +276,7 @@ petitionSchema.static('unarchieve', (arrayId:string):Promise<any> => {
           }
         }, {multi: true})
         .exec((err, saved) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(saved);
         });
     });
@@ -295,12 +296,12 @@ petitionSchema.static('addAttachmentPetition', (attachment:Object, query:Object,
                   }
                 })
                 .exec((err, saved) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(saved);
                 });            
             })
             .catch((err) => {
-              reject(err);
+              reject({message: err.message});
             })
       }
       else {

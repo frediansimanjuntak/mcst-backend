@@ -15,7 +15,7 @@ bookingSchema.static('getAll', (development:string):Promise<any> => {
           .populate("created_by development facility payment")
           .sort({"created_at": -1})
           .exec((err, bookings) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(bookings);
           });
     });
@@ -49,7 +49,7 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
             }]
           }])
           .exec((err, bookings) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(bookings);
           });
     });
@@ -58,12 +58,11 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
 bookingSchema.static('getOwn', (userId:string, development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development, "created_by": userId};
-
         Booking
           .find(_query)
           .populate("created_by development facility payment" )
           .exec((err, bookings) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(bookings);
           });
     });
@@ -71,21 +70,21 @@ bookingSchema.static('getOwn', (userId:string, development:string):Promise<any> 
 
 bookingSchema.static('generateCode', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        var generateCode = function(){
+        var generateCode = function() {
           let randomCode = Math.floor(Math.random()*9000000000) + 1000000000;;
           console.log(randomCode);
           let _query = {"reference_no": randomCode};
           Booking
             .find(_query)
             .exec((err, bookings) => {
-              if(err){
-                reject(err);
+              if (err) {
+                reject({message: err.message});
               }
-              if(bookings){
-                if(bookings.length != 0){
+              if (bookings) {
+                if (bookings.length != 0) {
                   generateCode();
                 }
-                if(bookings.length == 0){
+                if (bookings.length == 0) {
                   resolve(randomCode);
                 }
               }
@@ -104,7 +103,7 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
         Payments.createPayments(booking, userId, developmentId, attachment).then((res) => {
           let paymentId = res._id;
           let status;
-          if(paymentProof){
+          if (paymentProof) {
             status = "paid";
           }
           Booking.generateCode().then((code)=>{
@@ -115,24 +114,24 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
             _booking.development = developmentId;
             _booking.payment = paymentId;
             _booking.save((err, booking) => {
-              if(err){
-                reject(err);
+              if (err) {
+                reject({message: err.message});
               }
-              if(booking){
+              if (booking) {
                 let bookingId = booking._id;
                 Payments
                   .findById(paymentId)
                   .exec((err, payment) => {
-                    if(err){
-                      reject(err);
+                    if (err) {
+                      reject({message: err.message});
                     }
-                    if(payment){
+                    if (payment) {
                       payment.reference_id = bookingId;
                       payment.save((err, saved) => {
-                        if(err){
-                          reject(err);
+                        if (err) {
+                          reject({message: err.message});
                         }
-                        if(saved){
+                        if (saved) {
                           resolve({"booking": booking, "payment": saved});
                         }  
                       })
@@ -142,11 +141,11 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
             })
           })
           .catch((err) => {
-            reject(err);
+            reject({message: err.message});
           })
         })
         .catch((err) => {
-          reject(err);
+          reject({message: err.message});
         })           
       });
 });
@@ -160,7 +159,7 @@ bookingSchema.static('deleteBooking', (id:string):Promise<any> => {
         Booking
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -175,7 +174,7 @@ bookingSchema.static('updateBooking', (id:string, booking:Object):Promise<any> =
         Booking
           .findByIdAndUpdate(id, booking)
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });

@@ -16,7 +16,7 @@ announcementSchema.static('getAll', (development:string):Promise<any> => {
           .populate("development publish_by created_by")
           .sort({"created_at": -1})
           .exec((err, announcements) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(announcements);
           });
     });
@@ -32,7 +32,7 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development publish_by created_by")
           .exec((err, announcements) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(announcements);
           });
     });
@@ -44,7 +44,7 @@ announcementSchema.static('messageFCM', (id:string):Promise<any> => {
         .findById(id)
         .exec((err, announcement) => {
           if (err) {
-            reject(err);
+            reject({message: err.message});
           }
           else if (announcement) {
             let idUser = announcement.user;
@@ -52,7 +52,7 @@ announcementSchema.static('messageFCM', (id:string):Promise<any> => {
               .findById(idUser)
               .exec((err, users) => {
                 if (err) {
-                  reject(err);
+                  reject({message: err.message});
                 }
                 if (users) {
                   if (users.token_notif.length > 0) {
@@ -74,7 +74,7 @@ announcementSchema.static('createAnnouncement', (announcement:Object, userId:str
         _announcement.created_by = userId;
         _announcement.development = developmentId;
         _announcement.save((err, saved) => {
-          err ? reject(err)
+          err ? reject({message: err.message})
               : resolve(saved);
         });
     });
@@ -89,7 +89,7 @@ announcementSchema.static('deleteAnnouncement', (id:string):Promise<any> => {
         Announcement
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -104,7 +104,7 @@ announcementSchema.static('updateAnnouncement', (id:string, announcement:Object)
         Announcement
           .findByIdAndUpdate(id, announcement)
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -133,7 +133,7 @@ announcementSchema.static('publishAnnouncement', (id:string, userId:string, anno
           })
           .exec((err, updated) => {
               if (err) {
-                  reject(err);
+                  reject({message: err.message});
               }
               else {
                   Announcement.messageFCM(id);
@@ -156,7 +156,7 @@ announcementSchema.static('autoPublishAnnouncement', (data:Object):Promise<any> 
             }, {multi: true})
             .exec((err, updated) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 else if (updated) {
                     Announcement.getIdAnnouncementForFCM(_query);
@@ -175,7 +175,7 @@ announcementSchema.static('getIdAnnouncementForFCM', (query:Object):Promise<any>
             .find(query)
             .exec((err, announcements) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 else {
                     for (var i = 0; i < announcements.length; i++) {

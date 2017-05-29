@@ -11,7 +11,7 @@ hobbiesSchema.static('getAll', ():Promise<any> => {
         Hobbies
           .find(_query)
           .exec((err, hobbies) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(hobbies);
           });
     });
@@ -26,7 +26,7 @@ hobbiesSchema.static('getById', (id:string):Promise<any> => {
         Hobbies
           .findById(id)
           .exec((err, hobbies) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(hobbies);
           });
     });
@@ -47,7 +47,7 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
             .find({"name": hobby})
             .exec((err, res) => {
               if (err) {
-                reject(err);
+                reject({message: err.message});
               }
               if (res) {
                 if (res.length == 0) {
@@ -55,7 +55,7 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
                   _hobby.name = hobby;
                   _hobby.slug = GlobalService.slugify(hobby)
                   _hobby.save((err, saved) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(saved);
                   });
                 }
@@ -76,7 +76,7 @@ hobbiesSchema.static('deleteHobbies', (data:Object):Promise<any> => {
         Hobbies
           .findOneAndRemove({"name": hobby})
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve();
           });
     });
@@ -99,7 +99,7 @@ hobbiesSchema.static('updateHobbies', (id:string, data:Object):Promise<any> => {
             }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });

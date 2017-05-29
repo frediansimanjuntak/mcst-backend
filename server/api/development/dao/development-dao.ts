@@ -14,7 +14,7 @@ developmentSchema.static('getAll', (development:string):Promise<any> => {
         Development
             .find(_query)
             .exec((err, developments) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(developments);
             });
     });
@@ -29,7 +29,7 @@ developmentSchema.static('getById', (id:string):Promise<any> => {
             .findById(id)
             .populate("owner staff")
             .exec((err, developments) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(developments);
             });
     });
@@ -44,7 +44,7 @@ developmentSchema.static('createDevelopment', (development:Object):Promise<any> 
         var _development = new Development(development);
         _development.name_url = GlobalService.slugify(body.name);
         _development.save((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);
         });
     });
@@ -58,7 +58,7 @@ developmentSchema.static('deleteDevelopment', (id:string ):Promise<any> => {
         Development
             .findByIdAndRemove(id)            
             .exec((err, deleted) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve();
             });
     });
@@ -77,7 +77,7 @@ developmentSchema.static('updateDevelopment', (id:string, development:Object):Pr
                 }
             })
             .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
             });
     });
@@ -93,8 +93,9 @@ developmentSchema.static('getNewsletter', (name_url:string):Promise<any> => {
             .findOne({"name_url": name_url})
             .select("newsletter")
             .populate("newsletter.attachment  newsletter.release_by newsletter.created_by")
+            .sort({"newsletter.created_at": -1})
             .exec((err, newsletters) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(newsletters.newsletter);
             });
     });
@@ -112,7 +113,7 @@ developmentSchema.static('getByIdNewsletter', (name_url:string, idnewsletter:str
             .select({"newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}})
             .exec((err, newsletters) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 if (newsletters) {
                     _.each(newsletters.newsletter, (result) => {
@@ -146,7 +147,7 @@ developmentSchema.static('createNewsletter', (name_url:string, newsletter:Object
                         }
                     })
                     .exec((err, saved) => {
-                        err ? reject(err)
+                        err ? reject({message: err.message})
                             : resolve(saved);
                     });
             })
@@ -170,7 +171,7 @@ developmentSchema.static('deleteNewsletter', (name_url:string, idnewsletter:stri
                 }
             })
             .exec((err, deleted) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve();
             });
     });
@@ -192,7 +193,7 @@ developmentSchema.static('updateNewsletter', (name_url:string, idnewsletter:stri
         Development
             .update(_query, newsletterObj)
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });
@@ -212,7 +213,7 @@ developmentSchema.static('addAttachmentNewsletter', (query:Object, userId:string
                             }
                         })
                         .exec((err, saved) => {
-                            err ? reject(err)
+                            err ? reject({message: err.message})
                                 : resolve(saved);
                         });
                 })
@@ -246,7 +247,7 @@ developmentSchema.static('releaseNewsletter',(name_url:string, userId:string, id
             })
             .exec((err, saved) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 if (saved) {
                     Development.createNotification(userId, name_url, idnewsletter);
@@ -264,7 +265,7 @@ developmentSchema.static('createNotification',(sender:string, name_url:string, i
             .select({"newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}})
             .exec((err, dev) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 if (dev) {
                     _.each(dev.newsletter, (newsletter) => {
@@ -273,7 +274,7 @@ developmentSchema.static('createNotification',(sender:string, name_url:string, i
                             .select("_id username email default_property default_development token_notif")
                             .exec((err, users) => {
                                 if (err) {
-                                    reject(err);
+                                    reject({message: err.message});
                                 }
                                 else if (users) {
                                     for(var i = 0; i < users.length; i++){
@@ -311,7 +312,7 @@ developmentSchema.static('getProperties', (name_url:string):Promise<any> => {
             .select("properties")
             .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident") 
             .exec((err, properties) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(properties);
             });
     });
@@ -326,7 +327,7 @@ developmentSchema.static('getByIdDevProperties', (idDevelopment:string, idProper
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idProperties)}}})                
             .exec((err, res) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 if (res) {
                     _.each(res.properties, (result) => {
@@ -348,7 +349,7 @@ developmentSchema.static('getByIdProperties', (name_url:string, idproperties:str
             .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident properties.vehicles") 
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})                
             .exec((err, properties) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(properties);
             });
     });
@@ -365,7 +366,7 @@ developmentSchema.static('createProperties', (name_url:string, userId:string, de
             .find(_query)
             .exec((err, development) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 else if (development) {
                     if (development.length == 0) {
@@ -376,7 +377,7 @@ developmentSchema.static('createProperties', (name_url:string, userId:string, de
                                 }
                             })
                             .exec((err, saved) => {
-                                err ? reject(err)
+                                err ? reject({message: err.message})
                                     : resolve(saved);
                             });
                     }
@@ -402,7 +403,7 @@ developmentSchema.static('deleteProperties', (name_url:string, idproperties:stri
                 }
             })
             .exec((err, deleted) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve();
             });
     });
@@ -422,7 +423,7 @@ developmentSchema.static('updateProperties', (name_url:string, idproperties:stri
         Development
             .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, propertiesObj)
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                 : resolve(saved);
             });
     });
@@ -450,7 +451,7 @@ developmentSchema.static('generateCodeProperties', (name_url:string, idpropertie
                 resolve(res);
             })
             .catch((err) => {
-                reject(err);
+                reject({message: err.message});
             });
         }
         else if (body.type == "tenant") {
@@ -458,7 +459,7 @@ developmentSchema.static('generateCodeProperties', (name_url:string, idpropertie
                 resolve(res);
             })
             .catch((err) => {
-                reject(err);
+                reject({message: err.message});
             });
         }
         else if (body.type == "all") {
@@ -467,11 +468,11 @@ developmentSchema.static('generateCodeProperties', (name_url:string, idpropertie
                     resolve(res);
                 })
                 .catch((err) => {
-                    reject(err);
+                    reject({message: err.message});
                 });
             })
             .catch((err) => {
-                reject(err);
+                reject({message: err.message});
             });            
         }
     });
@@ -495,7 +496,7 @@ developmentSchema.static('deleteCodeProperties', (name_url:string, idproperties:
                     }
                 })
                 .exec((err, saved) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(saved);
                 });
         }
@@ -508,7 +509,7 @@ developmentSchema.static('deleteCodeProperties', (name_url:string, idproperties:
                     }
                 })
                 .exec((err, saved) => {
-                    err ? reject(err)
+                    err ? reject({message: err.message})
                         : resolve(saved);
                 });
         }
@@ -523,7 +524,7 @@ developmentSchema.static('deleteCodeProperties', (name_url:string, idproperties:
                 }
             })
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
         }
@@ -542,7 +543,7 @@ developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})  
             .exec((err, developments) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 if (developments) {
                     let developmentId = developments._id;
@@ -558,7 +559,7 @@ developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string
                             })
                             .exec((err, updated) => {
                                 if (err) {
-                                    reject(err);
+                                    reject({message: err.message});
                                 }
                                 if (updated) {
                                     Development
@@ -575,7 +576,7 @@ developmentSchema.static('deleteLandlord', (name_url:string, idproperties:string
                                         }, {upsert: true})
                                         .exec((err, updated) => {
                                             if (err) {
-                                                reject(err);
+                                                reject({message: err.message});
                                             }
                                             if (updated) {
                                                 resolve(updated);
@@ -604,7 +605,7 @@ developmentSchema.static('changeLandlord', (name_url:string, idproperties:string
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})  
             .exec((err, developments) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 if (developments) {
                     resolve(developments);
@@ -621,7 +622,7 @@ developmentSchema.static('changeLandlord', (name_url:string, idproperties:string
                             })
                             .exec((err, updated) => {
                                 if (err) {
-                                    reject(err);
+                                    reject({message: err.message});
                                 }
                                 if (updated) {
                                     Development
@@ -642,7 +643,7 @@ developmentSchema.static('changeLandlord', (name_url:string, idproperties:string
                                         }, {upsert: true})
                                         .exec((err, updated) => {
                                             if (err) {
-                                                reject(err);
+                                                reject({message: err.message});
                                             }
                                             if (updated) {
                                                  User
@@ -653,7 +654,7 @@ developmentSchema.static('changeLandlord', (name_url:string, idproperties:string
                                                     })
                                                     .exec((err, updated) => {
                                                         if (err) {
-                                                            reject(err);
+                                                            reject({message: err.message});
                                                         }
                                                         if (updated) {
                                                             resolve(updated);
@@ -680,7 +681,7 @@ developmentSchema.static('createStaffDevelopment', (name_url:string, staff:Objec
                 $push: {"staff": staff}
             })
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });
@@ -696,7 +697,7 @@ developmentSchema.static('deleteStaffDevelopment', (name_url:string, staff:Objec
             $pull: {"staff": staff}
         })
         .exec((err, saved) => {
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(saved);
         });
     });
@@ -714,7 +715,7 @@ developmentSchema.static('getTenantProperties', (name_url:string, idproperties:s
             .find({"name_url": name_url},{"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})
             .select("properties.tenant")   
             .exec((err, properties) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(properties);
             });
     });
@@ -755,7 +756,7 @@ developmentSchema.static('getByIdTenantProperties', (name_url:string, idproperti
         }];      
         Development
         .aggregate(pipeline, (err, tenant)=>{
-            err ? reject(err)
+            err ? reject({message: err.message})
                 : resolve(tenant);
         })
     });
@@ -774,7 +775,7 @@ developmentSchema.static('createTenantProperties', (name_url:string, idpropertie
                 }
             })
             .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
             }); 
     });
@@ -796,7 +797,7 @@ developmentSchema.static('deleteTenantProperties', (name_url:string, idtenant:st
                     .findOne({"name_url": name_url})
                     .exec((err, developments) => {
                         if (err) {
-                            reject(err);
+                            reject({message: err.message});
                         }
                         if (developments) {
                             let developmentId = developments._id;
@@ -808,7 +809,7 @@ developmentSchema.static('deleteTenantProperties', (name_url:string, idtenant:st
                                 })
                                 .exec((err, updated) => {
                                     if (err) {
-                                        reject(err);
+                                        reject({message: err.message});
                                     }
                                     if (updated) {
                                         Development
@@ -826,7 +827,7 @@ developmentSchema.static('deleteTenantProperties', (name_url:string, idtenant:st
                                                 }
                                             })
                                             .exec((err, updated) => {
-                                                err ? reject(err)
+                                                err ? reject({message: err.message})
                                                     : resolve(updated);
                                             });
                                     }
@@ -851,7 +852,7 @@ developmentSchema.static('updateTenantProperties', (name_url:string, idtenant:st
         Development
             .update({"name_url": name_url, "properties.tenant.data._id": new ObjectID(idtenant)}, tenantObj)
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });
@@ -872,7 +873,7 @@ developmentSchema.static('getRegisterVehicleProperties', (name_url:string, idpro
             .populate("properties.register_vehicle.owner properties.register_vehicle.document") 
             .exec((err, res) => {
                 if (err) {
-                    reject(err);
+                    reject({message: err.message});
                 }
                 if (res) {
                     let property;
@@ -923,7 +924,7 @@ developmentSchema.static('getByIdRegisterVehicleProperties', (name_url:string, i
 
         Development       
             .aggregate(pipeline, (err, tenant)=>{         
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(tenant);
             })
     });
@@ -955,7 +956,7 @@ developmentSchema.static('createRegisterVehicleProperties', (name_url:string, id
                         }
                     })
                     .exec((err, updated) => {
-                        err ? reject(err)
+                        err ? reject({message: err.message})
                             : resolve(updated);
                     });
             })
@@ -975,7 +976,7 @@ developmentSchema.static('getOwnerVehicleByLicensePlat', (name_url:string, licen
         Development
             .find(_query)
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });
@@ -997,7 +998,7 @@ developmentSchema.static('deleteRegisterVehicleProperties', (name_url:string, id
                 }
             })
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });
@@ -1026,7 +1027,7 @@ developmentSchema.static('updateRegisterVehicleProperties', (name_url:string, id
                         } 
                     })
                     .exec((err, updated) => {
-                        err ? reject(err)
+                        err ? reject({message: err.message})
                             : resolve(updated);
                     });
             })
@@ -1037,7 +1038,7 @@ developmentSchema.static('updateRegisterVehicleProperties', (name_url:string, id
         Development
             .update(query, registervehicleObj)
             .exec((err, saved) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
             });
     });

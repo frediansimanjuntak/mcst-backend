@@ -15,7 +15,7 @@ companySchema.static('getAll', ():Promise<any> => {
           .populate("company_logo chief employee created_by")
           .sort({"created_at": -1})
           .exec((err, companies) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(companies);
           });
     });
@@ -29,7 +29,7 @@ companySchema.static('getAllNameCompany', ():Promise<any> => {
           .find(_query)
           .select("name")
           .exec((err, companies) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(companies);
           });
     });
@@ -45,7 +45,7 @@ companySchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("company_logo chief employee created_by")
           .exec((err, bookings) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve(bookings);
           });
     });
@@ -60,7 +60,7 @@ companySchema.static('createCompany', (company:Object, userId:string, developmen
         _company.created_by = userId;
         _company.save((err, company) => {
           if(err){
-            reject(err);
+            reject({message: err.message});
           }
           if(company){
             let data = {
@@ -88,7 +88,7 @@ companySchema.static('deleteCompany', (id:string):Promise<any> => {
         Company
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
-              err ? reject(err)
+              err ? reject({message: err.message})
                   : resolve({message: "delete success"});
           });
     });
@@ -125,7 +125,7 @@ companySchema.static('updateCompany', (id:string, userId:string, company:Object,
                   }
                 })
                 .exec((err, saved) => {
-                      err ? reject(err)
+                      err ? reject({message: err.message})
                           : resolve(saved);
                  });
             })
@@ -137,7 +137,7 @@ companySchema.static('updateCompany', (id:string, userId:string, company:Object,
         Company
           .findByIdAndUpdate(id, companyObj)
           .exec((err, saved) => {  
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(saved);
           });
     });
@@ -156,7 +156,7 @@ companySchema.static('addEmployeeCompany', (id:string, employee:Object):Promise<
             }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -175,7 +175,7 @@ companySchema.static('removeEmployeeCompany', (id:string, employee:Object):Promi
             }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
@@ -196,7 +196,7 @@ companySchema.static('activationCompany', (id:string, company:Object):Promise<an
             }
           })
           .exec((err, updated) => {
-                err ? reject(err)
+                err ? reject({message: err.message})
                     : resolve(updated);
           });
     });
