@@ -55,20 +55,28 @@ userSchema.static('me', (userId:string):Promise<any> => {
               //change owned_property id into property data
               for (let i = 0; i < users.owned_property.length; i++) {
                 let property_id = users.owned_property[i].property;
-                for (let j = 0; j < users.owned_property.development.properties.length; j++) {
-                  let property = users.owned_property.development.properties[j];
-                  if (property_id == property._id) {
-                    users.owned_property[i].property = property;
+                if (users.owned_property.development.properties) {
+                  if (users.owned_property.development.properties.length > 0) {
+                    for (let j = 0; j < users.owned_property.development.properties.length; j++) {
+                      let property = users.owned_property.development.properties[j];
+                      if (property_id == property._id) {
+                        users.owned_property[i].property = property;
+                      }
+                    }
                   }
                 }
               }
               //change rented_property id into property data
               for (let k = 0; k < users.rented_property.length; k++) {
                 let property_id = users.rented_property[k].property;
-                for (let l = 0; l < users.rented_property.development.properties.length; l++) {
-                  let property = users.rented_property.development.properties[l];
-                  if (property_id == property._id) {
-                    users.rented_property[k].property = property;
+                if (users.rented_property.development.properties) {
+                  if (users.rented_property.development.properties.length > 0) {
+                    for (let l = 0; l < users.rented_property.development.properties.length; l++) {
+                      let property = users.rented_property.development.properties[l];
+                      if (property_id == property._id) {
+                        users.rented_property[k].property = property;
+                      }
+                    }
                   }
                 }
               }
