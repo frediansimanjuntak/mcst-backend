@@ -72,10 +72,14 @@ export class UserRoutes {
       router
         .route('/create_user')
         .post(auth.isAuthenticated(), UserController.createUsers);
-
+      
       router
         .route('/update_user/:id')
         .post(auth.isAuthenticated(), UserController.updateUsers);
+
+      router
+        .route('/users/default_property/:id')
+        .put(auth.isAuthenticated(), UserController.setDefaultProperty);
 
       router
         .route('/refresh_token')

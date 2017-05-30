@@ -12,7 +12,17 @@ notificationSchema.static('getAll', (development:string):Promise<any> => {
       let _query = {"development": development};
       Notifications
         .find(_query)
-        .populate("user development created_by")
+        .populate("development")
+        .populate({
+              path: 'user',
+              model: 'User',
+              select: '-salt -password'
+          })
+        .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
         .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject({message: err.message})
@@ -29,7 +39,17 @@ notificationSchema.static('getOwnNotification', (userId:string, developmentId:st
       let _query = {"development": developmentId, "user": userId};
       Notifications
         .find(_query)
-        .populate("user development created_by")
+        .populate("development")
+        .populate({
+              path: 'user',
+              model: 'User',
+              select: '-salt -password'
+          })
+        .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
         .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject({message: err.message})
@@ -46,7 +66,17 @@ notificationSchema.static('getOwnUnreadNotification', (userId:string, developmen
       let _query = {"development": developmentId, "user": userId, read_at: { $exists: false }};
       Notifications
         .find(_query)
-        .populate("user development created_by")
+        .populate("development")
+        .populate({
+              path: 'user',
+              model: 'User',
+              select: '-salt -password'
+          })
+        .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
         .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject({message: err.message})
@@ -195,15 +225,31 @@ notificationSchema.static('markRead', (id:string):Promise<any> => {
           return reject(new TypeError('Id is not a valid string.'));
       }
       Notifications
-        .findByIdAndUpdate(id, {
-          $set: {
-            "mark_read": true
+        .findById(id)
+        .exec((err, notif) => {
+          if (err) {
+            reject(err);
           }
-        })
-        .exec((err, updated) => {
-              err ? reject({message: err.message})
-                  : resolve(updated);
-          });
+          else if (notif) {
+            let markRead;
+            if (notif.mark_read == false) {
+              markRead = true;
+            }
+            else {
+              markRead = false;
+            }
+            Notifications
+              .findByIdAndUpdate(id, {
+                $set: {
+                  "mark_read": markRead
+                }
+              })
+              .exec((err, updated) => {
+                    err ? reject({message: err.message})
+                        : resolve(updated);
+                });
+          }
+        })      
     });
 });
 

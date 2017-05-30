@@ -11,7 +11,17 @@ paymentSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Payments
           .find(_query)
-          .populate("development payment_proof sender receiver")
+          .populate("development payment_proof")
+          .populate({
+              path: 'sender',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'receiver',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, payments) => {
               err ? reject({message: err.message})
                   : resolve(payments);
@@ -26,7 +36,17 @@ paymentSchema.static('getById', (id:string):Promise<any> => {
         } 
         Payments
           .findById(id)
-          .populate("development payment_proof development payment_proof sender receiver")
+          .populate("development payment_proof development payment_proof")
+          .populate({
+              path: 'sender',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'receiver',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, payments) => {
               err ? reject({message: err.message})
                   : resolve(payments);
@@ -39,7 +59,17 @@ paymentSchema.static('getByOwnPaymentReceiver', (userId:string, developmentId:st
         let _query = {"development": developmentId, "receiver":userId};
         Payments
           .find(_query)
-          .populate("development payment_proof development payment_proof sender receiver")
+          .populate("development payment_proof development payment_proof")
+          .populate({
+              path: 'sender',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'receiver',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, payments) => {
               err ? reject({message: err.message})
                   : resolve(payments);
@@ -170,7 +200,6 @@ paymentSchema.static('addAttachmentPayments', (query:Object, userId:string, atta
         } 
     });
 });
-
 
 let Payments = mongoose.model('Payments', paymentSchema);
 

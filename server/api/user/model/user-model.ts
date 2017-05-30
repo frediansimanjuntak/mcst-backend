@@ -97,10 +97,10 @@ var UserSchema = new mongoose.Schema({
       type: Schema.Types.ObjectId,
       ref: 'Vehicles'
     }],
-    user_group: {
+    user_group: [{
       type: Schema.Types.ObjectId,
       ref: 'UserGroup'
-    },  
+    }],  
     token_notif:[{type: String}],
     created_by: {
       type: Schema.Types.ObjectId,

@@ -7,35 +7,48 @@ faqSchema.static('getAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
         Faq
-          .find(_query)
-          .populate("created_by")
-          .exec((err, faqs) => {
-            err ? reject({message: err.message})
-                : resolve(faqs);
-          });
+            .find(_query)
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, faqs) => {
+                err ? reject({message: err.message})
+                    : resolve(faqs);
+            });
     });
 });
 
 faqSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         Faq
-          .findById(id)
-          .populate("created_by")
-          .exec((err, faqs) => {
-            err ? reject({message: err.message})
-                : resolve(faqs);
-          });
+            .findById(id)
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, faqs) => {
+                err ? reject({message: err.message})
+                    : resolve(faqs);
+            });
     });
 });
 
 faqSchema.static('getByFilter', (filter:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         Faq
-          .find({'for': filter})
-          .exec((err, faqs) => {
-            err ? reject({message: err.message})
-                : resolve(faqs);
-          });
+            .find({'for': filter})
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, faqs) => {
+                err ? reject({message: err.message})
+                    : resolve(faqs);
+            });
     });
 });
 

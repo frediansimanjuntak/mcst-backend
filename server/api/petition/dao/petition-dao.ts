@@ -28,7 +28,8 @@ petitionSchema.static('getAll', (development:string):Promise<any> => {
             populate: {
               path: 'default_development',
               model: 'Development'
-            }
+            },
+            select: '-salt -password'
           })
           .sort({"created_at": -1})
           .exec((err, petitions) => {

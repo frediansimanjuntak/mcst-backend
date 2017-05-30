@@ -12,7 +12,17 @@ vehicleSchema.static('getAll', ():Promise<any> => {
         let _query = {};
         Vehicles
           .find(_query)
-          .populate("development owner created_by document")
+          .populate("development document")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'owner',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, vehicles) => {
               err ? reject({message: err.message})
                   : resolve(vehicles);
@@ -27,7 +37,17 @@ vehicleSchema.static('getById', (id:string):Promise<any> => {
         }
         Vehicles
           .findById(id)
-          .populate("development owner created_by document")
+          .populate("development document")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'owner',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, vehicle) => {
               err ? reject({message: err.message})
                   : resolve(vehicle);
@@ -42,7 +62,17 @@ vehicleSchema.static('getByProperty', (id:string):Promise<any> => {
         }
         Vehicles
           .find({"property": id})
-          .populate("development owner created_by document")
+          .populate("development document")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'owner',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, vehicle) => {
               err ? reject({message: err.message})
                   : resolve(vehicle);
@@ -57,7 +87,17 @@ vehicleSchema.static('getByLicensePlate', (license:string):Promise<any> => {
         }
         Vehicles
           .findOne({"license_plate": license})
-          .populate("development owner created_by document")
+          .populate("development document")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'owner',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, vehicle) => {
               err ? reject({message: err.message})
                   : resolve(vehicle);
@@ -72,7 +112,17 @@ vehicleSchema.static('getByOwner', (owner:string):Promise<any> => {
         }
         Vehicles
           .find({"owner": owner})
-          .populate("development owner created_by document")
+          .populate("development document")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'owner',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, vehicles) => {
               err ? reject({message: err.message})
                   : resolve(vehicles);
@@ -85,7 +135,17 @@ vehicleSchema.static('getOwnVehicle', (developmentId:string, userId:string):Prom
         let _query = {$or: [{"owner": userId}, {"created_by": userId}], "development": developmentId};
         Vehicles
           .find(_query)
-          .populate("development owner created_by document")
+          .populate("development document")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'owner',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, vehicles) => {
               err ? reject({message: err.message})
                   : resolve(vehicles);
@@ -120,7 +180,7 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
                     "idProperty": saved.property,
                     "idVehicle": saved._id,
                     "idUser": saved.owner
-                  }
+                  };
                   let _query = {"_id": saved._id};    
                   Vehicles.addVehicleToProperty(data);
                   Vehicles.addVehicleToUser(data);                 
@@ -133,8 +193,7 @@ vehicleSchema.static('createVehicle', (vehicle:Object, userId:string, developmen
               resolve({message: "This Vehicles is Already"});
             }
           }
-        })
-              
+        })              
     });
 });
 
@@ -174,7 +233,6 @@ vehicleSchema.static('addVehicleToProperty', (data:Object):Promise<any> => {
           }
         })
         .exec((err, updated) => {
-          console.log(updated);
             err ? reject({message: err.message})
                 : resolve(updated);
         });       
@@ -230,7 +288,6 @@ vehicleSchema.static('deleteVehicleToUser', (data:Object):Promise<any> => {
           }
         })
         .exec((err, updated) => {
-          console.log(updated);
             err ? reject({message: err.message})
                 : resolve(updated);
         });       

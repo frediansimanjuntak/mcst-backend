@@ -7,12 +7,22 @@ feedbackSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
         Feedback
-          .find(_query)
-          .populate("development reply_by created_by")
-          .exec((err, guests) => {
-              err ? reject({message: err.message})
-                  : resolve(guests);
-          });
+            .find(_query)
+            .populate("development")
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'reply_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, guests) => {
+                err ? reject({message: err.message})
+                    : resolve(guests);
+            });
     });
 });
 
@@ -20,12 +30,22 @@ feedbackSchema.static('getAllPublish', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"status": "publish"};
         Feedback
-          .find(_query)
-          .populate("development reply_by created_by")
-          .exec((err, guests) => {
-              err ? reject({message: err.message})
-                  : resolve(guests);
-          });
+            .find(_query)
+            .populate("development")
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'reply_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, guests) => {
+                err ? reject({message: err.message})
+                    : resolve(guests);
+            });
     });
 });
 
@@ -33,12 +53,22 @@ feedbackSchema.static('getAllUnPublish', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"status": "unpublish"};
         Feedback
-          .find(_query)
-          .populate("development reply_by created_by")
-          .exec((err, guests) => {
-              err ? reject({message: err.message})
-                  : resolve(guests);
-          });
+            .find(_query)
+            .populate("development")
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'reply_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, guests) => {
+                err ? reject({message: err.message})
+                    : resolve(guests);
+            });
     });
 });
 
@@ -48,12 +78,22 @@ feedbackSchema.static('getById', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Feedback
-          .findById(id)
-          .populate("development reply_by created_by")
-          .exec((err, feedbacks) => {
-              err ? reject({message: err.message})
-                  : resolve(feedbacks);
-          });
+            .findById(id)
+            .populate("development")
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'reply_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, feedbacks) => {
+                err ? reject({message: err.message})
+                    : resolve(feedbacks);
+            });
     });
 });
 
@@ -62,13 +102,13 @@ feedbackSchema.static('createFeedback', (feedback:Object, userId:string, develop
       if (!_.isObject(feedback)) {  
         return reject(new TypeError('Feedback is not a valid object.'));
       }
-      var _feedback = new Feedback(feedback);
-          _feedback.created_by = userId;
-          _feedback.development = developmentId;
-          _feedback.save((err, saved) => {
+        var _feedback = new Feedback(feedback);
+        _feedback.created_by = userId;
+        _feedback.development = developmentId;
+        _feedback.save((err, saved) => {
             err ? reject({message: err.message})
                 : resolve(saved);
-          });
+        });
     });
 });
 

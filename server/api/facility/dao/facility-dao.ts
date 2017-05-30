@@ -7,11 +7,17 @@ facilitySchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
         Facility
-          .find(_query)
-          .exec((err, facilities) => {
-              err ? reject({message: err.message})
-                  : resolve(facilities);
-          });
+            .find(_query)
+            .populate("development")
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, facilities) => {
+                err ? reject({message: err.message})
+                    : resolve(facilities);
+            });
     });
 });
 
@@ -21,12 +27,17 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Facility
-          .findById(id)
-          .populate("created_by development")
-          .exec((err, facilities) => {
-              err ? reject({message: err.message})
-                  : resolve(facilities);
-          });
+            .findById(id)
+            .populate("development")
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, facilities) => {
+                err ? reject({message: err.message})
+                    : resolve(facilities);
+            });
     });
 });
 
@@ -36,9 +47,14 @@ facilitySchema.static('getByName', (name:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Facility
-          .findOne({"name": name})
-          .populate("created_by development")
-          .exec((err, facilities) => {
+            .findOne({"name": name})
+            .populate("development")
+            .populate({
+                path: 'created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, facilities) => {
               err ? reject({message: err.message})
                   : resolve(facilities);
           });
