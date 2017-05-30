@@ -37,7 +37,7 @@ hobbiesSchema.static('createHobbies', (data:Object):Promise<any> => {
         }
         let body:any = data;
         let hobbies = body.hobbies;
-        for(var i = 0; i < hobbies.length; i++) {
+        for (var i = 0; i < hobbies.length; i++) {
           let hobby = hobbies[i];
           Hobbies
             .find({"name": hobby})
