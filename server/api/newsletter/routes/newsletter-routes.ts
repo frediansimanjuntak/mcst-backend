@@ -18,7 +18,7 @@ export class NewsletterRoutes {
 
       router
         .route('/newsletters/:name_url/update/:idnewsletter')
-        .post(auth.isAuthenticated(), NewsletterController.updateNewsletter); 
+        .post(auth.isAuthenticated(), NewsletterController.updateNewsletter);
 
       router
         .route('/newsletters/:name_url/release/:idnewsletter')

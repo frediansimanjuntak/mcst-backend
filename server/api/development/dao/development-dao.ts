@@ -183,15 +183,16 @@ developmentSchema.static('deleteNewsletter', (name_url:string, idnewsletter:stri
         }
         Development
             .findOneAndUpdate({"name_url": name_url}, {
-                $pull:{
+                $pull: {
                     "newsletter": {
-                        "id": idnewsletter
+                        "_id": idnewsletter
                     }
                 }
             })
             .exec((err, deleted) => {
                 err ? reject({message: err.message})
                     : resolve();
+                    
             });
     });
 });
