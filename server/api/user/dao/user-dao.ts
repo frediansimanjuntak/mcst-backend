@@ -46,7 +46,7 @@ userSchema.static('me', (userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         User
           .findById(userId, '-salt -password')
-          .populate("default_development user_group vehicles")
+          .populate("default_development user_group vehicles rented_property.development owned_property.development user_group")
           .exec((err, users) => {
             if (err) {
               reject({message: err.message});
@@ -79,7 +79,7 @@ userSchema.static('getById', (id:string):Promise<any> => {
         }
         User
           .findById(id, '-salt -password')
-          .populate("default_development user_group vehicles")
+          .populate("default_development user_group vehicles rented_property.development owned_property.development user_group")
           .exec((err, users) => {
               err ? reject({message: err.message})
                   : resolve(users);
