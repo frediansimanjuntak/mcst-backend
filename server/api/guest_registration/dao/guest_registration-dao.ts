@@ -7,12 +7,17 @@ guestSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
         Guest
-          .find(_query)
-          .populate("development created_by checkin_by checkout_by contract")
-          .exec((err, guests) => {
-              err ? reject({message: err.message})
-                  : resolve(guests);
-          });
+            .find(_query)
+            .populate("development contract")
+            .populate({
+                path: 'created_by checkin_by checkout_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, guests) => {
+                err ? reject({message: err.message})
+                    : resolve(guests);
+            });
     });
 });
 
@@ -22,12 +27,17 @@ guestSchema.static('getById', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Guest
-          .findById(id)
-          .populate("development created_by checkin_by checkout_by contract")
-          .exec((err, guests) => {
-              err ? reject({message: err.message})
-                  : resolve(guests);
-          });
+            .findById(id)
+            .populate("development contract")
+            .populate({
+                path: 'created_by checkin_by checkout_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, guests) => {
+                err ? reject({message: err.message})
+                    : resolve(guests);
+            });
     });
 });
 
@@ -35,12 +45,17 @@ guestSchema.static('getOwnGuest', (userId:string, developmentId:string):Promise<
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": developmentId, "created_by": userId};
         Guest
-          .find(_query)
-          .populate("development created_by checkin_by checkout_by contract")
-          .exec((err, guests) => {
-              err ? reject({message: err.message})
-                  : resolve(guests);
-          });
+            .find(_query)
+            .populate("development contract")
+            .populate({
+                path: 'created_by checkin_by checkout_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .exec((err, guests) => {
+                err ? reject({message: err.message})
+                    : resolve(guests);
+            });
     });
 });
 
@@ -77,7 +92,6 @@ guestSchema.static('updateGuest', (id:string, guest:Object):Promise<any> => {
         if (!_.isObject(guest)) {
           return reject(new TypeError('Guest is not a valid object.'));
         }
-
         Guest
             .findByIdAndUpdate(id, guest)
             .exec((err, updated) => {

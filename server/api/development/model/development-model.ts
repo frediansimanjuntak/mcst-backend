@@ -67,20 +67,6 @@ var developmentSchema = new mongoose.Schema({
 			type: Schema.Types.ObjectId,
 			ref: 'Vehicles'
 		}],
-		registered_vehicle: [{
-			license_plate: {type:String},
-			owner: {
-				type: Schema.Types.ObjectId,
-    			ref: 'User'
-			},
-			transponder: {type: String},
-			document: {
-				type: Schema.Types.ObjectId,
-    			ref: 'Attachment'
-			},
-			registered_on: {type: Date},
-			remarks: {type: String}
-		}],
 		code: {
 	    	landlord: {type: String},
 	    	create_at_landlord: {type: Date},

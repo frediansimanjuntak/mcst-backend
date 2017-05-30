@@ -22,7 +22,7 @@ userSchema.static('userAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
         User
-          .find(_query)
+          .find(_query, '-salt -password')
           .exec((err, users) => {
               err ? reject({message: err.message})
                   : resolve(users);
@@ -176,7 +176,6 @@ userSchema.static('signUp', (user:Object, developmentId:string):Promise<any> => 
           }
           if(res){     
             var userId = res._id.toString();
-
             if (body.owned_property != null){
               var ownedProperty_landlord = [].concat(res.owned_property)
               for (var i = 0; i < ownedProperty_landlord.length; i++) {
@@ -186,8 +185,7 @@ userSchema.static('signUp', (user:Object, developmentId:string):Promise<any> => 
                 User.updatePropertyOwner(idDevelopment, idProperty, userId, body.remarks);           
               }
               role = "owner";
-            }
-            
+            }            
             if(body.rented_property != null){
               let idDevelopment = body.rented_property.development.toString();
               let idProperty = body.rented_property.property.toString();
@@ -528,7 +526,7 @@ userSchema.static('changePassword', (id:string, oldpass:string, newpass:string):
                   user.password = newpass;
                   user.save((err, res) => {
                     err ? reject({message: err.message})
-                  : resolve({message: 'data updated'});
+                        : resolve({message: 'data updated'});
                   });
                 } else {
                   reject({message: "old password didn't match"});                  
@@ -650,8 +648,8 @@ userSchema.static('settingDetailUser', (id:string, user:Object):Promise<any> => 
         User
           .findByIdAndUpdate(id, userObj)
           .exec((err, updated) => {
-                err ? reject({message: err.message})
-                    : resolve(updated);
+              err ? reject({message: err.message})
+                  : resolve(updated);
           });
     });
 });
@@ -675,8 +673,8 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
             }
           })
           .exec((err, updated) => {
-                err ? reject({message: err.message})
-                    : resolve(updated);
+              err ? reject({message: err.message})
+                  : resolve(updated);
           });
     });
 });

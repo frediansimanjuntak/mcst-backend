@@ -13,7 +13,12 @@ bookingSchema.static('getAll', (development:string):Promise<any> => {
 
         Booking
           .find(_query)
-          .populate("created_by development facility payment")
+          .populate("development facility payment")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .sort({"created_at": -1})
           .exec((err, bookings) => {
               err ? reject({message: err.message})
@@ -29,7 +34,7 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
         }
         Booking
           .findById(id)
-          .populate("created_by development facility" )
+          .populate("development facility" )
           .populate([{
             path: 'payment',
             model: 'Payments',
@@ -48,6 +53,11 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
               model: 'Attachment'
             }]
           }])
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, bookings) => {
               err ? reject({message: err.message})
                   : resolve(bookings);
@@ -60,7 +70,30 @@ bookingSchema.static('getOwn', (userId:string, development:string):Promise<any> 
         let _query = {"development": development, "created_by": userId};
         Booking
           .find(_query)
-          .populate("created_by development facility payment" )
+          .populate("development facility" )
+          .populate([{
+            path: 'payment',
+            model: 'Payments',
+            populate: [{
+              path: 'sender',
+              model: 'User',
+              select:('username _id email')
+            },            
+            {
+              path: 'receiver',
+              model: 'User',
+              select:('username _id email')
+            },
+            {
+              path: 'payment_proof',
+              model: 'Attachment'
+            }]
+          }])
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, bookings) => {
               err ? reject({message: err.message})
                   : resolve(bookings);

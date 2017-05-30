@@ -15,7 +15,17 @@ contractSchema.static('getAll', (development:string):Promise<any> => {
 
         Contract
           .find(_query)
-          .populate("development company attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
+          .populate("development company attachment quotation contract_note.attachment contract_notice.attachment")
+          .populate({
+              path: 'contract_note.posted_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .sort({"created_at": -1})
           .exec((err, contracts) => {
               err ? reject({message: err.message})
@@ -29,10 +39,19 @@ contractSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Contract
           .findById(id)
-          .populate("development company attachment quotation contract_note.attachment contract_note.posted_by contract_notice.attachment created_by")
+          .populate("development company attachment quotation contract_note.attachment contract_notice.attachment ")
+          .populate({
+              path: 'contract_note.posted_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, contracts) => {
               err ? reject({message: err.message})
                   : resolve(contracts);

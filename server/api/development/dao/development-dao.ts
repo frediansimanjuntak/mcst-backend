@@ -92,7 +92,17 @@ developmentSchema.static('getNewsletter', (name_url:string):Promise<any> => {
         Development
             .findOne({"name_url": name_url})
             .select("newsletter")
-            .populate("newsletter.attachment  newsletter.release_by newsletter.created_by")
+            .populate("newsletter.attachment")
+            .populate({
+                path: 'newsletter.created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'newsletter.release_by',
+                model: 'User',
+                select: '-salt -password'
+            })
             .sort({"newsletter.created_at": -1})
             .exec((err, newsletters) => {
                 err ? reject({message: err.message})
@@ -109,7 +119,17 @@ developmentSchema.static('getByIdNewsletter', (name_url:string, idnewsletter:str
         var ObjectID = mongoose.Types.ObjectId;
         Development 
             .findOne({"name_url": name_url})
-            .populate("newsletter.attachment newsletter.release_by newsletter.created_by")
+            .populate("newsletter.attachment")
+            .populate({
+                path: 'newsletter.created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'newsletter.release_by',
+                model: 'User',
+                select: '-salt -password'
+            })
             .select({"newsletter": {$elemMatch: {"_id": new ObjectID(idnewsletter)}}})
             .exec((err, newsletters) => {
                 if (err) {
@@ -308,8 +328,23 @@ developmentSchema.static('getProperties', (name_url:string):Promise<any> => {
         }
         Development
             .findOne({"name_url": name_url})
-            .select("properties")
-            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident") 
+            .select("properties") 
+            .populate("properties.vehicles")
+            .populate({
+                path: 'properties.landlord.data.resident',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'properties.created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'properties.tenant.data.resident',
+                model: 'User',
+                select: '-salt -password'
+            })
             .exec((err, properties) => {
                 err ? reject({message: err.message})
                     : resolve(properties);
@@ -322,7 +357,22 @@ developmentSchema.static('getByIdDevProperties', (idDevelopment:string, idProper
         var ObjectID = mongoose.Types.ObjectId;
         Development 
             .findById(idDevelopment)
-            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident properties.vehicles") 
+            .populate("properties.vehicles")
+            .populate({
+                path: 'properties.landlord.data.resident',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'properties.created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'properties.tenant.data.resident',
+                model: 'User',
+                select: '-salt -password'
+            }) 
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idProperties)}}})                
             .exec((err, res) => {
                 if (err) {
@@ -345,7 +395,22 @@ developmentSchema.static('getByIdProperties', (name_url:string, idproperties:str
         var ObjectID = mongoose.Types.ObjectId;
         Development 
             .findOne({"name_url": name_url})
-            .populate ("properties.landlord.data.resident properties.created_by properties.tenant.data.resident properties.vehicles") 
+            .populate("properties.vehicles")
+            .populate({
+                path: 'properties.landlord.data.resident',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'properties.created_by',
+                model: 'User',
+                select: '-salt -password'
+            })
+            .populate({
+                path: 'properties.tenant.data.resident',
+                model: 'User',
+                select: '-salt -password'
+            })
             .select({"properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}})                
             .exec((err, properties) => {
                 err ? reject({message: err.message})

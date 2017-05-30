@@ -10,7 +10,17 @@ pollSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Poll
           .find(_query)
-          .populate("development created_by votes.voted_by")
+          .populate("development")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'votes.voted_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .sort({"created_at": -1})
           .exec((err, polls) => {
               err ? reject({message: err.message})
@@ -26,7 +36,17 @@ pollSchema.static('getById', (id:string):Promise<any> => {
         }
         Poll
           .findById(id)
-          .populate("development created_by votes.voted_by")
+          .populate("development")
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'votes.voted_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, polls) => {
               err ? reject({message: err.message})
                   : resolve(polls);

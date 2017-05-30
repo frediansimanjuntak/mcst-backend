@@ -12,7 +12,17 @@ announcementSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Announcement
           .find(_query)
-          .populate("development publish_by created_by")
+          .populate("development")
+          .populate({
+              path: 'publish_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .sort({"created_at": -1})
           .exec((err, announcements) => {
               err ? reject({message: err.message})
@@ -28,7 +38,17 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
         }
         Announcement
           .findById(id)
-          .populate("development publish_by created_by")
+          .populate("development")
+          .populate({
+              path: 'publish_by',
+              model: 'User',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, announcements) => {
               err ? reject({message: err.message})
                   : resolve(announcements);

@@ -11,7 +11,22 @@ companySchema.static('getAll', ():Promise<any> => {
         let _query = {};
         Company
           .find(_query)
-          .populate("company_logo chief employee created_by")
+          .populate("company_logo")
+          .populate({
+              path: 'chief',
+              model: 'Contractor',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'employee',
+              model: 'Contractor',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .sort({"created_at": -1})
           .exec((err, companies) => {
               err ? reject({message: err.message})
@@ -40,7 +55,22 @@ companySchema.static('getById', (id:string):Promise<any> => {
         }
         Company
           .findById(id)
-          .populate("company_logo chief employee created_by")
+          .populate("company_logo")
+          .populate({
+              path: 'chief',
+              model: 'Contractor',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'employee',
+              model: 'Contractor',
+              select: '-salt -password'
+          })
+          .populate({
+              path: 'created_by',
+              model: 'User',
+              select: '-salt -password'
+          })
           .exec((err, bookings) => {
               err ? reject({message: err.message})
                   : resolve(bookings);
