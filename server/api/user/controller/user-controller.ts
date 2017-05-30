@@ -78,6 +78,15 @@ export class UserController {
         .catch(error => res.status(400).json(error));
   }
 
+  static setDefaultProperty(req: express.Request, res: express.Response):void {
+      let _user = req.body;
+      let _id = req.params.id;
+      UserDAO
+        ['setDefaultProperty'](_id, _user)
+        .then(user => res.status(201).json(user))
+        .catch(error => res.status(400).json(error));
+  }
+
   static deleteUser(req: express.Request, res: express.Response):void {
       let _id = req.params.id;
       let _development = req.body;

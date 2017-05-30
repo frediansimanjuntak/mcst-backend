@@ -314,6 +314,34 @@ userSchema.static('createUsers', (user:Object, development:string, role:string, 
     });
 });
 
+userSchema.static('setDefaultProperty', (idUser:string, data:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      let body:any = data;
+      let role;
+      if(body.status == "rented"){
+        role = "tenant";
+      }
+      else {
+        role = "owner";
+      }
+      User
+        .findByIdAndUpdate(idUser, {
+          $set: {
+            "default_property": {
+              "development": body.development,
+              "property": body.property,
+              "role": role
+            },
+            "default_development": body.development
+          }
+        })
+        .exec((err, updated) => {
+          err ? reject({message: err.message})
+              : resolve(updated);
+        })
+    });
+});
+
 userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
@@ -326,7 +354,7 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
       _user.save((err, saved) => {
         err ? reject({message: err.message})
             : resolve(saved);
-        });
+      });
     });
 });
 
