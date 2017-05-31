@@ -768,19 +768,19 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                     "username": userData.username,
                     "resident_since": socialProfile.resident_since,
                     "social_interaction": socialProfile.social_interaction,
-                    "young_kids": socialProfile.young_kids,
-                    "age_kids": socialProfile.age_kids,
-                    "hobbies": socialProfile.hobbies,
+                    "young_kids": socialProfile.young_kids ? socialProfile.young_kids : 0,
+                    "age_kids": socialProfile.age_kids ? socialProfile.age_kids : 0,
+                    "hobbies": socialProfile.hobbies ? socialProfile.hobbies : [],
                     "vehicle": licenseVehicle,
                     "phone": phone,
                     "email": email
-                  };            
-                  dataArr.push(data);      
+                  };
+                  dataArr.push(data);
                 }
                 resolve(dataArr);
-              }              
-            }            
-          })          
+              }
+            }
+          })
     });
 });
 
