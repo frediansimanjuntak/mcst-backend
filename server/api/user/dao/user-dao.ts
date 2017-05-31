@@ -730,7 +730,7 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
                         let defaultDevPropId = defaultPropertyDev[j]._id.toString();
                         if (defaultDevPropId == defaultProperty) {
                           property = defaultPropertyDev[j];
-                          vehicles = property.registered_vehicle;
+                          vehicles = property.vehicles;
                           unit_no = property.address.unit_no;
                           unit_no_2 = property.address.unit_no_2;
                           block = property.address.block_no;
@@ -826,7 +826,7 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
                      unit_no = property.address.unit_no;
                      unit_no_2 = property.address.unit_no_2;
                      block = property.address.block_no;
-                     vehicles = property.registered_vehicle;
+                     vehicles = property.vehicles;
                      if (vehicles.length != 0) {
                         for (var k = 0; k < vehicles.length; k++) {
                           let vehicle = vehicles[k];
