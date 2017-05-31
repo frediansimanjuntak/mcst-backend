@@ -47,6 +47,15 @@ paymentSchema.static('getById', (id:string):Promise<any> => {
               model: 'User',
               select: '-salt -password'
           })
+          .populate({
+            path: 'created_by',
+            model: 'User',
+            select: '-salt -password',
+            populate: {
+              path: 'default_development',
+              model: 'Development'
+            }
+          })
           .exec((err, payments) => {
               err ? reject({message: err.message})
                   : resolve(payments);
