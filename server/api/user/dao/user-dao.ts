@@ -830,7 +830,7 @@ userSchema.static('getOwnSocialProfile', (userId:string):Promise<any> => {
                      if (vehicles.length != 0) {
                         for (var k = 0; k < vehicles.length; k++) {
                           let vehicle = vehicles[k];
-                          let owner = vehicle.owner.toString();
+                          let owner = vehicle.owner ? vehicle.owner.toString() : "";
                           if (owner == userId) {
                             licenseVehicle = vehicle.license_plate;
                           }
