@@ -356,17 +356,19 @@ userSchema.static('createUserSuperAdmin', (user:Object):Promise<any> => {
     });
 });
 
-userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => {
-    return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-            return reject(new TypeError('Id is not a valid string.'));
-        }
-        let body:any = development;
-        User
-          .findById(id, (err, userr) => {   
-            if (userr.owned_property != null){
-              var ObjectID = mongoose.Types.ObjectId; 
-              var ownedProperty_landlord = [].concat(userr.owned_property)
+userSchema.static('deleteUserInDevelopment', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => { 
+      var ObjectID = mongoose.Types.ObjectId; 
+      
+      User
+        .findById(id)
+        .exec((err, user) => {
+          if (err) { 
+            reject({message: err.message});
+          }
+          else if (user) {
+            if (user.owned_property.length > 0) { 
+              var ownedProperty_landlord = user.owned_property;
               for (var i = 0; i < ownedProperty_landlord.length; i++) {
                 var ownedProperty = ownedProperty_landlord[i];
                 let developmentId = ownedProperty.development;
@@ -383,36 +385,84 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
                             : resolve(saved);
                     });
               }
-            }  
-          })
-          .exec((err) => {
-              resolve({message: "error"});
-          });
-
-        Development
-          .findByIdAndUpdate(body.development, {
-            $pull: {
-              "properties.0.tenant.data": {
-                "resident": id
+            }
+            else if (user.rented_property.length > 0) {
+              var rentedProperty_landlord = user.rented_property;
+              for (var i = 0; i < rentedProperty_landlord.length; i++) {
+                var rentedProperty = rentedProperty_landlord[i];
+                let developmentId = rentedProperty.development;
+                let propertyId = rentedProperty.property;
+                Development
+                  .findByIdAndUpdate({"_id": developmentId}, {
+                    $pull: {
+                      "properties.0.tenant.data": {
+                        "resident": id
+                      }
+                    }
+                  })
+                  .exec((err, saved) => {
+                      err ? reject({message: err.message})
+                          : resolve(saved);
+                  });
               }
             }
-          })
-          .exec((err, update) => {
-              err ? reject({message: err.message})
-                  : resolve(update);
-          });
+          }
+          else {
+            resolve({message: "not found data"});
+          }
+        })
+    });
+});
 
-        UserGroup
-          .findByIdAndUpdate(body.user_group, {
-            $pull: {
-              "users": id
-            }
-          })
-          .exec((err, update) => {
-              err ? reject({message: err.message})
-                  : resolve(update);
-          });
+userSchema.static('deleteUserInUserGroup', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => { 
+      var ObjectID = mongoose.Types.ObjectId; 
+      
+      User
+        .findById(id)
+        .exec((err, user) => {
+          if (err) { 
+            reject({message: err.message});
+          }
+          else if (user) {
+            if (user.user_group.length > 0) { 
+              var userGroups = user.user_group;
+              for (var i = 0; i < userGroups.length; i++) {
+                var userGroup = userGroups[i];
+                UserGroup
+                  .findByIdAndUpdate(userGroup, {
+                    $pull: {
+                      "users": id
+                    },
+                    $unset: {
+                      "chief": id
+                    }
+                  })
+                  .exec((err, update) => {
+                      err ? reject({message: err.message})
+                          : resolve(update);
+                  });                
+              }
+            } 
+            else {
+              resolve({message: "user group not found"})
+            }           
+          }
+          else {
+            resolve({message: "not found data"});
+          }
+        })
+    });
+});
 
+userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        let body:any = development;
+        User.deleteUserInDevelopment(id);
+        User.deleteUserInUserGroup(id);
         User
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
