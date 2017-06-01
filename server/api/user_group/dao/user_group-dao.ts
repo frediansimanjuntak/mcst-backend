@@ -88,9 +88,9 @@ userGroupSchema.static('getOwn', (userid: string):Promise<any> => {
 
 userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(userGroup)) {
-        return reject(new TypeError('User Group is not a valid object.'));
-      }
+    //   if (!_.isObject(userGroup)) {
+    //     return reject(new TypeError('User Group is not a valid object.'));
+    //   }
       let body:any = userGroup;
       UserGroup
         .findOne({"chief" : body.chief})
@@ -107,7 +107,7 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
             _user_group.created_by = userId;
             _user_group.save((err, saved) => {
               if (err) {
-                reject({message: err.message});
+                reject({message: err});
               }
               else if (saved) {
                 let userGroupId = saved._id;
@@ -117,6 +117,7 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
                     let iduser = result;
                     UserGroup.updateUserInUserGroup(iduser, saved._id, "push");
                   })
+                  resolve(saved);
                 }
                 else{
                   resolve(saved);
