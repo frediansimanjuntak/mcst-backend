@@ -115,9 +115,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(Payments)) {
         return reject(new TypeError('Incident is not a valid object.'));
-      }
-
-      let files:any = attachment;      
+      }  
       Payments.generateCode().then((code)=> {
         var _payment = new Payments(payment);
         _payment.created_by = userId;
@@ -127,7 +125,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
           if (err) {
             reject({message: err.message});
           }
-          if (payment) {
+          else if (payment) {
             let paymentId = payment._id;
             if (attachment) {
               let _query = {"_id": paymentId};
@@ -180,7 +178,7 @@ paymentSchema.static('updatePayments', (id:string, userId:string, payment:Object
     });
 });
 
-paymentSchema.static('addAttachmentPayments', (query:Object, userId:string, attachment:Object):Promise<any> => {
+paymentSchema.static('addAttachmentPayments', (attachment:Object, userId:string, query:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let files:any = attachment;
         let paymentProof = files.payment_proof;
@@ -198,6 +196,7 @@ paymentSchema.static('addAttachmentPayments', (query:Object, userId:string, atta
                 .exec((err, saved) => {
                       err ? reject({message: err.message})
                           : resolve(saved);
+                          console.log(saved);
                  });
             })
             .catch(err=>{
