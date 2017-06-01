@@ -111,8 +111,8 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
               }
               else if (saved) {
                 let userGroupId = saved._id;
-                if (saved.users != null) {
-                  let users = saved.users
+                if (saved.users.length > 0) {
+                  let users = saved.users;
                   _.each(users, (result) => {
                     let iduser = result;
                     UserGroup.updateUserInUserGroup(iduser, saved._id, "push");
@@ -140,7 +140,7 @@ userGroupSchema.static('deleteUserGroup', (id:string):Promise<any> => {
               reject(err);
             }
             else if (usergroup) {
-              if (usergroup.users != null) {
+              if (usergroup.users.length > 0) {
                 var users = [].concat(usergroup.users);
                 for (var i = 0; i < users.length; i++) {
                   var iduser = users[i];
@@ -176,8 +176,7 @@ userGroupSchema.static('updateUserInUserGroup', (id:string, idUserGroup:string, 
           .exec((err, saved) => {
             err ? reject({message: err.message})
                 : resolve(saved);
-          });
-              
+          });              
     });
 });
 

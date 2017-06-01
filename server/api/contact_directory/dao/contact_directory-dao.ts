@@ -33,9 +33,6 @@ contactDirectorySchema.static('getById', (id:string, developmentId:string):Promi
 
 contactDirectorySchema.static('createContactDirectory', (data:Object, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isObject(data)) {
-          return reject(new TypeError('Access Control is not a valid object.'));
-        }
         var _contact = new ContactDirectory(data);
         _contact.development = developmentId;
         _contact.save((err, saved) => {
