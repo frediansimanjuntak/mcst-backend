@@ -59,7 +59,8 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
             populate: {
               path: 'default_development',
               model: 'Development'
-            }
+            },
+            select: '-salt -password'
           })
           .exec((err, petitions) => {
             if (err) {
@@ -110,7 +111,8 @@ petitionSchema.static('getOwn', (userId:string, development:string):Promise<any>
             populate: {
               path: 'default_development',
               model: 'Development'
-            }
+            },
+            select: '-salt -password'
           })
           .exec((err, bookings) => {
               err ? reject({message: err.message})

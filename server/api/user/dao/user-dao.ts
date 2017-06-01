@@ -375,7 +375,7 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
                   .update({"_id": developmentId, "properties": {$elemMatch: {"_id": new ObjectID(propertyId)}}},
                       {
                         $unset: {  
-                          "properties.$.landlord": id
+                          "properties.$.landlord.data.resident": id
                         }
                       }, {upsert: true})
                   .exec((err, saved) => {
@@ -392,7 +392,7 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
         Development
           .findByIdAndUpdate(body.development, {
             $pull: {
-              "properties.0.tenant": {
+              "properties.0.tenant.data": {
                 "resident": id
               }
             }
@@ -884,19 +884,19 @@ userSchema.static('settingsocialProfile', (userId:string, user:Object):Promise<a
         if (body.showPhoneNumber == true) {
           private_phone = false;
         }
-        if (body.showPhoneNumber == false) {
+        else if (body.showPhoneNumber == false) {
           private_phone = true;
         }
         if (body.showEmail == true) {
           private_email = false;
         }
-        if (body.showEmail == false) {
+        else if (body.showEmail == false) {
           private_email = true;
         }
         if (body.showUnit == true) {
           private_unit = false;
         }
-        if (body.showUnit == false) {
+        else if (body.showUnit == false) {
           private_unit = true;
         }
         
