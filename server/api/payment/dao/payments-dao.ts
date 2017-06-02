@@ -129,9 +129,13 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
             let paymentId = payment._id;
             if (attachment) {
               let _query = {"_id": paymentId};
-              Payments.addAttachmentPayments(attachment, userId.toString(), _query); 
+              Payments.addAttachmentPayments(attachment, userId.toString(), _query).then(res => {
+                resolve(res);
+              }); 
             }
-            resolve(payment);
+            else {
+              resolve(payment);  
+            }
           }
         });
       })
@@ -168,13 +172,14 @@ paymentSchema.static('updatePayments', (id:string, userId:string, payment:Object
         }
         let ObjectID = mongoose.Types.ObjectId; 
         let _query = {"_id": id};
-        Payments.addAttachmentPayments(attachment, userId.toString(), _query);    
-        Payments
-          .update(_query, paymentObj)
-          .exec((err, saved) => {
-                err ? reject({message: err.message})
-                    : resolve(saved);
-            });
+        Payments.addAttachmentPayments(attachment, userId.toString(), _query).then(res => {
+          Payments
+            .update(_query, paymentObj)
+            .exec((err, saved) => {
+                  err ? reject({message: err.message})
+                      : resolve(saved);
+              });
+        });    
     });
 });
 
