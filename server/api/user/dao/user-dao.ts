@@ -250,6 +250,26 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
     });
 });
 
+userSchema.static('checkUserData', (search:string):Promise<any> => {
+  return new Promise((resolve:Function, reject:Function) => {
+    Users
+    .findOne({ $or: [{"username": search}, {"email": search}, {"phone": search}]})
+    .exec((err, users)=>{  
+      if(err) {
+        reject(err);
+      }
+      else{
+        if(users) {
+          resolve({message: true});
+        }
+        else{
+          resolve({message: false});
+        }
+      }
+    })
+  });
+});
+
 userSchema.static('createUsers', (user:Object, development:string, role:string, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       if (!_.isObject(user)) {
@@ -306,7 +326,7 @@ userSchema.static('createUsers', (user:Object, development:string, role:string, 
           let typeMail = "signUp";
           User.email(data, typeMail);
         }
-        err ? reject({message: err.message})
+        err ? reject(err)
             : resolve(saved);
         });
     });
