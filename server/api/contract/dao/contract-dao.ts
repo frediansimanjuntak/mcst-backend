@@ -192,13 +192,16 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
+        let body: any = contract;
         let _query = {"_id": id};
         let contractObj = {$set: {}};
         for(var param in contract) {
           contractObj.$set[param] = contract[param];
         }
         contractObj.$set["updated_at"] = new Date();
-        Contract.attachmentContract(_query, userId.toString(), attachment);
+        if (body.file != 'null') {
+          Contract.attachmentContract(_query, userId.toString(), attachment);
+        }
         Contract
           .update(_query, contractObj)
           .exec((err, saved) => {
