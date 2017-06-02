@@ -99,7 +99,7 @@ userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, deve
             reject({message: err.message});
           }
           if (res) {
-            reject({message: "Chief is Allready"});
+            reject({message: "Chief have become the head of another group, please choose other user"});
           }
           else{
             var _user_group = new UserGroup(userGroup);
