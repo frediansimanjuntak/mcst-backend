@@ -252,7 +252,7 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
 
 userSchema.static('checkUserData', (search:string):Promise<any> => {
   return new Promise((resolve:Function, reject:Function) => {
-    Users
+    User
     .findOne({ $or: [{"username": search}, {"email": search}, {"phone": search}]})
     .exec((err, users)=>{  
       if(err) {
