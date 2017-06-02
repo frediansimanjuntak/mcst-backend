@@ -195,19 +195,42 @@ contractSchema.static('updateContract', (id:string, userId:string, contract:Obje
         let body: any = contract;
         let _query = {"_id": id};
         let contractObj = {$set: {}};
-        for(var param in contract) {
-          contractObj.$set[param] = contract[param];
-        }
-        contractObj.$set["updated_at"] = new Date();
-        if (body.file != 'null') {
-          Contract.attachmentContract(_query, userId.toString(), attachment);
-        }
-        Contract
-          .update(_query, contractObj)
-          .exec((err, saved) => {
-            err ? reject({message: err.message})
-                : resolve(saved);             
+        if (body.file == 'not null') {
+          Contract.attachmentContract(_query, userId.toString(), attachment).then(res => {
+            Contract
+              .update(_query, {
+                $set: {
+                  'start_time': body.start_time,
+                  'end_time': body.end_time,
+                  'contract_type': body.contract_type,
+                  'title': body.title,
+                  'remark': body.remark,
+                  'updated_at': new Date()
+                }
+              })
+              .exec((err, saved) => {
+                err ? reject({message: err.message})
+                    : resolve(saved);             
+              });    
           });
+        }
+        else {
+          Contract
+            .update(_query, {
+              $set: {
+                'start_time': body.start_time,
+                'end_time': body.end_time,
+                'contract_type': body.contract_type,
+                'title': body.title,
+                'remark': body.remark,
+                'updated_at': new Date()
+              }
+            })
+            .exec((err, saved) => {
+              err ? reject({message: err.message})
+                  : resolve(saved);             
+            });
+        }
     });
 });
 
