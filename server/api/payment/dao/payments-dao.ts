@@ -130,7 +130,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
             if (attachment) {
               let _query = {"_id": paymentId};
               Payments.addAttachmentPayments(attachment, userId.toString(), _query).then(res => {
-                resolve(res);
+                resolve(payment);
               }); 
             }
             else {
