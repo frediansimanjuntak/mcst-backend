@@ -21,6 +21,10 @@ export class UserRoutes {
         .post(auth.isAuthenticated(), UserController.updateUser);
 
       router
+        .route('/users/check/:search')
+        .get(UserController.checkUserData);
+
+      router
         .route('/users/verification_code')
         .post(auth.isAuthenticated(), UserController.verifiedUser);
 

@@ -167,6 +167,25 @@ UserSchema
       });
   }, 'The specified email address is already in use.');
 
+UserSchema
+  .path('username')
+  .validate(function(value, respond) {
+    return this.constructor.findOne({ username: value }).exec()
+      .then(user => {
+        if(user) {
+          if(this.id === user.id) {
+            return respond(true);
+          }
+          return respond(false);
+        }
+        return respond(true);
+      })
+      .catch(function(err) {
+        throw err;
+      });
+  }, 'The specified username is already in use.');
+
+
 var validatePresenceOf = function(value) {
   return value && value.length;
 };

@@ -59,6 +59,14 @@ export class UserController {
         .catch(error => res.status(400).json(error));
   }
 
+  static checkUserData(req: express.Request, res: express.Response):void {
+    let _search = req.params.search;
+    UserDAO
+    ['checkUserData'](_search)
+    .then(user => res.status(200).json(user))
+    .catch(error => res.status(400).json(error));
+  }
+
   static createUsers(req: express.Request, res: express.Response):void {
       let _user = req.body;
       let _developmentId = req["user"].default_development;
