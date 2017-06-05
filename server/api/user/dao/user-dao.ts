@@ -388,9 +388,9 @@ userSchema.static('deleteUserInDevelopment', (id:string):Promise<any> => {
           }
           else if (user) {
             if (user.owned_property.length > 0) { 
-              var ownedProperty_landlord = user.owned_property;
-              for (var i = 0; i < ownedProperty_landlord.length; i++) {
-                var ownedProperty = ownedProperty_landlord[i];
+              var ownedPropertyLandlord = user.owned_property;
+              for (var i = 0; i < ownedPropertyLandlord.length; i++) {
+                var ownedProperty = ownedPropertyLandlord[i];
                 let developmentId = ownedProperty.development;
                 let propertyId = ownedProperty.property;
                 Development
@@ -407,13 +407,13 @@ userSchema.static('deleteUserInDevelopment', (id:string):Promise<any> => {
               }
             }
             else if (user.rented_property.length > 0) {
-              var rentedProperty_landlord = user.rented_property;
-              for (var i = 0; i < rentedProperty_landlord.length; i++) {
-                var rentedProperty = rentedProperty_landlord[i];
+              var rentedPropertyTenant = user.rented_property;
+              for (var i = 0; i < rentedPropertyTenant.length; i++) {
+                var rentedProperty = rentedPropertyTenant[i];
                 let developmentId = rentedProperty.development;
                 let propertyId = rentedProperty.property;
                 Development
-                  .findByIdAndUpdate({"_id": developmentId}, {
+                  .update({"_id": developmentId}, {
                     $pull: {
                       "properties.0.tenant.data": {
                         "resident": id
