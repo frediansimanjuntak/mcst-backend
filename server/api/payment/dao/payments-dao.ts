@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import paymentSchema from '../model/payments-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import Booking from '../../booking/dao/booking-dao';
 import {AWSService} from '../../../global/aws.service';
 import {GlobalService} from '../../../global/global.service';
 
@@ -127,6 +128,9 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
           }
           else if (payment) {
             let paymentId = payment._id;
+            if (payment.payment_type == "booking") {
+              Payments.changeStatusBooking(payment.reference_id.toString());
+            }
             if (attachment) {
               let _query = {"_id": paymentId};
               Payments.addAttachmentPayments(attachment, userId.toString(), _query).then(res => {
@@ -141,8 +145,25 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
       })
       .catch((err) => {
         reject({message: err.message});
-      })
-                
+      })                
+    });
+});
+
+paymentSchema.static('changeStatusBooking', (id:string, ):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        if (!_.isString(id)) {
+            return reject(new TypeError('Id is not a valid string.'));
+        }
+        Booking
+          .findByIdAndUpdate(id, {
+            $set: {
+              "status": "paid"
+            }
+          })
+          .exec((err, updated) => {
+              err ? reject({message: err.message})
+                  : resolve(updated);
+          });
     });
 });
 
@@ -151,7 +172,6 @@ paymentSchema.static('deletePayments', (id:string, ):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Payments
           .findByIdAndRemove(id)
           .exec((err, deleted) => {

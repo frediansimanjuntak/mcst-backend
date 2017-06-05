@@ -158,6 +158,7 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
                     }
                     if (payment) {
                       payment.reference_id = bookingId;
+                      payment.payment_type = "booking";
                       payment.save((err, saved) => {
                         if (err) {
                           reject({message: err.message});
