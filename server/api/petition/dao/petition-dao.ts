@@ -66,7 +66,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
             if (err) {
               reject({message: err.message});
             }
-            if (petitions) {
+            else if (petitions) {
               let user = petitions.created_by;
               let developmentID = user.default_development._id;
               let developmentName = user.default_development.name;
@@ -87,6 +87,9 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
               else {
                 resolve({"petitions": petitions});
               }
+            }
+            else {
+               resolve({message: "No Data Petitions"});
             }
           });
     });
