@@ -265,7 +265,7 @@ paymentReminderSchema.static('updateUserLandlordPaymentReminder', (userId:string
                         "total_amount": body.amount,
                         "remark": body.charge,
                         "created_by": userId,
-                        "serial_no": body.referenceNo,
+                        "reference_no": body.referenceNo,
                         "reference_id": body.referenceId
                       };
                       Payments.createPayments(paymentData, userId, developmentId, attachment);
@@ -307,7 +307,7 @@ paymentReminderSchema.static('updateVehiclePaymentReminder', (userId:string, dat
                       "charge": body.charge,
                       "remark": body.remarks,
                       "created_by": userId,
-                      "serial_no": body.referenceNo,
+                      "reference_no": body.referenceNo,
                       "reference_id": body.referenceId
                     };                
                     Payments.createPayments(paymentData, userId, body.developmentId, attachment);

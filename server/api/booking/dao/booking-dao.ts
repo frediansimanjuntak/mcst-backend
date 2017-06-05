@@ -137,6 +137,9 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
           if (paymentProof) {
             status = "paid";
           }
+          else {
+            status = "unpaid";
+          }
           Booking.generateCode().then((code)=>{
             var _booking = new Booking(booking);
             _booking.created_by = userId;
@@ -157,6 +160,7 @@ bookingSchema.static('createBooking', (booking:Object, userId:string, developmen
                       reject({message: err.message});
                     }
                     if (payment) {
+                      payment.reference_no = booking.reference_no;
                       payment.reference_id = bookingId;
                       payment.payment_type = "booking";
                       payment.save((err, saved) => {

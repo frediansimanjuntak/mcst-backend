@@ -127,10 +127,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
             reject({message: err.message});
           }
           else if (payment) {
-            let paymentId = payment._id;
-            if (payment.payment_type == "booking") {
-              Payments.changeStatusBooking(payment.reference_id.toString());
-            }
+            let paymentId = payment._id;            
             if (attachment) {
               let _query = {"_id": paymentId};
               Payments.addAttachmentPayments(attachment, userId.toString(), _query).then(res => {
@@ -149,21 +146,31 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
     });
 });
 
-paymentSchema.static('changeStatusBooking', (id:string, ):Promise<any> => {
+paymentSchema.static('changeStatusBooking', (query:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        if (!_.isString(id)) {
-            return reject(new TypeError('Id is not a valid string.'));
-        }
-        Booking
-          .findByIdAndUpdate(id, {
-            $set: {
-              "status": "paid"
-            }
-          })
-          .exec((err, updated) => {
-              err ? reject({message: err.message})
-                  : resolve(updated);
-          });
+      Payments
+        .findOne(query)
+        .exec((err, payment) => {
+          if (err) {
+            reject(err);
+          }
+          else if (payment) {
+            if (payment.payment_type == "booking") {
+              Booking
+                .update({"_id": payment.reference_id}, {
+                  $set: {
+                    "status": "paid"
+                  }
+                }, {upsert: true})
+                .exec((err, updated) => {
+                    err ? reject({message: err.message})
+                        : resolve(updated);
+                        console.log(updated);
+                });
+            }  
+            resolve(payment);          
+          }
+        })        
     });
 });
 
@@ -219,10 +226,14 @@ paymentSchema.static('addAttachmentPayments', (attachment:Object, userId:string,
                   }
                 })
                 .exec((err, saved) => {
-                      err ? reject({message: err.message})
-                          : resolve(saved);
-                          console.log(saved);
-                 });
+                  if (err) {
+                    reject(err);
+                  }
+                  else if (saved) {
+                    Payments.changeStatusBooking(query);
+                    resolve(saved);
+                  }
+                });
             })
             .catch(err=>{
               resolve({message: "attachment error"});
