@@ -48,19 +48,20 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
           .findById(id)
           .populate("development attachment")
           .populate({
-            path: 'contract',
-            populate: {
-              path: 'company',
-              model: 'Company'
-            }
-          })
-          .populate({
             path: 'created_by',
+            model: 'User',
             populate: {
               path: 'default_development',
               model: 'Development'
             },
             select: '-salt -password'
+          })
+          .populate({
+            path: 'contract',
+            populate: {
+              path: 'company',
+              model: 'Company'
+            }
           })
           .exec((err, petitions) => {
             if (err) {
@@ -89,7 +90,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
               }
             }
             else {
-               resolve({message: "No Data Petitions"});
+               resolve({message: "Petition not found"});
             }
           });
     });
