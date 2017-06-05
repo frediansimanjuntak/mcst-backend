@@ -101,43 +101,63 @@ guestSchema.static('updateGuest', (id:string, guest:Object):Promise<any> => {
     });
 });
 
-guestSchema.static('checkInGuest', (id:string, userId:string):Promise<any> => {
+guestSchema.static('checkInGuest', (id:string, userId:string, data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        let checkIn = Date.now();
+        let body:any = data;
+        let checkIn = new Date();
         Guest
-            .findByIdAndUpdate(id, {
-                $set: {
-                    "check_in": checkIn,
-                    "checkin_by": userId
+            .findById(id)
+            .exec((err, guest) => {
+                if (err) {
+                    reject(err);
+                }
+                else if (guest) {
+                    if (guest.visitor.pass == body.visitor.pass) {
+                        guest.check_in = checkIn;
+                        guest.checkin_by = userId;
+                        guest.save((err, saved) => {
+                            err ? reject({message: err.message})
+                                : resolve(saved);
+                        })
+                    }
+                }
+                else {
+                    resolve({message: "Visitor pass not same"});
                 }
             })
-            .exec((err, updated) => {
-                err ? reject({message: err.message})
-                    : resolve(updated);
-            });
     });
 });
 
-guestSchema.static('checkOutGuest', (id:string, userId:string):Promise<any> => {
+guestSchema.static('checkOutGuest', (id:string, userId:string, data:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-        let checkOut = Date.now();
+        let body:any = data;
+        let checkOut = new Date();
         Guest
-        .findByIdAndUpdate(id, {
-          $set: {
-            "check_out": checkOut,
-            "checkout_by": userId
-          }
-        })
-        .exec((err, updated) => {
-              err ? reject({message: err.message})
-                  : resolve(updated);
-          });
+            .findById(id)
+            .exec((err, guest) => {
+                if (err) {
+                    reject(err);
+                }
+                else if (guest) {
+                    if (guest.visitor.pass == body.visitor.pass) {
+                        guest.check_out = checkOut;
+                        guest.checkout_by = userId;
+                        guest.save((err, saved) => {
+                            err ? reject({message: err.message})
+                                : resolve(saved);
+                        })
+                    }
+                }
+                else {
+                    resolve({message: "Visitor pass not same"});
+                }
+            })
     });
 });
 
