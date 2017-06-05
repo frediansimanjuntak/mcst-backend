@@ -4,9 +4,10 @@ import AnnouncementDAO from '../dao/announcement-dao';
 export class AnnouncementController {
   static getAll(req: express.Request, res: express.Response):void {
       let _developmentId = req["user"].default_development;
+      let _role = req["user"].role;
 
       AnnouncementDAO
-        ['getAll'](_developmentId)
+        ['getAll'](_developmentId, _role)
         .then(annoncements => res.status(200).json(annoncements))
         .catch(error => res.status(400).json(error));
   }

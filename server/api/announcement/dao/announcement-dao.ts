@@ -7,9 +7,15 @@ import User from '../../user/dao/user-dao';
 
 var DateOnly = require('mongoose-dateonly')(mongoose);
 
-announcementSchema.static('getAll', (development:string):Promise<any> => {
+announcementSchema.static('getAll', (development:string, role:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"development": development, "publish": true};
+        let _query;
+        if (role == "user") {
+            _query = {"development": development, "publish": true};
+        }
+        else {
+            _query = {"development": development};
+        }        
         Announcement
           .find(_query)
           .populate("development")
