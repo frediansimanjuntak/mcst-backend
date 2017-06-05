@@ -11,7 +11,7 @@ var fcm = new FCM(serverKey);
 export class FCMService {
     static sendMessage(userToken:Object, type:string, title:string) {
         return new Promise((resolve:Function, reject:Function) => {            
-            var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera) 
+            var message = {
                 "priority": "high",
                 "content_available": true,
                 "registration_ids": userToken, 

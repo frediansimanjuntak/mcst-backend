@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import paymentSchema from '../model/payments-model';
 import Attachment from '../../attachment/dao/attachment-dao';
+import Booking from '../../booking/dao/booking-dao';
 import {AWSService} from '../../../global/aws.service';
 import {GlobalService} from '../../../global/global.service';
 
@@ -126,7 +127,7 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
             reject({message: err.message});
           }
           else if (payment) {
-            let paymentId = payment._id;
+            let paymentId = payment._id;            
             if (attachment) {
               let _query = {"_id": paymentId};
               Payments.addAttachmentPayments(attachment, userId.toString(), _query).then(res => {
@@ -141,8 +142,35 @@ paymentSchema.static('createPayments', (payment:Object, userId:string, developme
       })
       .catch((err) => {
         reject({message: err.message});
-      })
-                
+      })                
+    });
+});
+
+paymentSchema.static('changeStatusBooking', (query:Object):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+      Payments
+        .findOne(query)
+        .exec((err, payment) => {
+          if (err) {
+            reject(err);
+          }
+          else if (payment) {
+            if (payment.payment_type == "booking") {
+              Booking
+                .update({"_id": payment.reference_id}, {
+                  $set: {
+                    "status": "paid"
+                  }
+                }, {upsert: true})
+                .exec((err, updated) => {
+                    err ? reject({message: err.message})
+                        : resolve(updated);
+                        console.log(updated);
+                });
+            }  
+            resolve(payment);          
+          }
+        })        
     });
 });
 
@@ -151,7 +179,6 @@ paymentSchema.static('deletePayments', (id:string, ):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Payments
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -199,10 +226,14 @@ paymentSchema.static('addAttachmentPayments', (attachment:Object, userId:string,
                   }
                 })
                 .exec((err, saved) => {
-                      err ? reject({message: err.message})
-                          : resolve(saved);
-                          console.log(saved);
-                 });
+                  if (err) {
+                    reject(err);
+                  }
+                  else if (saved) {
+                    Payments.changeStatusBooking(query);
+                    resolve(saved);
+                  }
+                });
             })
             .catch(err=>{
               resolve({message: "attachment error"});

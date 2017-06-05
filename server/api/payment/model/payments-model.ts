@@ -7,6 +7,7 @@ var paymentSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'Development'
 	},
+	reference_no : {type: String, trim: true},
 	reference_id : {type: String, trim: true},
 	property: {type: String, trim: true},		
 	payment_type: {type: String, trim: true},

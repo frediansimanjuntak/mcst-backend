@@ -7,7 +7,7 @@ var contactDirectorySchema = new mongoose.Schema({
     	ref: 'Development'
 	},
 	name: {type: String, required: true},
-	type_contact: {type: String, enum: ['other', 'management']},
+	type_contact: {type: String, enum: ['other', 'management', 'emergency']},
 	service: {type: String},
 	register_number: {type: String},
 	ratings: {type: Number},

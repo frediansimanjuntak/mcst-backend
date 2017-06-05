@@ -752,7 +752,7 @@ userSchema.static('settingAccount', (id:string, user:Object):Promise<any> => {
 userSchema.static('getAllSocialProfile', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         var ObjectID = mongoose.Types.ObjectId;
-        let _query = {};        
+        let _query = {"role": "user", $or: [{"rented_property.active": true}, {"owned_property.active": true}]};        
         User
           .find(_query)
           .populate("default_property.development")
@@ -762,7 +762,7 @@ userSchema.static('getAllSocialProfile', ():Promise<any> => {
             }
             if (users) {              
               if (users.length == 0) {
-                resolve({message: "no data"})
+                resolve({message: "User Not Found"})
               }
               if (users.length >= 1) {
                 let dataArr = [];
