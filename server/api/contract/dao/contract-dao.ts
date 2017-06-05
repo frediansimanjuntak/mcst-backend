@@ -399,19 +399,21 @@ contractSchema.static('getByIdContractNote', (id:string, idcontractnote:string):
           .findById(id)
           .populate("contract_note.attachment contract_note.posted_by")
           .select({"contract_note": {$elemMatch: {"_id" : new ObjectID (idcontractnote)}}})
-          .exec((err, contractnotes) => {
+          .exec((err, contract) => {
             if (err) {
               reject({message: err.message});
             }
-            else if (contractnotes) {
-                _.each(contractnotes.contract_note, (err, result) => {
-                  if (err) {
-                    reject({message: err.message});
-                  }
-                  else if (result) {
-                    resolve(result);
-                  }
-                })                
+            else if (contract) {
+                resolve(contract);
+                // if(contract.contract_note.length > 0){
+                //     _.each(contract.contract_note, (err, result) => {
+                //         err ? reject({message: err.message})
+                //             : resolve(result);
+                //     }) 
+                // }  
+                // else {
+                //     resolve({message: "No Data in Contract Note"})
+                // }                            
             }
           });
     });
