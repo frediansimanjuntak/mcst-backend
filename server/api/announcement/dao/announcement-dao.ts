@@ -9,7 +9,7 @@ var DateOnly = require('mongoose-dateonly')(mongoose);
 
 announcementSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"development": development};
+        let _query = {"development": development, "publish": true};
         Announcement
           .find(_query)
           .populate("development")
