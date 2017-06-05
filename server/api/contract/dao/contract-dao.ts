@@ -425,7 +425,6 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
               return reject(new TypeError('Id is not a valid string.'));
         }
         let body:any = contract_note; 
-        var referenceId = body.reference_id;  
         Attachment.createAttachment(attachment, userId)
           .then(res => {
             var idAttachment = res.idAtt;
@@ -444,27 +443,66 @@ contractSchema.static('createContractNote', (id:string, userId:string, contract_
                   "updated_at": new Date()
                 }
               })
-              .exec((err, saved)=>{
-                  err ? reject({message: err.message})
-                      : resolve(saved);
-              }); 
-              if (body.status == "closed" && referenceId) {
-                  console.log(body.status)
-                  Incident
-                    .findByIdAndUpdate(referenceId, {
-                      $set: {
-                        "status": "resolved"
-                      }
-                    })
-                    .exec((err, saved) => {
-                        err ? reject({message: err.message})
-                            : resolve(saved);
-                    });
-              }         
+              .exec((err, saved) => {
+                  if (err) {
+                      reject(err);
+                  }
+                  else if (saved) {
+                    if (body.status == "closed") {
+                        Contract
+                            .findById(id)
+                            .exec((err, contract) => {
+                                if (err) {
+                                    reject(err);
+                                }
+                                else if (contract) {
+                                    let refId = contract.reference_id;
+                                    if (contract.reference_type == "incident") {
+                                        Contract.changeStatusBooking(refId);
+                                    }
+                                    else if (contract.reference_type == "petition") {
+                                        Contract.changeStatusPetition(refId);
+                                    }   
+                                    resolve(contract);                         
+                                }
+                            })                 
+                    }
+                  }
+              });                        
           })
           .catch(err=>{
             resolve({message: "attachment error"});
           })                
+    });
+});
+
+contractSchema.static('changeStatusBooking', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        Incident
+            .update({"_id": id}, {
+                $set: {
+                    "status": "resolved"
+                }
+            })
+            .exec((err, saved) => {
+                err ? reject({message: err.message})
+                    : resolve(saved);
+            });
+    });
+});
+
+contractSchema.static('changeStatusPetition', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        Petition
+            .update({"_id": id}, {
+                $set: {
+                    "status": "resolved"
+                }
+            })
+            .exec((err, saved) => {
+                err ? reject({message: err.message})
+                    : resolve(saved);
+            });
     });
 });
 
