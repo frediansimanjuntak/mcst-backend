@@ -460,7 +460,7 @@ developmentSchema.static('deleteProperties', (name_url:string, idproperties:stri
             return reject(new TypeError('Development Name is not a valid string.'));
         }
         Development
-            .findOneAndUpdate({"name_url": name_url}, {
+            .update({"name_url": name_url}, {
                 $pull:{
                     "properties": {
                         "_id": idproperties

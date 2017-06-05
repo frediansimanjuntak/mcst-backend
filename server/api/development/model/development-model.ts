@@ -7,7 +7,7 @@ import attachment from '../../attachment/dao/attachment-dao';
 import {AWSService} from '../../../global/aws.service';
 
 var developmentSchema = new mongoose.Schema({
-    name: {type: String, required: true},
+    name: {type: String, required: true, unique: true},
     name_url: {type: String},
     owner: {
     	type: Schema.Types.ObjectId,
