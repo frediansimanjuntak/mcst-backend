@@ -22,7 +22,7 @@ userSchema.static('userAll', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
         User
-          .find(_query, '-salt -password')
+          .find(_query)
           .exec((err, users) => {
               err ? reject({message: err.message})
                   : resolve(users);
@@ -34,7 +34,7 @@ userSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"default_development": development};
         User
-          .find(_query, '-salt -password')
+          .find(_query)
           .exec((err, users) => {
               err ? reject({message: err.message})
                   : resolve(users);
@@ -45,25 +45,30 @@ userSchema.static('getAll', (development:string):Promise<any> => {
 userSchema.static('me', (userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         User
-          .findById(userId, '-salt -password')
+          .findById(userId)
           .populate("default_development user_group vehicles rented_property.development owned_property.development user_group")
           .exec((err, users) => {
             if (err) {
               reject({message: err.message});
             }
             if (users) {
-              let developmentID = users.default_development._id;
-              if (users.default_property.property) {
-                let propertyID = users.default_property.property;
-                Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
-                  let unit = "Unit #" + res.address.unit_no + "-" + res.address.unit_no_2; 
-                  resolve({"user": users, "property_data": res, "unit": unit});
-                })
-                .catch((err) => {
-                  reject({message: err.message});
-                  console.log(err);
-                })
-              }
+              if (users.default_development) {
+                let developmentID = users.default_development._id;
+                if (users.default_property.property) {
+                  let propertyID = users.default_property.property;
+                  Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
+                    let unit = "Unit #" + res.address.unit_no + "-" + res.address.unit_no_2; 
+                    resolve({"user": users, "property_data": res, "unit": unit});
+                  })
+                  .catch((err) => {
+                    reject({message: err.message});
+                    console.log(err);
+                  })
+                }
+                else {
+                  resolve({"user": users});
+                }
+              }              
               else {
                 resolve({"user": users});
               }
@@ -78,7 +83,7 @@ userSchema.static('getById', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         User
-          .findById(id, '-salt -password')
+          .findById(id)
           .populate("default_development user_group vehicles rented_property.development owned_property.development user_group")
           .exec((err, users) => {
               err ? reject({message: err.message})
@@ -231,12 +236,10 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
           updateObj.$push["owned_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyOwner(idDevelopment, idProperty, idUser, remarks); 
         }
-
         if(body.type == 'tenant'){
           updateObj.$push["rented_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyTenant(idDevelopment, idProperty, idUser, remarks); 
         }
-
         if(body.default_property.property){
           updateObj.$set["default_property"] = ({"development": idDevelopment, "role": role, "property": defaultProperty})
           updateObj.$set["default_development"] = idDevelopment;
@@ -436,8 +439,7 @@ userSchema.static('deleteUserInDevelopment', (id:string):Promise<any> => {
 
 userSchema.static('deleteUserInUserGroup', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => { 
-      var ObjectID = mongoose.Types.ObjectId; 
-      
+      var ObjectID = mongoose.Types.ObjectId;       
       User
         .findById(id)
         .exec((err, user) => {
@@ -496,7 +498,7 @@ userSchema.static('deleteUser', (id:string, development:Object):Promise<any> => 
 userSchema.static('resendVerificationUser', (userId:string, user:Object):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let body:any = user;
-        let code = Math.random().toString(36).substr(2, 4).toUpperCase(); 
+        let code = GlobalService.verivicationCode();
         User
           .findById(userId)
           .exec((err, res) => {
@@ -583,6 +585,7 @@ userSchema.static('changePassword', (id:string, oldpass:string, newpass:string):
     }
     User
       .findById(id)
+      .select('+password')
       .exec((err, user) => {
         if(err){
           reject({message: err.message});

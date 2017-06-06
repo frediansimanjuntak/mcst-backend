@@ -16,7 +16,6 @@ export class PropertiesRoutes {
         .route('/properties/:name_url/:idproperties')
         .get(auth.isAuthenticated(), PropertiesController.getByIdProperties)
         .delete(auth.isAuthenticated(), PropertiesController.deleteProperties);
-        // .put(auth.isAuthenticated(), PropertiesController.deleteLandlord);
 
       router
         .route('/properties/:name_url/update/:idproperties')
@@ -25,8 +24,7 @@ export class PropertiesRoutes {
       router
         .route('/properties/:name_url/generate_code/:idproperties')
         .post(auth.isAuthenticated(), PropertiesController.generateCodeProperties)
-        .put(auth.isAuthenticated(), PropertiesController.deleteCodeProperties);
-        
+        .put(auth.isAuthenticated(), PropertiesController.deleteCodeProperties);        
 
       //Route Tenant
       router
@@ -43,25 +41,7 @@ export class PropertiesRoutes {
       //Route Landlord
       router
         .route('/properties/:name_url/landlord/:idproperties')
-        // .get(auth.isAuthenticated(), PropertiesController.getByIdProperties)
         .delete(auth.isAuthenticated(), PropertiesController.deleteLandlord)
         .put(auth.isAuthenticated(), PropertiesController.changeLandlord);
-
-      //Route Register Vehicle
-      router
-        .route('/properties/:name_url/register_vehicle/:idproperties')
-        .get(auth.isAuthenticated(), PropertiesController.getRegisterVehicleProperties)
-        .post(auth.isAuthenticated(), PropertiesController.createRegisterVehicleProperties);
-
-       router
-        .route('/properties/:name_url/vehicle/:license_plate')
-        .get(auth.isAuthenticated(), PropertiesController.getOwnerVehicleByLicensePlat);
-
-      router
-        .route('/properties/:name_url/:idproperties/register_vehicle/:idregistervehicle')
-        .get(auth.isAuthenticated(), PropertiesController.getByIdRegisterVehicleProperties)
-        .post(auth.isAuthenticated(), PropertiesController.updateRegisterVehicleProperties)
-        .delete(auth.isAuthenticated(), PropertiesController.deleteRegisterVehicleProperties);
-
     }
 }

@@ -10,7 +10,6 @@ import {GlobalService} from '../../../global/global.service';
 incidentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         Incident
           .find(_query)
           .populate("development attachment starred_by created_by contract")
@@ -27,7 +26,6 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         } 
-
         Incident
           .findById(id)
           .populate("development attachment starred_by created_by contract")
@@ -41,8 +39,7 @@ incidentSchema.static('getById', (id:string):Promise<any> => {
 
 incidentSchema.static('getOwnIncident', (userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-        let _query = {"development": developmentId, "created_by":userId};
-
+        let _query = {"development": developmentId, "created_by": userId};
         Incident
           .find(_query)
           .populate("development attachment starred_by created_by contract")
@@ -95,10 +92,19 @@ incidentSchema.static('createIncident', (incident:Object, userId:string, develop
               if (err) {
                 reject({message: err.message});
               }
-              if (incident) {
-                let _query = {"_id": incident._id};
-                Incident.addAttachmentIncident(attachment, _query, userId.toString()); 
-                resolve(incident);
+              else if (incident) {
+                if (attachment) {
+                  let _query = {"_id": incident._id};
+                  Incident.addAttachmentIncident(attachment, _query, userId.toString()).then((res) => {
+                    resolve(incident);
+                  })
+                  .catch((err) => {
+                    reject(err);
+                  })
+                }
+                else {
+                  resolve(incident);
+                }   
               }
             });
           })
@@ -158,9 +164,9 @@ incidentSchema.static('statusIncident',(id:string):Promise<any> => {
             }
           })     
           .exec((err, updated) => {
-              err ? reject({message: err.message})
-                  : resolve(updated);
-                });           
+            err ? reject({message: err.message})
+                : resolve(updated);
+          });           
     });
 });
 
@@ -170,14 +176,13 @@ incidentSchema.static('starred', (id:string, starred_by:string):Promise<any> => 
         return reject(new TypeError('Starred By is not a valid object.'));
       }
       Incident
-        .findByIdAndUpdate(id,     
-          {
+        .findByIdAndUpdate(id, {
             $push: {"starred_by": starred_by}
           })
         .exec((err, saved) => {
-              err ? reject({message: err.message})
-                  : resolve(saved);
-                });
+          err ? reject({message: err.message})
+              : resolve(saved);
+        });
     });
 });
 
@@ -187,13 +192,12 @@ incidentSchema.static('unstarred', (id:string, starred_by:string):Promise<any> =
         return reject(new TypeError('Starred By is not a valid object.'));
       }
       Incident
-        .findByIdAndUpdate(id,     
-          {
+        .findByIdAndUpdate(id, {
             $pull: {"starred_by": starred_by}
           })
         .exec((err, saved) => {
-              err ? reject({message: err.message})
-                  : resolve(saved);
+          err ? reject({message: err.message})
+              : resolve(saved);
         });
     });
 });
@@ -205,8 +209,7 @@ incidentSchema.static('resolve', (id:string, userId:string, incident:string):Pro
       }
       let body:any = incident;
       Incident
-        .findByIdAndUpdate(id,     
-          {
+        .findByIdAndUpdate(id, {
             $set: {
               "resolved_by": body.resolved_by,
               "resolved_at": new Date(),
@@ -227,17 +230,15 @@ incidentSchema.static('archieve', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
       }
       Incident
-        .findByIdAndUpdate(id,     
-          {
+        .findByIdAndUpdate(id, {
             $set: {"archieve": true}
           })
         .exec((err, saved) => {
-              err ? reject({message: err.message})
-                  : resolve(saved);
+          err ? reject({message: err.message})
+              : resolve(saved);
         });
     });
 });
-
 
 incidentSchema.static('unarchieve', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -250,8 +251,8 @@ incidentSchema.static('unarchieve', (id:string):Promise<any> => {
             $set: {"archieve": false}
           })
         .exec((err, saved) => {
-              err ? reject({message: err.message})
-                  : resolve(saved);
+          err ? reject({message: err.message})
+              : resolve(saved);
         });
     });
 });

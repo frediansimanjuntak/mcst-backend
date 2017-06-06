@@ -9,22 +9,7 @@ userGroupSchema.static('getAll', ():Promise<any> => {
         let _query = {};
         UserGroup
           .find(_query)
-          .populate("development")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'chief',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'users',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development created_by chief users")
           .exec((err, user_groups) => {
               err ? reject({message: err.message})
                   : resolve(user_groups);
@@ -36,22 +21,7 @@ userGroupSchema.static('getById', (id: string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         UserGroup
           .findById(id)
-          .populate("development")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'chief',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'users',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development created_by chief users")
           .exec((err, user_groups) => {
               err ? reject({message: err.message})
                   : resolve(user_groups);
@@ -63,22 +33,7 @@ userGroupSchema.static('getOwn', (userid: string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         UserGroup
           .findOne({"chief": userid})
-          .populate("development")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'chief',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'users',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development created_by chief users")
           .exec((err, user_groups) => {
               err ? reject({message: err.message})
                   : resolve(user_groups);
@@ -88,9 +43,6 @@ userGroupSchema.static('getOwn', (userid: string):Promise<any> => {
 
 userGroupSchema.static('createUserGroup', (userGroup:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-    //   if (!_.isObject(userGroup)) {
-    //     return reject(new TypeError('User Group is not a valid object.'));
-    //   }
       let body:any = userGroup;
       UserGroup
         .findOne({"chief" : body.chief})

@@ -8,12 +8,7 @@ guestSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Guest
             .find(_query)
-            .populate("development contract")
-            .populate({
-                path: 'created_by checkin_by checkout_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development contract created_by checkin_by checkout_by")
             .exec((err, guests) => {
                 err ? reject({message: err.message})
                     : resolve(guests);
@@ -28,12 +23,7 @@ guestSchema.static('getById', (id:string):Promise<any> => {
         }
         Guest
             .findById(id)
-            .populate("development contract")
-            .populate({
-                path: 'created_by checkin_by checkout_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development contract created_by checkin_by checkout_by")
             .exec((err, guests) => {
                 err ? reject({message: err.message})
                     : resolve(guests);
@@ -46,12 +36,7 @@ guestSchema.static('getOwnGuest', (userId:string, developmentId:string):Promise<
         let _query = {"development": developmentId, "created_by": userId};
         Guest
             .find(_query)
-            .populate("development contract")
-            .populate({
-                path: 'created_by checkin_by checkout_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development contract created_by checkin_by checkout_by")
             .exec((err, guests) => {
                 err ? reject({message: err.message})
                     : resolve(guests);
@@ -61,8 +46,9 @@ guestSchema.static('getOwnGuest', (userId:string, developmentId:string):Promise<
 
 guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(guest)) {  
-        return reject(new TypeError('Guest is not a valid object.'));      }
+        if (!_.isObject(guest)) {  
+            return reject(new TypeError('Guest is not a valid object.'));     
+        }
         var _guest = new Guest(guest);
         _guest.created_by = userId;
         _guest.development = developmentId;
@@ -79,11 +65,11 @@ guestSchema.static('deleteGuest', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Guest
-          .findByIdAndRemove(id)
-          .exec((err, deleted) => {
-              err ? reject({message: err.message})
-                  : resolve();
-                });
+            .findByIdAndRemove(id)
+            .exec((err, deleted) => {
+                err ? reject({message: err.message})
+                    : resolve();
+            });
     });
 });
 

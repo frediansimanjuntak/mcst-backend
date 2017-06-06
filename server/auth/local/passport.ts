@@ -7,7 +7,9 @@ function localAuthenticate(User, username, password, done) {
   User.findOne({
     username: username.toLowerCase(),
     active: true
-  }).exec()
+  })
+  .select('+password +salt')
+  .exec()
     .then(user => {
       if(!user) {
         return done(null, false, {

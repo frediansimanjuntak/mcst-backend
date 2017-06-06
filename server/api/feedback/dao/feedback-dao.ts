@@ -8,17 +8,7 @@ feedbackSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Feedback
             .find(_query)
-            .populate("development")
-            .populate({
-                path: 'created_by',
-                model: 'User',
-                select: '-salt -password'
-            })
-            .populate({
-                path: 'reply_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development created_by reply_by")
             .exec((err, guests) => {
                 err ? reject({message: err.message})
                     : resolve(guests);
@@ -31,17 +21,7 @@ feedbackSchema.static('getAllPublish', ():Promise<any> => {
         let _query = {"status": "publish"};
         Feedback
             .find(_query)
-            .populate("development")
-            .populate({
-                path: 'created_by',
-                model: 'User',
-                select: '-salt -password'
-            })
-            .populate({
-                path: 'reply_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development created_by reply_by")
             .exec((err, guests) => {
                 err ? reject({message: err.message})
                     : resolve(guests);
@@ -54,17 +34,7 @@ feedbackSchema.static('getAllUnPublish', ():Promise<any> => {
         let _query = {"status": "unpublish"};
         Feedback
             .find(_query)
-            .populate("development")
-            .populate({
-                path: 'created_by',
-                model: 'User',
-                select: '-salt -password'
-            })
-            .populate({
-                path: 'reply_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development created_by reply_by")
             .exec((err, guests) => {
                 err ? reject({message: err.message})
                     : resolve(guests);
@@ -79,17 +49,7 @@ feedbackSchema.static('getById', (id:string):Promise<any> => {
         }
         Feedback
             .findById(id)
-            .populate("development")
-            .populate({
-                path: 'created_by',
-                model: 'User',
-                select: '-salt -password'
-            })
-            .populate({
-                path: 'reply_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development created_by reply_by")
             .exec((err, feedbacks) => {
                 err ? reject({message: err.message})
                     : resolve(feedbacks);
@@ -99,9 +59,9 @@ feedbackSchema.static('getById', (id:string):Promise<any> => {
 
 feedbackSchema.static('createFeedback', (feedback:Object, userId:string, developmentId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-      if (!_.isObject(feedback)) {  
-        return reject(new TypeError('Feedback is not a valid object.'));
-      }
+        if (!_.isObject(feedback)) {  
+            return reject(new TypeError('Feedback is not a valid object.'));
+        }
         var _feedback = new Feedback(feedback);
         _feedback.created_by = userId;
         _feedback.development = developmentId;
@@ -118,11 +78,11 @@ feedbackSchema.static('deleteFeedback', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Feedback
-          .findByIdAndRemove(id)
-          .exec((err, deleted) => {
-              err ? reject({message: err.message})
-                  : resolve({message: "Delete Success"});
-          });
+            .findByIdAndRemove(id)
+            .exec((err, deleted) => {
+                err ? reject({message: err.message})
+                    : resolve({message: "Delete Success"});
+            });
     });
 });
 
@@ -132,11 +92,11 @@ feedbackSchema.static('updateFeedback', (id:string, feedback:Object):Promise<any
             return reject(new TypeError('Id is not a valid string.'));
         }
         Feedback
-          .findByIdAndUpdate(id, feedback)
-          .exec((err, updated) => {
-            err ? reject({message: err.message})
-                : resolve(updated);
-          });
+            .findByIdAndUpdate(id, feedback)
+            .exec((err, updated) => {
+                err ? reject({message: err.message})
+                    : resolve(updated);
+            });
     });
 });
 
@@ -156,14 +116,13 @@ feedbackSchema.static('replyFeedback', (id:string, userId:string, reply:Object):
               }
             })
             .exec((err, updated) => {
-              err ? reject({message: err.message})
-                  : resolve(updated);
+                err ? reject({message: err.message})
+                    : resolve(updated);
             });
         }
         else {
           reject({message: "no data to reply"});
-        }
-        
+        }        
     });
 });
 
@@ -189,13 +148,13 @@ feedbackSchema.static('archieveFeedback', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Feedback
-        .findByIdAndUpdate(id, {
-          $set: {"archieve": true}
-        })
-        .exec((err, updated) => {
-              err ? reject({message: err.message})
-                  : resolve(updated);
-          });
+            .findByIdAndUpdate(id, {
+                $set: {"archieve": true}
+            })
+            .exec((err, updated) => {
+                err ? reject({message: err.message})
+                    : resolve(updated);
+            });
     });
 });
 

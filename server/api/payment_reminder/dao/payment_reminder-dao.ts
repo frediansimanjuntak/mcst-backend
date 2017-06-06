@@ -12,9 +12,9 @@ import {GlobalService} from '../../../global/global.service';
 paymentReminderSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         PaymentReminder
           .find(_query)
+          .populate("development created_by")
           .exec((err, guests) => {
               err ? reject({message: err.message})
                   : resolve(guests);
@@ -27,7 +27,6 @@ paymentReminderSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         PaymentReminder
           .findById(id)
           .populate("development created_by")
