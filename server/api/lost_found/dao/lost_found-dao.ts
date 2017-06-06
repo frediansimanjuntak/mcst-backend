@@ -89,9 +89,18 @@ lostfoundSchema.static('createLostfound', (lostfound:Object, userId:string, deve
                 reject({message: err.message});
             }
             else if (saved) {
-                let _query = {"_id": saved._id};
-                Lost_found.addAttachmentLostfound(attachment, _query, userId.toString());  
-                resolve(saved);
+                if(attachment){
+                    let _query = {"_id": saved._id};
+                    Lost_found.addAttachmentLostfound(attachment, _query, userId.toString()).then((res) => {
+                        resolve(saved);
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    })
+                }
+                else {
+                    resolve(saved);
+                }
             }
         });
       })
@@ -142,12 +151,12 @@ lostfoundSchema.static('archieveLostfound', (id:string):Promise<any> => {
             return reject(new TypeError('Id is not a valid string.'));
         }
         Lost_found
-        .findByIdAndUpdate(id, {
-            $set: {
-              "archieve": true
-            }
-        })
-        .exec((err, updated) => {
+            .findByIdAndUpdate(id, {
+                $set: {
+                    "archieve": true
+                }
+            })
+            .exec((err, updated) => {
               err ? reject({message: err.message})
                   : resolve(updated);
           });

@@ -6,7 +6,6 @@ import accesscontrolSchema from '../model/access_control-model';
 accesscontrolSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {"development": development};
-
         AccessControl
           .find(_query)
           .exec((err, accesscontrols) => {
@@ -21,7 +20,6 @@ accesscontrolSchema.static('getById', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         AccessControl
           .findById(id)
           .exec((err, accesscontrols) => {
@@ -36,9 +34,7 @@ accesscontrolSchema.static('createAccessControl', (accesscontrol:Object):Promise
         if (!_.isObject(accesscontrol)) {
           return reject(new TypeError('Access Control is not a valid object.'));
         }
-
         var _accesscontrol = new AccessControl(accesscontrol);
-
         _accesscontrol.save((err, saved) => {
           err ? reject({message: err.message})
               : resolve(saved);
@@ -51,7 +47,6 @@ accesscontrolSchema.static('deleteAccessControl', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         AccessControl
           .findByIdAndRemove(id)
           .exec((err, deleted) => {
@@ -66,7 +61,6 @@ accesscontrolSchema.static('updateAccessControl', (id:string, accesscontrol:Obje
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         AccessControl
           .findByIdAndUpdate(id, accesscontrol)
           .exec((err, updated) => {

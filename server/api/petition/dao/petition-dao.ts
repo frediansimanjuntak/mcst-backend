@@ -14,7 +14,7 @@ petitionSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Petition
           .find(_query)
-          .populate("development attachment")
+          .populate("development attachment created_by")
           .populate({
             path: 'contract',
             populate: {
@@ -22,14 +22,6 @@ petitionSchema.static('getAll', (development:string):Promise<any> => {
               model: 'Company',
               select: '_id name'
             }
-          })
-          .populate({
-            path: 'created_by',
-            populate: {
-              path: 'default_development',
-              model: 'Development'
-            },
-            select: '-salt -password'
           })
           .sort({"created_at": -1})
           .exec((err, petitions) => {
@@ -46,16 +38,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
         }
         Petition
           .findById(id)
-          .populate("development attachment")
-          .populate({
-            path: 'created_by',
-            model: 'User',
-            populate: {
-              path: 'default_development',
-              model: 'Development'
-            },
-            select: '-salt -password'
-          })
+          .populate("development attachment created_by")
           .populate({
             path: 'contract',
             populate: {
@@ -101,7 +84,7 @@ petitionSchema.static('getOwn', (userId:string, development:string):Promise<any>
         let _query = {"development": development, "created_by": userId};
         Petition
           .find(_query)
-          .populate("development attachment")
+          .populate("development attachment created_by")
           .populate({
             path: 'contract',
             populate: {
@@ -109,14 +92,6 @@ petitionSchema.static('getOwn', (userId:string, development:string):Promise<any>
               model: 'Company',
               select: '_id name'
             }
-          })
-          .populate({
-            path: 'created_by',
-            populate: {
-              path: 'default_development',
-              model: 'Development'
-            },
-            select: '-salt -password'
           })
           .exec((err, bookings) => {
               err ? reject({message: err.message})

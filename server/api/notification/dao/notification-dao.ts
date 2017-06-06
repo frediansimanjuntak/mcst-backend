@@ -12,17 +12,7 @@ notificationSchema.static('getAll', (development:string):Promise<any> => {
       let _query = {"development": development};
       Notifications
         .find(_query)
-        .populate("development")
-        .populate({
-              path: 'user',
-              model: 'User',
-              select: '-salt -password'
-          })
-        .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+        .populate("development user created_by")
         .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject({message: err.message})
@@ -39,17 +29,7 @@ notificationSchema.static('getOwnNotification', (userId:string, developmentId:st
       let _query = {"development": developmentId, "user": userId};
       Notifications
         .find(_query)
-        .populate("development")
-        .populate({
-              path: 'user',
-              model: 'User',
-              select: '-salt -password'
-          })
-        .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+        .populate("development user created_by")
         .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject({message: err.message})
@@ -66,17 +46,7 @@ notificationSchema.static('getOwnUnreadNotification', (userId:string, developmen
       let _query = {"development": developmentId, "user": userId, read_at: { $exists: false }};
       Notifications
         .find(_query)
-        .populate("development")
-        .populate({
-              path: 'user',
-              model: 'User',
-              select: '-salt -password'
-          })
-        .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+        .populate("development user created_by")
         .sort({"created_at": -1})
         .exec((err, notifications) => {
           err ? reject({message: err.message})
@@ -190,14 +160,13 @@ notificationSchema.static('readNotification', (userId:string, arrayId:string[]):
         if (!GlobalService.validateObjectId(userId)) {
           return reject(new TypeError('User ID is not a valid ObjectId.'));
         }
-
         Notifications
-        .update({_id: {$in: arrayId}}, {
-          $set: {
-            "read_at": new Date()
-          }
-        }, {multi: true})
-        .exec((err, updated) => {
+          .update({_id: {$in: arrayId}}, {
+            $set: {
+              "read_at": new Date()
+            }
+          }, {multi: true})
+          .exec((err, updated) => {
               err ? reject({message: err.message})
                   : resolve(updated);
           });
@@ -211,8 +180,8 @@ notificationSchema.static('updateNotification', (id:string, notification:Object)
         }
 
         Notifications
-        .findByIdAndUpdate(id, notification)
-        .exec((err, updated) => {
+          .findByIdAndUpdate(id, notification)
+          .exec((err, updated) => {
               err ? reject({message: err.message})
                   : resolve(updated);
           });

@@ -8,7 +8,6 @@ import {AWSService} from '../../../global/aws.service';
 attachmentSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
         let _query = {};
-
         Attachment
           .find(_query)
           .sort({"created_at": -1})
@@ -21,7 +20,6 @@ attachmentSchema.static('getAll', (development:string):Promise<any> => {
 
 attachmentSchema.static('getById', (id:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-
         Attachment
           .findById(id)
           .exec((err, attachments) => {
@@ -37,11 +35,9 @@ attachmentSchema.static('createAttachment', (attachment:Object, userId:string):P
         if (!_.isObject(attachment)) {
           return reject(new TypeError('Attachment is not a valid object.'));
         }
-
         var files = [].concat(attachment);
         var idAtt = [];
         var errAtt = 0;
-
         if (files.length > 0)
         {
             var i = 0;
@@ -72,10 +68,8 @@ attachmentSchema.static('createAttachment', (attachment:Object, userId:string):P
                       reject({message: "Error uploading your images"});
                     }                
                   });
-
                   let idattach = _attachment.id;  
-                  idAtt.push(idattach);
-                   
+                  idAtt.push(idattach);                   
                   if (i >= files.length - 1) {
                     if (errAtt == 0) {
                       resolve({idAtt, errAtt});  

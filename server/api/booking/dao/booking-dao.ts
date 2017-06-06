@@ -13,12 +13,7 @@ bookingSchema.static('getAll', (development:string):Promise<any> => {
 
         Booking
           .find(_query)
-          .populate("development facility payment")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development facility payment created_by")
           .sort({"created_at": -1})
           .exec((err, bookings) => {
               err ? reject({message: err.message})
@@ -34,7 +29,7 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
         }
         Booking
           .findById(id)
-          .populate("development facility" )
+          .populate("development facility created_by")
           .populate([{
             path: 'payment',
             model: 'Payments',
@@ -53,11 +48,6 @@ bookingSchema.static('getById', (id:string):Promise<any> => {
               model: 'Attachment'
             }]
           }])
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
           .exec((err, bookings) => {
               err ? reject({message: err.message})
                   : resolve(bookings);
@@ -70,7 +60,7 @@ bookingSchema.static('getOwn', (userId:string, development:string):Promise<any> 
         let _query = {"development": development, "created_by": userId};
         Booking
           .find(_query)
-          .populate("development facility" )
+          .populate("development facility created_by" )
           .populate([{
             path: 'payment',
             model: 'Payments',
@@ -89,11 +79,6 @@ bookingSchema.static('getOwn', (userId:string, development:string):Promise<any> 
               model: 'Attachment'
             }]
           }])
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
           .exec((err, bookings) => {
               err ? reject({message: err.message})
                   : resolve(bookings);

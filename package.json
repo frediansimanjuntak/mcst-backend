@@ -3,10 +3,7 @@
   "version": "0.0.1",
   "main": "src/mcst-backend.js",
   "scripts": {
-    "tsc": "tsc",
-    "tsc:w": "tsc -w",
-    "postinstall": "tsc",
-    "start": "node index",
+    "start": "tsc && node index",
     "watch": "gulp",
     "dev": "tsc && concurrently \"npm start\" \"gulp\"",
     "build-dev": "node index && gulp client.watch",

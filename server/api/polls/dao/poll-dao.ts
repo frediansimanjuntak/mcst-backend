@@ -10,17 +10,7 @@ pollSchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Poll
           .find(_query)
-          .populate("development")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'votes.voted_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development created_by votes.voted_by")
           .sort({"created_at": -1})
           .exec((err, polls) => {
               err ? reject({message: err.message})
@@ -36,17 +26,7 @@ pollSchema.static('getById', (id:string):Promise<any> => {
         }
         Poll
           .findById(id)
-          .populate("development")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'votes.voted_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development created_by votes.voted_by")
           .exec((err, polls) => {
               err ? reject({message: err.message})
                   : resolve(polls);
@@ -89,9 +69,9 @@ pollSchema.static('updatePoll', (id:string, poll:Object):Promise<any> => {
           return reject(new TypeError('Poll is not a valid object.'));
         }
         Poll
-        .findByIdAndUpdate(id, poll)
-        .exec((err, updated) => {
-              err ? reject({message: err.message})
+          .findByIdAndUpdate(id, poll)
+          .exec((err, updated) => {
+                err ? reject({message: err.message})
                   : resolve(updated);
           });
     });
@@ -236,9 +216,7 @@ pollSchema.static('outcomePoll', (id:string):Promise<any> => {
 
 pollSchema.static('stopAllPollToday', ():Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
-
         let today = new Date();
-
         Poll
         .find({"end_time": {$lte: today}})
         .exec((err, polls) => {

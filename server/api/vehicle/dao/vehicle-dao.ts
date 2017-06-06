@@ -12,17 +12,7 @@ vehicleSchema.static('getAll', ():Promise<any> => {
         let _query = {};
         Vehicles
           .find(_query)
-          .populate("development document")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'owner',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development document created_by owner")
           .exec((err, vehicles) => {
               err ? reject({message: err.message})
                   : resolve(vehicles);
@@ -37,17 +27,7 @@ vehicleSchema.static('getById', (id:string):Promise<any> => {
         }
         Vehicles
           .findById(id)
-          .populate("development document")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'owner',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development document created_by owner")
           .exec((err, vehicle) => {
               err ? reject({message: err.message})
                   : resolve(vehicle);
@@ -62,17 +42,7 @@ vehicleSchema.static('getByProperty', (id:string):Promise<any> => {
         }
         Vehicles
           .find({"property": id})
-          .populate("development document")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'owner',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development document created_by owner")
           .exec((err, vehicle) => {
               err ? reject({message: err.message})
                   : resolve(vehicle);
@@ -87,17 +57,7 @@ vehicleSchema.static('getByLicensePlate', (license:string):Promise<any> => {
         }
         Vehicles
           .findOne({"license_plate": license})
-          .populate("development document")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'owner',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development document created_by owner")
           .exec((err, vehicle) => {
               err ? reject({message: err.message})
                   : resolve(vehicle);
@@ -112,17 +72,7 @@ vehicleSchema.static('getByOwner', (owner:string):Promise<any> => {
         }
         Vehicles
           .find({"owner": owner})
-          .populate("development document")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'owner',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development document created_by owner")
           .exec((err, vehicles) => {
               err ? reject({message: err.message})
                   : resolve(vehicles);
@@ -135,17 +85,7 @@ vehicleSchema.static('getOwnVehicle', (developmentId:string, userId:string):Prom
         let _query = {$or: [{"owner": userId}, {"created_by": userId}], "development": developmentId};
         Vehicles
           .find(_query)
-          .populate("development document")
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'owner',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development document created_by owner")
           .exec((err, vehicles) => {
               err ? reject({message: err.message})
                   : resolve(vehicles);
@@ -202,10 +142,8 @@ vehicleSchema.static('addVehicleToUser', (data:Object):Promise<any> => {
       if (!_.isObject(data)) {  
         return reject(new TypeError('Lost and Found is not a valid object.'));
       }
-
       let ObjectID = mongoose.Types.ObjectId;   
       let body:any = data;
-
       User
         .update({"_id": body.idUser}, {
           $push: {
@@ -244,7 +182,6 @@ vehicleSchema.static('deleteVehicle', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Vehicles
           .findById(id)
           .exec((err, vehicle) => {
@@ -308,7 +245,6 @@ vehicleSchema.static('deleteVehicleToProperty', (data:Object):Promise<any> => {
           }
         })
         .exec((err, updated) => {
-          console.log(updated);
             err ? reject({message: err.message})
                 : resolve(updated);
         });       
@@ -339,7 +275,6 @@ vehicleSchema.static('updateVehicle', (id:string, userId:string, vehicle:Object,
 vehicleSchema.static('addAttachmentVehicle', (attachment:Object, query:Object, userId:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
       let files:any = attachment;
-      console.log(files);
       if (files) {
         let documentAtt = files.document;
         Attachment.createAttachment(documentAtt, userId).then(res => {

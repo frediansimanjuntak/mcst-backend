@@ -15,17 +15,7 @@ contractSchema.static('getAll', (development:string):Promise<any> => {
 
         Contract
           .find(_query)
-          .populate("development company attachment quotation contract_note.attachment contract_notice.attachment")
-          .populate({
-              path: 'contract_note.posted_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development company attachment quotation contract_note.attachment contract_notice.attachment contract_note.posted_by created_by")
           .sort({"created_at": -1})
           .exec((err, contracts) => {
               err ? reject({message: err.message})
@@ -41,17 +31,7 @@ contractSchema.static('getById', (id:string):Promise<any> => {
         }
         Contract
           .findById(id)
-          .populate("development company attachment quotation contract_note.attachment contract_notice.attachment ")
-          .populate({
-              path: 'contract_note.posted_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development company attachment quotation contract_note.attachment contract_notice.attachment contract_note.posted_by created_by")
           .exec((err, contracts) => {
               err ? reject({message: err.message})
                   : resolve(contracts);
@@ -161,9 +141,16 @@ contractSchema.static('createContract', (contract:Object, userId:string, develop
               }
               if (attachment) {
                 let _query = {"_id": contract._id};
-                Contract.attachmentContract(_query, userId.toString(), attachment);                
+                Contract.attachmentContract(_query, userId.toString(), attachment).then((res) => {
+                    resolve(contract);
+                })            
+                .catch((err) => {
+                    reject (err);
+                })    
               }
-              resolve(contract);
+              else {
+                resolve(contract);
+              }              
             }
           });
         })
@@ -404,16 +391,7 @@ contractSchema.static('getByIdContractNote', (id:string, idcontractnote:string):
               reject({message: err.message});
             }
             else if (contract) {
-                resolve(contract);
-                // if(contract.contract_note.length > 0){
-                //     _.each(contract.contract_note, (err, result) => {
-                //         err ? reject({message: err.message})
-                //             : resolve(result);
-                //     }) 
-                // }  
-                // else {
-                //     resolve({message: "No Data in Contract Note"})
-                // }                            
+                resolve(contract);                         
             }
           });
     });

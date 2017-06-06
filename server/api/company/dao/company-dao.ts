@@ -11,7 +11,7 @@ companySchema.static('getAll', ():Promise<any> => {
         let _query = {};
         Company
           .find(_query)
-          .populate("company_logo")
+          .populate("company_logo created_by")
           .populate({
               path: 'chief',
               model: 'Contractor',
@@ -20,11 +20,6 @@ companySchema.static('getAll', ():Promise<any> => {
           .populate({
               path: 'employee',
               model: 'Contractor',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'created_by',
-              model: 'User',
               select: '-salt -password'
           })
           .sort({"created_at": -1})
@@ -55,7 +50,7 @@ companySchema.static('getById', (id:string):Promise<any> => {
         }
         Company
           .findById(id)
-          .populate("company_logo")
+          .populate("company_logo created_by")
           .populate({
               path: 'chief',
               model: 'Contractor',
@@ -64,11 +59,6 @@ companySchema.static('getById', (id:string):Promise<any> => {
           .populate({
               path: 'employee',
               model: 'Contractor',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'created_by',
-              model: 'User',
               select: '-salt -password'
           })
           .exec((err, bookings) => {
@@ -154,9 +144,9 @@ companySchema.static('attachmentCompany', (query:Object, userId:string, attachme
                   }
                 })
                 .exec((err, saved) => {
-                      err ? reject({message: err.message})
-                          : resolve(saved);
-                 });
+                    err ? reject({message: err.message})
+                        : resolve(saved);
+                });
             })
             .catch(err=>{
                 resolve({message: "attachment error"});
@@ -174,15 +164,15 @@ companySchema.static('addEmployeeCompany', (id:string, employee:Object):Promise<
           return reject(new TypeError('Company Employee is not a valid object.'));
         }
         Company
-          .findByIdAndUpdate(id,{
-            $push: {
-              "employee": employee
-            }
-          })
-          .exec((err, updated) => {
+            .findByIdAndUpdate(id,{
+                $push: {
+                    "employee": employee
+                }
+            })
+            .exec((err, updated) => {
                 err ? reject({message: err.message})
                     : resolve(updated);
-          });
+            });
     });
 });
 
@@ -211,15 +201,15 @@ companySchema.static('activationCompany', (id:string, company:Object):Promise<an
         }
         let body:any = company;
         Company
-          .findByIdAndUpdate(id,{
-            $set: {
-              "active": body.active
-            }
-          })
-          .exec((err, updated) => {
+            .findByIdAndUpdate(id,{
+                $set: {
+                    "active": body.active
+                }
+            })
+            .exec((err, updated) => {
                 err ? reject({message: err.message})
                     : resolve(updated);
-          });
+            });
     });
 });
 

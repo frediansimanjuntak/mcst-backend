@@ -8,12 +8,7 @@ facilitySchema.static('getAll', (development:string):Promise<any> => {
         let _query = {"development": development};
         Facility
             .find(_query)
-            .populate("development")
-            .populate({
-                path: 'created_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development created_by")
             .exec((err, facilities) => {
                 err ? reject({message: err.message})
                     : resolve(facilities);
@@ -28,12 +23,7 @@ facilitySchema.static('getById', (id:string):Promise<any> => {
         }
         Facility
             .findById(id)
-            .populate("development")
-            .populate({
-                path: 'created_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development created_by")
             .exec((err, facilities) => {
                 err ? reject({message: err.message})
                     : resolve(facilities);
@@ -48,12 +38,7 @@ facilitySchema.static('getByName', (name:string):Promise<any> => {
         }
         Facility
             .findOne({"name": name})
-            .populate("development")
-            .populate({
-                path: 'created_by',
-                model: 'User',
-                select: '-salt -password'
-            })
+            .populate("development created_by")
             .exec((err, facilities) => {
               err ? reject({message: err.message})
                   : resolve(facilities);
@@ -110,7 +95,6 @@ facilitySchema.static('getSchedule', (id:string):Promise<any> => {
         if (!_.isString(id)) {
             return reject(new TypeError('Id is not a valid string.'));
         }
-
         Facility
           .findById(id)
           .select("schedule")
@@ -163,10 +147,10 @@ facilitySchema.static('updateSchedule', (id:string, idschedule:string, schedule:
         let ObjectID = mongoose.Types.ObjectId;   
         let scheduleObj = {$set: {}};
         for(var param in schedule) {
-          scheduleObj.$set['schedule.$.'+param] = schedule[param];
+          scheduleObj.$set['schedule.$.' + param] = schedule[param];
         }        
         Facility
-          .update({"_id":id, "schedule": {$elemMatch: {"_id": new ObjectID(idschedule)}}}, scheduleObj)
+          .update({"_id": id, "schedule": {$elemMatch: {"_id": new ObjectID(idschedule)}}}, scheduleObj)
           .exec((err, saved) => {
                 err ? reject({message: err.message})
                     : resolve(saved);
@@ -201,13 +185,13 @@ facilitySchema.static('createMaintenanceFacility', (id:string, facility:Object):
             return reject(new TypeError('Id is not a valid string.'));
         }
         Facility
-          .findByIdAndUpdate(id, {
-            $push: {"maintenance": facility}
-          })
-          .exec((err, updated) => {
+            .findByIdAndUpdate(id, {
+                $push: {"maintenance": facility}
+            })
+            .exec((err, updated) => {
                 err ? reject({message: err.message})
                     : resolve(updated);
-          });
+            });
     });
 });
 

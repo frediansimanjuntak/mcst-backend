@@ -18,17 +18,7 @@ announcementSchema.static('getAll', (development:string, role:string):Promise<an
         }        
         Announcement
           .find(_query)
-          .populate("development")
-          .populate({
-              path: 'publish_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development publish_by created_by")
           .sort({"created_at": -1})
           .exec((err, announcements) => {
               err ? reject({message: err.message})
@@ -44,17 +34,7 @@ announcementSchema.static('getById', (id:string):Promise<any> => {
         }
         Announcement
           .findById(id)
-          .populate("development")
-          .populate({
-              path: 'publish_by',
-              model: 'User',
-              select: '-salt -password'
-          })
-          .populate({
-              path: 'created_by',
-              model: 'User',
-              select: '-salt -password'
-          })
+          .populate("development publish_by created_by")
           .exec((err, announcements) => {
               err ? reject({message: err.message})
                   : resolve(announcements);
@@ -78,7 +58,7 @@ announcementSchema.static('messageFCM', (id:string):Promise<any> => {
                 if (err) {
                   reject({message: err.message});
                 }
-                if (users) {
+                else if (users) {
                   if (users.token_notif.length > 0) {
                       FCMService.sendMessage(users.token_notif, "announcement", announcement.title);
                   }  
