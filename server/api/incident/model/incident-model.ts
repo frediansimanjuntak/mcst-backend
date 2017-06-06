@@ -9,7 +9,7 @@ var incidentSchema = new mongoose.Schema({
     	ref: 'Development'
 	},
 	property: {type: String, trim: true},		
-	incident_type: {type: String, trim: true},
+	incident_type: {type: String, enum: ['hygiene', 'general', 'damage'], default: 'general'},
 	landlord_acceptance: {type: String, trim: true},
 	attachment: [{
 			type: Schema.Types.ObjectId,
