@@ -56,7 +56,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
               let developmentName = user.default_development.name;
               if (user.default_property.property) {
                 let propertyID = user.default_property.property;
-                Development.getByIdDevProperties(developmentID.toString(), propertyID).then((res) => {
+                Development.getByIdDevProperties(developmentID.toString(), propertyID.toString()).then((res) => {
                   let data = {
                     "name": user.name,
                     "phone": user.phone,

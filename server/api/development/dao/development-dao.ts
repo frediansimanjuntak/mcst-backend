@@ -328,7 +328,7 @@ developmentSchema.static('getByIdDevProperties', (idDevelopment:string, idProper
                 if (err) {
                     reject({message: err.message});
                 }
-                if (res) {
+                else if (res) {
                     _.each(res.properties, (result) => {
                         resolve(result);
                     })
