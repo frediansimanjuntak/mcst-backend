@@ -38,12 +38,21 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
         }
         Petition
           .findById(id)
-          .populate("development attachment created_by")
+          .populate("development attachment")
           .populate({
             path: 'contract',
             populate: {
               path: 'company',
               model: 'Company'
+            }
+          })
+          .populate({
+            path: 'created_by',
+            model: 'User',
+            populate: {
+              path: 'default_development',
+              model: 'Development',
+              select: '_id name'
             }
           })
           .exec((err, petitions) => {
@@ -56,7 +65,7 @@ petitionSchema.static('getById', (id:string):Promise<any> => {
               let developmentName = user.default_development.name;
               if (user.default_property.property) {
                 let propertyID = user.default_property.property;
-                Development.getByIdDevProperties(developmentID.toString(), propertyID.toString()).then((res) => {
+                Development.getByIdDevProperties(developmentID, propertyID).then((res) => {
                   let data = {
                     "name": user.name,
                     "phone": user.phone,
