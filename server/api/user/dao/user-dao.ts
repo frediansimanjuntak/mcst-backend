@@ -176,12 +176,12 @@ userSchema.static('signUp', (user:Object, developmentId:string):Promise<any> => 
         _user.password = password;
         _user.verification.code = code;
         _user.save((err, res)=>{
-          if(err){
+          if (err) {
             reject({message: err.message});
           }
-          if(res){     
+          if (res) {     
             var userId = res._id.toString();
-            if (body.owned_property != null){
+            if (body.owned_property != null) {
               var ownedProperty_landlord = [].concat(res.owned_property)
               for (var i = 0; i < ownedProperty_landlord.length; i++) {
                 var ownedProperty = ownedProperty_landlord[i];
@@ -191,7 +191,7 @@ userSchema.static('signUp', (user:Object, developmentId:string):Promise<any> => 
               }
               role = "owner";
             }            
-            if(body.rented_property != null){
+            if (body.rented_property != null) {
               let idDevelopment = body.rented_property.development.toString();
               let idProperty = body.rented_property.property.toString();
               User.updatePropertyTenant(idDevelopment, idProperty, userId, body.remarks); 
@@ -227,20 +227,20 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
         let ObjectID = mongoose.Types.ObjectId;
         let idProperty = body.id_property.toString();
         let idDevelopment = body.id_development.toString();
-        let idUser = body.id_user.toString();
-        let role = body.default_property.role;
-        let defaultProperty = body.default_property.property;
+        let idUser = body.id_user.toString();             
         let remarks = body.remarks;
         let updateObj = {$push: {}, $set: {}};
-        if(body.type == 'landlord'){
+        if (body.type == 'landlord') {
           updateObj.$push["owned_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyOwner(idDevelopment, idProperty, idUser, remarks); 
         }
-        if(body.type == 'tenant'){
+        if (body.type == 'tenant') {
           updateObj.$push["rented_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyTenant(idDevelopment, idProperty, idUser, remarks); 
         }
-        if(body.default_property.property){
+        if (body.default_property.property) {
+          let defaultProperty = body.default_property.property;
+          let role = body.default_property.role;
           updateObj.$set["default_property"] = ({"development": idDevelopment, "role": role, "property": defaultProperty})
           updateObj.$set["default_development"] = idDevelopment;
         }
@@ -258,14 +258,14 @@ userSchema.static('checkUserData', (search:string):Promise<any> => {
     User
     .findOne({ $or: [{"username": search}, {"email": search}, {"phone": search}]})
     .exec((err, users)=>{  
-      if(err) {
+      if (err) {
         reject(err);
       }
-      else{
-        if(users) {
+      else {
+        if (users) {
           resolve({message: true});
         }
-        else{
+        else {
           resolve({message: false});
         }
       }
@@ -280,7 +280,7 @@ userSchema.static('createUsers', (user:Object, development:string, role:string, 
       }
       let body:any = user;
       let roleUser;
-      if (role == "superadmin"){ 
+      if (role == "superadmin") { 
         if (body.role == "admin" || body.role == "user") {
           roleUser = body.role;
         }
@@ -339,7 +339,7 @@ userSchema.static('setDefaultProperty', (idUser:string, data:Object):Promise<any
     return new Promise((resolve:Function, reject:Function) => {
       let body:any = data;
       let role;
-      if(body.status == "rented"){
+      if (body.status == "rented") {
         role = "tenant";
       }
       else {
@@ -502,18 +502,18 @@ userSchema.static('resendVerificationUser', (userId:string, user:Object):Promise
         User
           .findById(userId)
           .exec((err, res) => {
-            if(err){
+            if (err) {
               reject({message: err.message});
             }
-            if(res){
+            if (res) {
               var verified = res.verification.verified;
-              if(verified == false){
+              if (verified == false) {
                 res.verification.code = code;
                 res.save((err, saved) => {
-                  if(err){
+                  if (err) {
                     reject({message: err.message});
                   }
-                  if(saved){
+                  if (saved) {
                       let data = {
                         "emailTo": saved.email,
                         "fullname": saved.details.first_name +" "+ saved.details.last_name,
@@ -527,7 +527,7 @@ userSchema.static('resendVerificationUser', (userId:string, user:Object):Promise
                   }
                 })                  
               }
-              else{
+              else {
                 reject({message: "Your Account Already Verified"})
               }
             }
@@ -543,15 +543,15 @@ userSchema.static('verifiedUser', (userId:string, data:Object):Promise<any> => {
           .exec((err, user) => {
               var verified = user.verification.verified;
               var code = user.verification.code; 
-              if(verified == false){    
-                if (code == body.code){
+              if (verified == false) {    
+                if (code == body.code) {
                     user.verification.verified = true;
                     user.verification.verified_date = new Date();
                     user.save((err, saved) => {
-                      if(err){
+                      if (err) {
                         reject({message: err.message});
                       }
-                      if(saved){
+                      if (saved) {
                         let data = {
                           "emailTo": saved.email,
                           "fullname": saved.details.first_name +" "+ saved.details.last_name,
@@ -566,11 +566,11 @@ userSchema.static('verifiedUser', (userId:string, data:Object):Promise<any> => {
                       }
                     })            
                 }
-                else{
+                else {
                   reject({message: 'Your code is wrong'});
                 }
               }
-               else{
+               else {
                 reject({message: "Already Verified"})
               }
           })
@@ -587,15 +587,15 @@ userSchema.static('changePassword', (id:string, oldpass:string, newpass:string):
       .findById(id)
       .select('+password')
       .exec((err, user) => {
-        if(err){
+        if (err) {
           reject({message: err.message});
         }
-        if(user){
+        if (user) {
           user.authenticate(oldpass, (err, ok) => {
-                if(err) {
+                if (err) {
                   reject({message: err.message});
                 }
-                if(ok) {
+                if (ok) {
                   user.password = newpass;
                   user.save((err, res) => {
                     err ? reject({message: err.message})
@@ -625,11 +625,11 @@ userSchema.static('updateUser', (id:string, data:Object):Promise<any> => {
             user.email = body.email;
             user.phone = body.phone;
             user.save((err, saved) => {
-              if(err){
+              if (err) {
                 reject({message: err.message});
               }
-              if(saved){
-                if(body.oldPassword && body.newPassword) {
+              if (saved) {
+                if (body.oldPassword && body.newPassword) {
                   User.changePassword(id, body.oldPassword, body.newPassword).then((res) => {
                     resolve(res);
                   })
@@ -637,7 +637,7 @@ userSchema.static('updateUser', (id:string, data:Object):Promise<any> => {
                     reject({message: err.message});
                   })
                 }
-                else{
+                else {
                   resolve({message: 'data updated'});
                 }
               }
