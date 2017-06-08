@@ -229,27 +229,35 @@ userSchema.static('InputUserInLandlordOrTenant', (user:Object):Promise<any> => {
         let idDevelopment = body.id_development.toString();
         let idUser = body.id_user.toString();             
         let remarks = body.remarks;
-        let updateObj = {$push: {}, $set: {}};
+        let updatePushObj = {$push: {}};
+        let updateSetObj = {$set: {}};
         if (body.type == 'landlord') {
-          updateObj.$push["owned_property"] = ({"development": idDevelopment, "property": idProperty});
+          updatePushObj.$push["owned_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyOwner(idDevelopment, idProperty, idUser, remarks); 
         }
         if (body.type == 'tenant') {
-          updateObj.$push["rented_property"] = ({"development": idDevelopment, "property": idProperty});
+          updatePushObj.$push["rented_property"] = ({"development": idDevelopment, "property": idProperty});
           User.updatePropertyTenant(idDevelopment, idProperty, idUser, remarks); 
         }
-        if (body.default_property.property) {
+        if (body.default_property) {
           let defaultProperty = body.default_property.property;
           let role = body.default_property.role;
-          updateObj.$set["default_property"] = ({"development": idDevelopment, "role": role, "property": defaultProperty})
-          updateObj.$set["default_development"] = idDevelopment;
+          updateSetObj.$set["default_property"] = ({"development": idDevelopment, "role": role, "property": defaultProperty})
+          updateSetObj.$set["default_development"] = idDevelopment;
+          User
+            .findByIdAndUpdate(idUser, updateSetObj)
+            .exec((err, updated) => {
+              err ? reject({message: err.message})
+                  : resolve(updated);
+            })
         }
         User
-          .findByIdAndUpdate(idUser, updateObj)
+          .findByIdAndUpdate(idUser, updatePushObj)
           .exec((err, updated) => {
             err ? reject({message: err.message})
                 : resolve(updated);
-          })         
+          })              
+
     });
 });
 
