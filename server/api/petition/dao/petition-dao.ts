@@ -302,6 +302,25 @@ petitionSchema.static('addAttachmentPetition', (attachment:Object, query:Object,
     });
 });
 
+petitionSchema.static('approvePetition', (id:string, status:string, userId:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {      
+      Petition
+        .findById(id)
+        .exec((err, petition) => {
+          if (err) { reject(err); }
+          else if (petition) {
+            petition.approval.status = status;
+            petition.approval.by = userId;
+            petition.approval.date = new Date();
+            petition.save((err, saved) => {
+              err ? reject({message: err.message})
+                  : resolve(saved);
+            })
+          }
+        })
+    });
+});
+
 let Petition = mongoose.model('Petition', petitionSchema);
 
 export default Petition;
