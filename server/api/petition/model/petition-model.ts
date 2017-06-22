@@ -27,8 +27,8 @@ var petitionSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'User'
 	},
-	approve: {
-		status: {type: String, default: false},
+	approval: {
+		status: {type: String, enum:['pending', 'accepted', 'rejected'], default: 'pending'},
 		by: {
 			type: Schema.Types.ObjectId,
     		ref: 'User'

@@ -30,7 +30,7 @@ export class PetitionRoutes {
         .put(auth.isAuthenticated(), PetitionController.unarchieve);
       
        router
-        .route('/petitions/approve/:id')
+        .route('/petitions/:approve/:id')
         .post(auth.isAuthenticated(), PetitionController.approvePetition);
     }
 }
