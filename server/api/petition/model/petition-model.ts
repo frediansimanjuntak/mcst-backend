@@ -27,6 +27,14 @@ var petitionSchema = new mongoose.Schema({
 		type: Schema.Types.ObjectId,
     	ref: 'User'
 	},
+	approve: {
+		status: {type: String, default: false},
+		by: {
+			type: Schema.Types.ObjectId,
+    		ref: 'User'
+		},
+		date: {type: Date}
+	},
 	updated_at: {type: Date},
 	created_at: {type: Date, default: Date.now}
 });

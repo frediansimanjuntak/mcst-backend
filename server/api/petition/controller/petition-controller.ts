@@ -72,4 +72,13 @@ export class PetitionController {
         .then(_userid => res.status(201).json(_userid))
         .catch(error => res.status(400).json(error));
   }
+
+  static approvePetition(req: express.Request, res: express.Response):void {    
+      let _id = req.params.id;
+      let userId = req["user"]._id;
+      PetitionDAO
+        ['approvePetition'](_id, userId)
+        .then(_userid => res.status(201).json(_userid))
+        .catch(error => res.status(400).json(error));
+  }
 }
