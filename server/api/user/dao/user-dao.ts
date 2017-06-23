@@ -195,7 +195,7 @@ userSchema.static('signUp', (user:Object, developmentId:string):Promise<any> => 
               let idDevelopment = body.rented_property.development.toString();
               let idProperty = body.rented_property.property.toString();
               User.updatePropertyTenant(idDevelopment, idProperty, userId, body.remarks); 
-              role = "occupired";             
+              role = "occupied";             
             }            
             let data = {
               "emailTo": res.email,
