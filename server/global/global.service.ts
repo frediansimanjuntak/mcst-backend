@@ -1,5 +1,6 @@
 'use strict';
 import config from '../config/environment/index';
+import Development from '../api/development/dao/development-dao';
 
 declare global {
   interface String {
@@ -58,4 +59,33 @@ export class GlobalService {
     let randomCode = Math.floor(Math.random() * 9000000000) + 1000000000;
     return randomCode;
   }
+
+  static propertyCode(type){
+    let randomCode = Math.random().toString(36).substr(2, 5);
+    let _query;
+    var generateCode = function() {
+      if (type == 'landlord'){
+        _query = {"properties.code.landlord": randomCode};
+      }
+      else if (type == 'tenant') {
+        _query = {"properties.code.tenant": randomCode};
+      }
+      Development
+        .find(_query)
+        .exec((err, petition) => {
+          if (err) {
+            return({message: err.message});
+          }
+          else if (petition) {
+            if (petition.length > 0) {
+              generateCode();
+            }
+            else {
+              return randomCode;
+            }
+          }
+        })
+    }
+    generateCode();
+  } 
 }
