@@ -309,6 +309,9 @@ petitionSchema.static('approvePetition', (id:string, status:string, userId:strin
         .exec((err, petition) => {
           if (err) { reject(err); }
           else if (petition) {
+            if (status == "rejected") {
+              Petition.updateContractStatusClose(petition.contract);
+            }
             petition.approval.status = status;
             petition.approval.by = userId;
             petition.approval.date = new Date();
@@ -317,6 +320,21 @@ petitionSchema.static('approvePetition', (id:string, status:string, userId:strin
                   : resolve(saved);
             })
           }
+        })
+    });
+});
+
+petitionSchema.static('updateContractStatusClose', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {      
+      Contract
+        .findByIdAndUpdate(id, {
+          $set: {
+            status: "close"
+          }
+        })
+        .exec((err, updated) => {
+          err ? reject(err)
+              : resolve(updated);
         })
     });
 });
