@@ -433,9 +433,8 @@ developmentSchema.static('generateCodeProperties', (name_url:string, idpropertie
             return reject(new TypeError('Development Name is not a valid string.'));
         }    
         let body:any = properties;          
-        let landlordCode = Math.random().toString(36).substr(2, 5);  
-        let tenantCode = Math.random().toString(36).substr(2, 5); 
-        let updateObj = {$set: {}};
+        let landlordCode = GlobalService.propertyCode('landlord');  
+        let tenantCode = GlobalService.propertyCode('tenant'); 
         let dataLandlord = {
             "code.landlord": landlordCode,
             "code.create_at_landlord": new Date()
@@ -483,49 +482,28 @@ developmentSchema.static('deleteCodeProperties', (name_url:string, idproperties:
         }    
         let body:any = properties;
         let ObjectID = mongoose.Types.ObjectId;  
-        let landlordCode = Math.random().toString(36).substr(2, 5);  
-        let tenantCode = Math.random().toString(36).substr(2, 5); 
+        let _query = {"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}};
+        let _updateObj = {$unset: {}};
         if (body.type == "landlord") {
-            Development
-                .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                    $unset: {              
-                        "properties.$.code.landlord": landlordCode,
-                        "properties.$.code.create_at_landlord": new Date()
-                    }
-                })
-                .exec((err, saved) => {
-                    err ? reject({message: err.message})
-                        : resolve(saved);
-                });
+            _updateObj.$unset['properties.$.code.landlord'] = "";
+            _updateObj.$unset['properties.$.code.create_at_landlord'] = "";
         }
-        else if (body.type == "tenant") {
-            Development
-                .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                    $unset: {              
-                        "properties.$.code.tenant": tenantCode,
-                        "properties.$.code.create_at_tenant": new Date()
-                    }
-                })
-                .exec((err, saved) => {
-                    err ? reject({message: err.message})
-                        : resolve(saved);
-                });
+        if (body.type == "tenant") {
+            _updateObj.$unset['properties.$.code.tenant'] = "";
+            _updateObj.$unset['properties.$.code.create_at_tenant'] = "";
         }
-        else if (body.type == "all") {
-            Development
-            .update({"name_url": name_url, "properties": {$elemMatch: {"_id": new ObjectID(idproperties)}}}, {
-                $unset: {              
-                    "properties.$.code.landlord": landlordCode,
-                    "properties.$.code.create_at_landlord": new Date(),
-                    "properties.$.code.tenant": tenantCode,
-                    "properties.$.code.create_at_tenant": new Date()
-                }
-            })
+        if (body.type == "all") {
+            _updateObj.$unset['properties.$.code.landlord'] = "";
+            _updateObj.$unset['properties.$.code.create_at_landlord'] = "";
+            _updateObj.$unset['properties.$.code.tenant'] = "";
+            _updateObj.$unset['properties.$.code.create_at_tenant'] = "";
+        }
+        Development
+            .update(_query, _updateObj)
             .exec((err, saved) => {
                 err ? reject({message: err.message})
                     : resolve(saved);
             });
-        }
     });
 });
 
@@ -699,7 +677,6 @@ developmentSchema.static('deleteStaffDevelopment', (name_url:string, staff:Objec
             });
     });
 });
-
 
 //Tenant
 developmentSchema.static('getTenantProperties', (name_url:string, idproperties:string):Promise<any> => {
