@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import guestSchema from '../model/guest_registration-model';
+import Petition from '../../petition/dao/petition-dao';
 
 guestSchema.static('getAll', (development:string):Promise<any> => {
     return new Promise((resolve:Function, reject:Function) => {
@@ -49,13 +50,49 @@ guestSchema.static('createGuest', (guest:Object, userId:string, developmentId:st
         if (!_.isObject(guest)) {  
             return reject(new TypeError('Guest is not a valid object.'));     
         }
+        let body:any = guest;
         var _guest = new Guest(guest);
         _guest.created_by = userId;
         _guest.development = developmentId;
         _guest.save((err, saved) => {
-            err ? reject({message: err.message})
-                : resolve(saved);
+            if (err) { reject({message: err.message}); }
+            else {
+                if (body.petition_id){
+                    Guest.getContractByPetition(body.petition_id.toString()).then((res) => {
+                        if (res.approval.status == "accepted") {                            
+                            saved.contract = res.contract;
+                            saved.save((err, res) => {
+                                err ? reject({message: err.message})
+                                    : resolve(res);
+                            })
+                        }
+                        else { 
+                            if (res.approval.status == "pending"){
+                                reject({message: "Petition not approved by admin"});
+                            }
+                            else if (res.approval.status == "rejected") {
+                                reject({message: "Petition is rejected by admin"});
+                            }
+                            Guest.deleteGuest(saved._id.toString());                            
+                        }
+                    })
+                }
+                else {
+                    resolve(saved);
+                }
+            }
         });
+    });
+});
+
+guestSchema.static('getContractByPetition', (id:string):Promise<any> => {
+    return new Promise((resolve:Function, reject:Function) => {
+        Petition
+            .findById(id)
+            .exec((err, petitions) => {
+                err ? reject({message: err.message})
+                    : resolve(petitions);
+            });
     });
 });
 

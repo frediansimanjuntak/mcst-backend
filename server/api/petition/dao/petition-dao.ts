@@ -312,6 +312,7 @@ petitionSchema.static('approvePetition', (id:string, status:string, userId:strin
             if (status == "rejected") {
               Petition.updateContractStatusClose(petition.contract);
             }
+            petition.status = status;
             petition.approval.status = status;
             petition.approval.by = userId;
             petition.approval.date = new Date();
